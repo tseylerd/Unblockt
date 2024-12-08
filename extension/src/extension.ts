@@ -10,7 +10,7 @@ import {readFileSync} from 'node:fs';
 import * as os from "node:os";
 
 let client: LanguageClient;
-const defaultMemory = '-Xmx4098m'
+const defaultMemory = '-Xmx4096m'
 
 export function activate(context: ExtensionContext) {
     const isProduction = context.extensionMode == ExtensionMode.Production
