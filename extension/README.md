@@ -1,11 +1,11 @@
 ![Version Badge](https://img.shields.io/badge/version-0.0.1-red)
 ![License Badge](https://img.shields.io/badge/license-PolyForm_Perimeter_License_1.0.0-green)
 ## Kotlin Language Support for Visual Studio Code
-**Note:** This extension is in its early stages and does not yet support all build systems or Kotlin features.
+**Note:** This extension is in its early stages and does not yet support all build systems or Kotlin features. It may also be unstable — please report any issues or unexpected behavior you experience.
 Currently:
 - Projects need to use Gradle as the build system.
 - Projects should follow the basic Gradle directory layout.
-- The extension works best with small projects and may be unstable or perform poorly on relatively big projects.
+- The extension works best with small projects and may be unstable or perform poorly on relatively large projects.
 - For more details, see the [limitations](#limitations) section.
 
 Your feedback is invaluable—please [report](https://github.com/tseylerd/Unblockt/issues) any issues you encounter.
@@ -50,7 +50,7 @@ Once indexing is complete, you're ready to code!
 - Only the basic Gradle directory layout is supported:
   - The `main` and `test` source sets must be located inside the `src` directory of the module.
 
-  **Example of a supported layout:**  
+  **Example of a supported layout:**
   ```
   <project-root>
   └── src
@@ -81,7 +81,7 @@ Please, use [GitHub Issues](https://github.com/tseylerd/Unblockt/issues) to repo
 
 ## Our Goal
 We want developers to enjoy working with Kotlin without having to change their habits.  
-To achieve this, we aim to create another high-quality tool for Kotlin development, including a standalone Language Server implementation.
+To achieve this, we aim to create yet another high-quality tool for Kotlin development, including a standalone Language Server implementation.
 
 ## Open source software used
 - [Kotlin](https://github.com/JetBrains/kotlin)
