@@ -1,0 +1,22 @@
+// Copyright 2024 Dmitrii Tseiler. Licensed under the PolyForm Perimeter License 1.0.0 (https://polyformproject.org/licenses/perimeter/1.0.0)
+
+package tse.unblockt.ls.server.util
+
+object Environment {
+    private val OS_STR = System.getProperty("os.name")
+
+    val OS = OS_STR.lowercase().run {
+        when {
+            startsWith("windows") -> OperatingSystem.WINDOWS
+            startsWith("mac") -> OperatingSystem.MAC_OS
+            startsWith("linux") -> OperatingSystem.LINUX
+            else -> throw IllegalStateException("Unknown operating system: $this")
+        }
+    }
+
+    enum class OperatingSystem {
+        MAC_OS,
+        LINUX,
+        WINDOWS,
+    }
+}

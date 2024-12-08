@@ -1,0 +1,291 @@
+{
+  "isIncomplete": false,
+  "items": [
+    {
+      "label": "asIterable()",
+      "labelDetails": {
+        "detail": " kotlin.collections",
+        "description": "Iterable<T>"
+      },
+      "kind": 3,
+      "insertText": "asIterable()",
+      "insertTextFormat": 2,
+      "deprecated": false
+    },
+    {
+      "label": "clear()",
+      "labelDetails": {
+        "detail": " kotlin.collections",
+        "description": "Unit"
+      },
+      "kind": 3,
+      "insertText": "clear()",
+      "insertTextFormat": 2,
+      "deprecated": false
+    },
+    {
+      "label": "dropLastWhile(predicate: (T) -> Boolean)",
+      "labelDetails": {
+        "detail": " kotlin.collections",
+        "description": "List<T>"
+      },
+      "kind": 3,
+      "insertText": "dropLastWhile { $0 }",
+      "insertTextFormat": 2,
+      "deprecated": false
+    },
+    {
+      "label": "dropWhile(predicate: (T) -> Boolean)",
+      "labelDetails": {
+        "detail": " kotlin.collections",
+        "description": "List<T>"
+      },
+      "kind": 3,
+      "insertText": "dropWhile { $0 }",
+      "insertTextFormat": 2,
+      "deprecated": false
+    },
+    {
+      "label": "elementAt(index: Int)",
+      "labelDetails": {
+        "detail": " kotlin.collections",
+        "description": "T"
+      },
+      "kind": 3,
+      "insertText": "elementAt($0)",
+      "insertTextFormat": 2,
+      "deprecated": false
+    },
+    {
+      "label": "elementAtOrElse(index: Int, defaultValue: (Int) -> T)",
+      "labelDetails": {
+        "detail": " kotlin.collections",
+        "description": "T"
+      },
+      "kind": 3,
+      "insertText": "elementAtOrElse($0)",
+      "insertTextFormat": 2,
+      "deprecated": false
+    },
+    {
+      "label": "elementAtOrNull(index: Int)",
+      "labelDetails": {
+        "detail": " kotlin.collections",
+        "description": "T?"
+      },
+      "kind": 3,
+      "insertText": "elementAtOrNull($0)",
+      "insertTextFormat": 2,
+      "deprecated": false
+    },
+    {
+      "label": "let(block: (T) -> R)",
+      "labelDetails": {
+        "detail": " kotlin",
+        "description": "R"
+      },
+      "kind": 3,
+      "insertText": "let { $0 }",
+      "insertTextFormat": 2,
+      "deprecated": false
+    },
+    {
+      "label": "minusElement(element: T)",
+      "labelDetails": {
+        "detail": " kotlin.collections",
+        "description": "List<T>"
+      },
+      "kind": 3,
+      "insertText": "minusElement($0)",
+      "insertTextFormat": 2,
+      "deprecated": false
+    },
+    {
+      "label": "parallelStream()",
+      "labelDetails": {
+        "detail": " kotlin.collections",
+        "description": "Stream<E>"
+      },
+      "kind": 3,
+      "insertText": "parallelStream()",
+      "insertTextFormat": 2,
+      "deprecated": false
+    },
+    {
+      "label": "plusElement(element: T)",
+      "labelDetails": {
+        "detail": " kotlin.collections",
+        "description": "List<T>"
+      },
+      "kind": 3,
+      "insertText": "plusElement($0)",
+      "insertTextFormat": 2,
+      "deprecated": false
+    },
+    {
+      "label": "shuffle()",
+      "labelDetails": {
+        "detail": " kotlin.collections",
+        "description": "Unit"
+      },
+      "kind": 3,
+      "insertText": "shuffle()",
+      "insertTextFormat": 2,
+      "deprecated": false
+    },
+    {
+      "label": "shuffle(random: Random)",
+      "labelDetails": {
+        "detail": " kotlin.collections",
+        "description": "Unit"
+      },
+      "kind": 3,
+      "insertText": "shuffle($0)",
+      "insertTextFormat": 2,
+      "deprecated": false
+    },
+    {
+      "label": "shuffled()",
+      "labelDetails": {
+        "detail": " kotlin.collections",
+        "description": "List<T>"
+      },
+      "kind": 3,
+      "insertText": "shuffled()",
+      "insertTextFormat": 2,
+      "deprecated": false
+    },
+    {
+      "label": "shuffled(random: Random)",
+      "labelDetails": {
+        "detail": " kotlin.collections",
+        "description": "List<T>"
+      },
+      "kind": 3,
+      "insertText": "shuffled($0)",
+      "insertTextFormat": 2,
+      "deprecated": false
+    },
+    {
+      "label": "single()",
+      "labelDetails": {
+        "detail": " kotlin.collections",
+        "description": "T"
+      },
+      "kind": 3,
+      "insertText": "single()",
+      "insertTextFormat": 2,
+      "deprecated": false
+    },
+    {
+      "label": "single(predicate: (T) -> Boolean)",
+      "labelDetails": {
+        "detail": " kotlin.collections",
+        "description": "T"
+      },
+      "kind": 3,
+      "insertText": "single { $0 }",
+      "insertTextFormat": 2,
+      "deprecated": false
+    },
+    {
+      "label": "singleOrNull()",
+      "labelDetails": {
+        "detail": " kotlin.collections",
+        "description": "T?"
+      },
+      "kind": 3,
+      "insertText": "singleOrNull()",
+      "insertTextFormat": 2,
+      "deprecated": false
+    },
+    {
+      "label": "singleOrNull(predicate: (T) -> Boolean)",
+      "labelDetails": {
+        "detail": " kotlin.collections",
+        "description": "T?"
+      },
+      "kind": 3,
+      "insertText": "singleOrNull { $0 }",
+      "insertTextFormat": 2,
+      "deprecated": false
+    },
+    {
+      "label": "sumByDouble(selector: (T) -> Double)",
+      "labelDetails": {
+        "detail": " kotlin.collections",
+        "description": "Double"
+      },
+      "kind": 3,
+      "insertText": "sumByDouble { $0 }",
+      "insertTextFormat": 2,
+      "deprecated": true
+    },
+    {
+      "label": "takeLastWhile(predicate: (T) -> Boolean)",
+      "labelDetails": {
+        "detail": " kotlin.collections",
+        "description": "List<T>"
+      },
+      "kind": 3,
+      "insertText": "takeLastWhile { $0 }",
+      "insertTextFormat": 2,
+      "deprecated": false
+    },
+    {
+      "label": "takeUnless(predicate: (T) -> Boolean)",
+      "labelDetails": {
+        "detail": " kotlin",
+        "description": "T?"
+      },
+      "kind": 3,
+      "insertText": "takeUnless { $0 }",
+      "insertTextFormat": 2,
+      "deprecated": false
+    },
+    {
+      "label": "takeWhile(predicate: (T) -> Boolean)",
+      "labelDetails": {
+        "detail": " kotlin.collections",
+        "description": "List<T>"
+      },
+      "kind": 3,
+      "insertText": "takeWhile { $0 }",
+      "insertTextFormat": 2,
+      "deprecated": false
+    },
+    {
+      "label": "toCollection(destination: C)",
+      "labelDetails": {
+        "detail": " kotlin.collections",
+        "description": "C"
+      },
+      "kind": 3,
+      "insertText": "toCollection($0)",
+      "insertTextFormat": 2,
+      "deprecated": false
+    },
+    {
+      "label": "toMutableList()",
+      "labelDetails": {
+        "detail": " kotlin.collections",
+        "description": "MutableList<T>"
+      },
+      "kind": 3,
+      "insertText": "toMutableList()",
+      "insertTextFormat": 2,
+      "deprecated": false
+    },
+    {
+      "label": "toMutableSet()",
+      "labelDetails": {
+        "detail": " kotlin.collections",
+        "description": "MutableSet<T>"
+      },
+      "kind": 3,
+      "insertText": "toMutableSet()",
+      "insertTextFormat": 2,
+      "deprecated": false
+    }
+  ]
+}

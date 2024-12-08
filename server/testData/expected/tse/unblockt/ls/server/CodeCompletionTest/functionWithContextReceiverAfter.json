@@ -1,0 +1,16 @@
+{
+  "isIncomplete": false,
+  "items": [
+    {
+      "label": "functionWithContextReceiver()",
+      "labelDetails": {
+        "detail": " tse.com",
+        "description": "Unit"
+      },
+      "kind": 3,
+      "insertText": "functionWithContextReceiver()",
+      "insertTextFormat": 2,
+      "deprecated": false
+    }
+  ]
+}

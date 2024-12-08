@@ -1,0 +1,216 @@
+{
+  "isIncomplete": false,
+  "items": [
+    {
+      "label": "id: Long",
+      "labelDetails": {
+        "detail": " java.lang",
+        "description": "Long"
+      },
+      "kind": 3,
+      "insertText": "id",
+      "insertTextFormat": 2,
+      "deprecated": false
+    },
+    {
+      "label": "instanceOf(type: KClass<*>)",
+      "labelDetails": {
+        "detail": " io.ktor.util.reflect",
+        "description": "Boolean"
+      },
+      "kind": 3,
+      "insertText": "instanceOf($0)",
+      "insertTextFormat": 2,
+      "command": {
+        "title": "handleInsert",
+        "command": "handleInsert",
+        "arguments": [
+          {
+            "document": "file:///src/main/java/tse/com/playground.kt",
+            "start": 67,
+            "end": 68,
+            "addImport": {
+              "packageName": "io.ktor.util.reflect",
+              "import": "io.ktor.util.reflect.instanceOf"
+            }
+          }
+        ]
+      },
+      "data": {
+        "document": "file:///src/main/java/tse/com/playground.kt",
+        "start": 67,
+        "end": 68,
+        "addImport": {
+          "packageName": "io.ktor.util.reflect",
+          "import": "io.ktor.util.reflect.instanceOf"
+        }
+      },
+      "deprecated": false
+    },
+    {
+      "label": "interrupt()",
+      "labelDetails": {
+        "detail": " java.lang",
+        "description": "Unit"
+      },
+      "kind": 3,
+      "insertText": "interrupt()",
+      "insertTextFormat": 2,
+      "deprecated": false
+    },
+    {
+      "label": "isAlive: Boolean",
+      "labelDetails": {
+        "detail": " java.lang",
+        "description": "Boolean"
+      },
+      "kind": 3,
+      "insertText": "isAlive",
+      "insertTextFormat": 2,
+      "deprecated": false
+    },
+    {
+      "label": "isDaemon: Boolean",
+      "labelDetails": {
+        "detail": " java.lang",
+        "description": "Boolean"
+      },
+      "kind": 3,
+      "insertText": "isDaemon",
+      "insertTextFormat": 2,
+      "deprecated": false
+    },
+    {
+      "label": "isInterrupted: Boolean",
+      "labelDetails": {
+        "detail": " java.lang",
+        "description": "Boolean"
+      },
+      "kind": 3,
+      "insertText": "isInterrupted",
+      "insertTextFormat": 2,
+      "deprecated": false
+    },
+    {
+      "label": "isVirtual: Boolean",
+      "labelDetails": {
+        "detail": " java.lang",
+        "description": "Boolean"
+      },
+      "kind": 3,
+      "insertText": "isVirtual",
+      "insertTextFormat": 2,
+      "deprecated": false
+    },
+    {
+      "label": "join()",
+      "labelDetails": {
+        "detail": " java.lang",
+        "description": "Unit"
+      },
+      "kind": 3,
+      "insertText": "join()",
+      "insertTextFormat": 2,
+      "deprecated": false
+    },
+    {
+      "label": "join(p0: Duration?)",
+      "labelDetails": {
+        "detail": " java.lang",
+        "description": "Boolean"
+      },
+      "kind": 3,
+      "insertText": "join($0)",
+      "insertTextFormat": 2,
+      "deprecated": false
+    },
+    {
+      "label": "join(p0: Long)",
+      "labelDetails": {
+        "detail": " java.lang",
+        "description": "Unit"
+      },
+      "kind": 3,
+      "insertText": "join($0)",
+      "insertTextFormat": 2,
+      "deprecated": false
+    },
+    {
+      "label": "join(p0: Long, p1: Int)",
+      "labelDetails": {
+        "detail": " java.lang",
+        "description": "Unit"
+      },
+      "kind": 3,
+      "insertText": "join($0)",
+      "insertTextFormat": 2,
+      "deprecated": false
+    },
+    {
+      "label": "priority: Int",
+      "labelDetails": {
+        "detail": " java.lang",
+        "description": "Int"
+      },
+      "kind": 3,
+      "insertText": "priority",
+      "insertTextFormat": 2,
+      "deprecated": false
+    },
+    {
+      "label": "runCatching(block: T.() -> R)",
+      "labelDetails": {
+        "detail": " kotlin",
+        "description": "Result<R>"
+      },
+      "kind": 3,
+      "insertText": "runCatching { $0 }",
+      "insertTextFormat": 2,
+      "deprecated": false
+    },
+    {
+      "label": "takeIf(predicate: (T) -> Boolean)",
+      "labelDetails": {
+        "detail": " kotlin",
+        "description": "T?"
+      },
+      "kind": 3,
+      "insertText": "takeIf { $0 }",
+      "insertTextFormat": 2,
+      "deprecated": false
+    },
+    {
+      "label": "threadId()",
+      "labelDetails": {
+        "detail": " java.lang",
+        "description": "Long"
+      },
+      "kind": 3,
+      "insertText": "threadId()",
+      "insertTextFormat": 2,
+      "deprecated": false
+    },
+    {
+      "label": "toString()",
+      "labelDetails": {
+        "detail": " java.lang",
+        "description": "String"
+      },
+      "kind": 3,
+      "insertText": "toString()",
+      "insertTextFormat": 2,
+      "deprecated": false
+    },
+    {
+      "label": "uncaughtExceptionHandler: Thread.UncaughtExceptionHandler?",
+      "labelDetails": {
+        "detail": " java.lang",
+        "description": "Thread.UncaughtExceptionHandler!"
+      },
+      "kind": 3,
+      "insertText": "uncaughtExceptionHandler",
+      "insertTextFormat": 2,
+      "deprecated": false
+    }
+  ]
+}

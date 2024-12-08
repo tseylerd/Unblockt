@@ -1,0 +1,355 @@
+{
+  "isIncomplete": false,
+  "items": [
+    {
+      "label": "cachedLoggerOf(ofClass: Class<*>)",
+      "labelDetails": {
+        "detail": " org.apache.logging.log4j.kotlin",
+        "description": "KotlinLogger"
+      },
+      "kind": 3,
+      "insertText": "org.apache.logging.log4j.kotlin.cachedLoggerOf($0)",
+      "insertTextFormat": 2,
+      "command": {
+        "title": "handleInsert",
+        "command": "handleInsert",
+        "arguments": [
+          {
+            "document": "file:///server/src/main/kotlin/tse/unblockt/ls/server/analysys/playground.kt",
+            "start": 86,
+            "end": 91,
+            "shortenReference": {
+              "packageName": "org.apache.logging.log4j.kotlin",
+              "shortenName": "cachedLoggerOf($0)"
+            }
+          }
+        ]
+      },
+      "data": {
+        "document": "file:///server/src/main/kotlin/tse/unblockt/ls/server/analysys/playground.kt",
+        "start": 86,
+        "end": 91,
+        "shortenReference": {
+          "packageName": "org.apache.logging.log4j.kotlin",
+          "shortenName": "cachedLoggerOf($0)"
+        }
+      },
+      "deprecated": false
+    },
+    {
+      "label": "logger()",
+      "labelDetails": {
+        "detail": " com.intellij.openapi.diagnostic",
+        "description": "Logger"
+      },
+      "kind": 3,
+      "insertText": "com.intellij.openapi.diagnostic.logger()",
+      "insertTextFormat": 2,
+      "command": {
+        "title": "handleInsert",
+        "command": "handleInsert",
+        "arguments": [
+          {
+            "document": "file:///server/src/main/kotlin/tse/unblockt/ls/server/analysys/playground.kt",
+            "start": 86,
+            "end": 91,
+            "shortenReference": {
+              "packageName": "com.intellij.openapi.diagnostic",
+              "shortenName": "logger()"
+            }
+          }
+        ]
+      },
+      "data": {
+        "document": "file:///server/src/main/kotlin/tse/unblockt/ls/server/analysys/playground.kt",
+        "start": 86,
+        "end": 91,
+        "shortenReference": {
+          "packageName": "com.intellij.openapi.diagnostic",
+          "shortenName": "logger()"
+        }
+      },
+      "deprecated": false
+    },
+    {
+      "label": "logger()",
+      "labelDetails": {
+        "detail": " org.apache.logging.log4j.kotlin",
+        "description": "KotlinLogger"
+      },
+      "kind": 3,
+      "insertText": "logger()",
+      "insertTextFormat": 2,
+      "command": {
+        "title": "handleInsert",
+        "command": "handleInsert",
+        "arguments": [
+          {
+            "document": "file:///server/src/main/kotlin/tse/unblockt/ls/server/analysys/playground.kt",
+            "start": 86,
+            "end": 91,
+            "addImport": {
+              "packageName": "org.apache.logging.log4j.kotlin",
+              "import": "org.apache.logging.log4j.kotlin.logger"
+            }
+          }
+        ]
+      },
+      "data": {
+        "document": "file:///server/src/main/kotlin/tse/unblockt/ls/server/analysys/playground.kt",
+        "start": 86,
+        "end": 91,
+        "addImport": {
+          "packageName": "org.apache.logging.log4j.kotlin",
+          "import": "org.apache.logging.log4j.kotlin.logger"
+        }
+      },
+      "deprecated": false
+    },
+    {
+      "label": "logger(name: String)",
+      "labelDetails": {
+        "detail": " org.apache.logging.log4j.kotlin",
+        "description": "KotlinLogger"
+      },
+      "kind": 3,
+      "insertText": "org.apache.logging.log4j.kotlin.logger($0)",
+      "insertTextFormat": 2,
+      "command": {
+        "title": "handleInsert",
+        "command": "handleInsert",
+        "arguments": [
+          {
+            "document": "file:///server/src/main/kotlin/tse/unblockt/ls/server/analysys/playground.kt",
+            "start": 86,
+            "end": 91,
+            "shortenReference": {
+              "packageName": "org.apache.logging.log4j.kotlin",
+              "shortenName": "logger($0)"
+            }
+          }
+        ]
+      },
+      "data": {
+        "document": "file:///server/src/main/kotlin/tse/unblockt/ls/server/analysys/playground.kt",
+        "start": 86,
+        "end": 91,
+        "shortenReference": {
+          "packageName": "org.apache.logging.log4j.kotlin",
+          "shortenName": "logger($0)"
+        }
+      },
+      "deprecated": false
+    },
+    {
+      "label": "logger: KotlinLogger",
+      "labelDetails": {
+        "detail": " tse.unblockt.ls",
+        "description": "KotlinLogger"
+      },
+      "kind": 3,
+      "insertText": "tse.unblockt.ls.logger",
+      "insertTextFormat": 2,
+      "command": {
+        "title": "handleInsert",
+        "command": "handleInsert",
+        "arguments": [
+          {
+            "document": "file:///server/src/main/kotlin/tse/unblockt/ls/server/analysys/playground.kt",
+            "start": 86,
+            "end": 91,
+            "shortenReference": {
+              "packageName": "tse.unblockt.ls",
+              "shortenName": "logger"
+            }
+          }
+        ]
+      },
+      "data": {
+        "document": "file:///server/src/main/kotlin/tse/unblockt/ls/server/analysys/playground.kt",
+        "start": 86,
+        "end": 91,
+        "shortenReference": {
+          "packageName": "tse.unblockt.ls",
+          "shortenName": "logger"
+        }
+      },
+      "deprecated": false
+    },
+    {
+      "label": "logger: KotlinLogger",
+      "labelDetails": {
+        "detail": " org.apache.logging.log4j.kotlin",
+        "description": "KotlinLogger"
+      },
+      "kind": 3,
+      "insertText": "logger",
+      "insertTextFormat": 2,
+      "command": {
+        "title": "handleInsert",
+        "command": "handleInsert",
+        "arguments": [
+          {
+            "document": "file:///server/src/main/kotlin/tse/unblockt/ls/server/analysys/playground.kt",
+            "start": 86,
+            "end": 91,
+            "addImport": {
+              "packageName": "org.apache.logging.log4j.kotlin",
+              "import": "org.apache.logging.log4j.kotlin.logger"
+            }
+          }
+        ]
+      },
+      "data": {
+        "document": "file:///server/src/main/kotlin/tse/unblockt/ls/server/analysys/playground.kt",
+        "start": 86,
+        "end": 91,
+        "addImport": {
+          "packageName": "org.apache.logging.log4j.kotlin",
+          "import": "org.apache.logging.log4j.kotlin.logger"
+        }
+      },
+      "deprecated": false
+    },
+    {
+      "label": "loggerDelegateOf(ofClass: Class<*>)",
+      "labelDetails": {
+        "detail": " org.apache.logging.log4j.kotlin",
+        "description": "ExtendedLogger"
+      },
+      "kind": 3,
+      "insertText": "org.apache.logging.log4j.kotlin.loggerDelegateOf($0)",
+      "insertTextFormat": 2,
+      "command": {
+        "title": "handleInsert",
+        "command": "handleInsert",
+        "arguments": [
+          {
+            "document": "file:///server/src/main/kotlin/tse/unblockt/ls/server/analysys/playground.kt",
+            "start": 86,
+            "end": 91,
+            "shortenReference": {
+              "packageName": "org.apache.logging.log4j.kotlin",
+              "shortenName": "loggerDelegateOf($0)"
+            }
+          }
+        ]
+      },
+      "data": {
+        "document": "file:///server/src/main/kotlin/tse/unblockt/ls/server/analysys/playground.kt",
+        "start": 86,
+        "end": 91,
+        "shortenReference": {
+          "packageName": "org.apache.logging.log4j.kotlin",
+          "shortenName": "loggerDelegateOf($0)"
+        }
+      },
+      "deprecated": false
+    },
+    {
+      "label": "loggerOf(ofClass: Class<*>)",
+      "labelDetails": {
+        "detail": " org.apache.logging.log4j.kotlin",
+        "description": "KotlinLogger"
+      },
+      "kind": 3,
+      "insertText": "org.apache.logging.log4j.kotlin.loggerOf($0)",
+      "insertTextFormat": 2,
+      "command": {
+        "title": "handleInsert",
+        "command": "handleInsert",
+        "arguments": [
+          {
+            "document": "file:///server/src/main/kotlin/tse/unblockt/ls/server/analysys/playground.kt",
+            "start": 86,
+            "end": 91,
+            "shortenReference": {
+              "packageName": "org.apache.logging.log4j.kotlin",
+              "shortenName": "loggerOf($0)"
+            }
+          }
+        ]
+      },
+      "data": {
+        "document": "file:///server/src/main/kotlin/tse/unblockt/ls/server/analysys/playground.kt",
+        "start": 86,
+        "end": 91,
+        "shortenReference": {
+          "packageName": "org.apache.logging.log4j.kotlin",
+          "shortenName": "loggerOf($0)"
+        }
+      },
+      "deprecated": false
+    },
+    {
+      "label": "namedLogger(name: String)",
+      "labelDetails": {
+        "detail": " org.apache.logging.log4j.kotlin",
+        "description": "KotlinLogger"
+      },
+      "kind": 3,
+      "insertText": "org.apache.logging.log4j.kotlin.namedLogger($0)",
+      "insertTextFormat": 2,
+      "command": {
+        "title": "handleInsert",
+        "command": "handleInsert",
+        "arguments": [
+          {
+            "document": "file:///server/src/main/kotlin/tse/unblockt/ls/server/analysys/playground.kt",
+            "start": 86,
+            "end": 91,
+            "shortenReference": {
+              "packageName": "org.apache.logging.log4j.kotlin",
+              "shortenName": "namedLogger($0)"
+            }
+          }
+        ]
+      },
+      "data": {
+        "document": "file:///server/src/main/kotlin/tse/unblockt/ls/server/analysys/playground.kt",
+        "start": 86,
+        "end": 91,
+        "shortenReference": {
+          "packageName": "org.apache.logging.log4j.kotlin",
+          "shortenName": "namedLogger($0)"
+        }
+      },
+      "deprecated": true
+    },
+    {
+      "label": "thisLogger()",
+      "labelDetails": {
+        "detail": " com.intellij.openapi.diagnostic",
+        "description": "Logger"
+      },
+      "kind": 3,
+      "insertText": "thisLogger()",
+      "insertTextFormat": 2,
+      "command": {
+        "title": "handleInsert",
+        "command": "handleInsert",
+        "arguments": [
+          {
+            "document": "file:///server/src/main/kotlin/tse/unblockt/ls/server/analysys/playground.kt",
+            "start": 86,
+            "end": 91,
+            "addImport": {
+              "packageName": "com.intellij.openapi.diagnostic",
+              "import": "com.intellij.openapi.diagnostic.thisLogger"
+            }
+          }
+        ]
+      },
+      "data": {
+        "document": "file:///server/src/main/kotlin/tse/unblockt/ls/server/analysys/playground.kt",
+        "start": 86,
+        "end": 91,
+        "addImport": {
+          "packageName": "com.intellij.openapi.diagnostic",
+          "import": "com.intellij.openapi.diagnostic.thisLogger"
+        }
+      },
+      "deprecated": false
+    }
+  ]
+}

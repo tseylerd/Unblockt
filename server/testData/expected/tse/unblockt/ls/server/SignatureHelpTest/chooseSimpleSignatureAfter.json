@@ -1,0 +1,17 @@
+{
+  "signatures": [
+    {
+      "label": "fun test(first: Int, second: Int)",
+      "parameters": [
+        {
+          "label": "first: Int"
+        },
+        {
+          "label": "second: Int"
+        }
+      ],
+      "activeParameter": 1
+    }
+  ],
+  "activeSignature": 0
+}

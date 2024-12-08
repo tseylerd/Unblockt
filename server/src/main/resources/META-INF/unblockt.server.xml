@@ -1,0 +1,8 @@
+<idea-plugin>
+    <id>com.tse.unblockt.ls</id>
+    <extensions defaultExtensionNs="com.intellij">
+        <filetype.decompiler filetype="CLASS" implementationClass="com.intellij.psi.impl.compiled.ClassFileDecompiler"/>
+        <applicationService serviceInterface="com.intellij.diagnostic.PluginProblemReporter"
+                            serviceImplementation="com.intellij.diagnostic.PluginProblemReporterImpl"/>
+    </extensions>
+</idea-plugin>

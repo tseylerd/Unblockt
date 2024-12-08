@@ -1,0 +1,6 @@
+.vscode/**
+compileServer.sh
+esbuild.js
+package-lock.json
+tsconfig.json
+src/**

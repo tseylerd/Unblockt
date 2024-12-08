@@ -1,0 +1,14 @@
+{
+  "signatures": [
+    {
+      "label": "fun test(simpleLambda: () -> Unit)",
+      "parameters": [
+        {
+          "label": "simpleLambda: () -> Unit"
+        }
+      ],
+      "activeParameter": 0
+    }
+  ],
+  "activeSignature": 0
+}

@@ -1,0 +1,13 @@
+{
+  "uri": "file:///Submodule1/src/main/java/tse/com/Submodule1Class.kt",
+  "range": {
+    "start": {
+      "line": 3,
+      "character": 4
+    },
+    "end": {
+      "line": 5,
+      "character": 5
+    }
+  }
+}

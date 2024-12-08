@@ -1,0 +1,13 @@
+{
+  "uri": "file:///src/main/java/tse/com/sampleRenamed.kt",
+  "range": {
+    "start": {
+      "line": 25,
+      "character": 4
+    },
+    "end": {
+      "line": 25,
+      "character": 10
+    }
+  }
+}
