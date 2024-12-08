@@ -2,11 +2,11 @@
 ![License Badge](https://img.shields.io/badge/license-PolyForm_Perimeter_License_1.0.0-green)
 # Unblockt
 ### Kotlin Language Support for Visual Studio Code
-**Note:** This extension is in its early stages and does not yet support all build systems or Kotlin features.
+**Note:** This extension is in its early stages and does not yet support all build systems or Kotlin features. It may also be unstable — please report any issues or unexpected behavior you experience.
 Currently:
 - Projects need to use Gradle as the build system.
 - Projects should follow the basic Gradle directory layout.
-- The extension works best with small projects and may be unstable or perform poorly on relatively big projects.
+- The extension works best with small projects and may be unstable or perform poorly on relatively large projects.
 - For more details, see the [limitations](#limitations) section.
 
 Your feedback is invaluable—please [report](https://github.com/tseylerd/Unblockt/issues) any issues you encounter.
