@@ -20,6 +20,7 @@ import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.allChildren
 import org.jetbrains.kotlin.psi.psiUtil.startOffset
 import org.jetbrains.kotlin.utils.addToStdlib.firstIsInstance
+import org.jetbrains.kotlin.utils.addToStdlib.firstIsInstanceOrNull
 import tse.unblockt.ls.protocol.*
 import tse.unblockt.ls.server.analysys.files.Offsets
 import tse.unblockt.ls.server.fs.LsFileManager
@@ -41,7 +42,7 @@ class SessionBasedParametersHintService(private val fileManager: LsFileManager):
         val offset = Offsets.positionToOffset(document, position)
         val argumentsList = getArgumentsList(uri, offset) ?: return null
         return analyze(argumentsList) {
-            val ktCallExpression = findReferenceExpression(argumentsList)
+            val ktCallExpression = findReferenceExpression(argumentsList) ?: return@analyze null
             val callCandidates = filterCallCandidates(argumentsList, offset, ktCallExpression.resolveToCallCandidates())
             val signatures = callCandidates.map { c: KaCallCandidateInfo ->
                 val call = c.candidate as KaSimpleFunctionCall
@@ -59,8 +60,8 @@ class SessionBasedParametersHintService(private val fileManager: LsFileManager):
         }
     }
 
-    private fun findReferenceExpression(argumentsList: KtValueArgumentList): KtReferenceExpression {
-        return argumentsList.siblings(forward = false, withSelf = false).firstIsInstance<KtReferenceExpression>()
+    private fun findReferenceExpression(argumentsList: KtValueArgumentList): KtReferenceExpression? {
+        return argumentsList.siblings(forward = false, withSelf = false).firstIsInstanceOrNull<KtReferenceExpression>()
     }
 
     context(KaSession)
