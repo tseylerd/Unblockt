@@ -7,14 +7,16 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import tse.unblockt.ls.protocol.LanguageClient
 import tse.unblockt.ls.protocol.progress.withClient
-import tse.unblockt.ls.rpc.CancellationType
-import tse.unblockt.ls.rpc.CancellationWithResult
-import tse.unblockt.ls.rpc.InternalTransport
+import tse.unblockt.ls.rpc.*
 import java.util.*
 import java.util.concurrent.Executors
 import kotlin.coroutines.coroutineContext
 
 class LsCallEntrypoint(private val client: LanguageClient) {
+    private var initializerJob: Job? = null
+    @Volatile
+    private var initialized: Boolean = false
+
     private val readDispatcher = Executors.newVirtualThreadPerTaskExecutor().asCoroutineDispatcher()
     private val writeMutex = Mutex()
 
@@ -37,8 +39,29 @@ class LsCallEntrypoint(private val client: LanguageClient) {
         }
     }
 
-    suspend fun <T> write(operation: Operation.WriteOperation, block: suspend () -> T): T {
-        return withJob(operation) {
+    suspend fun <T> initialize(initializer: suspend () -> T): T {
+        if (initialized) {
+            throw IllegalStateException("Already initialized")
+        }
+        
+        initializerJob = coroutineContext[Job]!!
+        val result = initializer()
+        initializerJob = null
+        initialized = true
+        return result
+    }
+
+    suspend fun shutdown(shutdown: suspend () -> Unit) {
+        initializerJob?.cancelAndJoin()
+        initializerJob = null
+        initialized = false
+        shutdown()
+    }
+
+    suspend fun write(operation: Operation.WriteOperation, block: suspend () -> Unit) {
+        initializerJob?.join()
+
+        withJob(operation) {
             writers++
             cancelAllCancellable()
 
@@ -56,6 +79,11 @@ class LsCallEntrypoint(private val client: LanguageClient) {
     }
 
     suspend fun <T> read(operation: Operation.ReadOperation, block: suspend () -> T): T {
+        if (initializerJob != null) {
+            delay(500)
+            throw RPCCallException("Cancelled", ErrorCodes.CANCELLED_BY_SERVER, null)
+        }
+
         return withJob(operation) {
             while (writers > 0) {
                 delay(10)

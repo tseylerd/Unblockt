@@ -3,6 +3,7 @@
 package tse.unblockt.ls.server.fs
 
 import com.intellij.openapi.Disposable
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.psi.PsiDocumentManager
@@ -12,9 +13,12 @@ import org.apache.logging.log4j.kotlin.logger
 import org.jetbrains.kotlin.analysis.api.platform.modification.KotlinGlobalModificationService
 import org.jetbrains.kotlin.psi.KtFile
 import tse.unblockt.ls.protocol.Uri
+import tse.unblockt.ls.server.GlobalServerState
 import tse.unblockt.ls.server.analysys.AnalysisEntrypoint
 import tse.unblockt.ls.server.analysys.LsListeners
 import tse.unblockt.ls.server.analysys.files.isKotlin
+import java.nio.file.Files
+import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.io.path.readText
 
@@ -22,20 +26,43 @@ object GlobalFileState {
     private val actualContent = ConcurrentHashMap<Uri, String>()
     private val modificationStamps = ConcurrentHashMap<IJUrl, Long>()
     private val listeners = mutableListOf<GlobalFileStateListener>()
+    private val openedFiles: MutableSet<Uri> = Collections.newSetFromMap(ConcurrentHashMap())
 
-    @Volatile
-    private var recentlySaved: Uri? = null
+    init {
+        GlobalServerState.onShutdown(ApplicationManager.getApplication()) {
+            shutdown()
+        }
+    }
 
     fun init(project: Project) {
-        LsListeners.instance(project).listen(object : LsListeners.FileChangeListener {
+        LsListeners.instance(project).listen(object : LsListeners.FileStateListener {
             override suspend fun changed(uri: Uri) {
+                if (openedFiles.contains(uri)) {
+                    return
+                }
+
                 actualContent.remove(uri)
                 modificationStamps.remove(uri.ij)
                 val asPath = uri.asPath()
                 changeFile(project, uri, asPath.readText())
             }
 
+            override suspend fun opened(uri: Uri, content: String) {
+                openedFiles.add(uri)
+                changeFile(project, uri, content)
+            }
+
+            override suspend fun closed(uri: Uri) {
+                openedFiles.remove(uri)
+                actualContent.remove(uri)
+                modificationStamps.remove(IJUrl(uri.asIJUrl))
+            }
+
             override suspend fun changed(uri: Uri, content: String) {
+                if (!openedFiles.contains(uri)) {
+                    return
+                }
+
                 actualContent[uri] = content
                 modificationStamps.compute(uri.ij) { _, old ->
                     (old ?: uri.asPath().toFile().lastModified()) + 1
@@ -81,7 +108,7 @@ object GlobalFileState {
             }
 
             override suspend fun saved(uri: Uri) {
-                changed(uri)
+                changed(uri, Files.readString(uri.asPath()))
             }
         })
     }
@@ -108,6 +135,7 @@ object GlobalFileState {
     fun shutdown() {
         actualContent.clear()
         modificationStamps.clear()
+        openedFiles.clear()
     }
 
     private fun reloadFile(project: Project, uri: Uri) {
@@ -126,7 +154,7 @@ object GlobalFileState {
         psiFile.onContentReload()
     }
 
-    private fun changeFile(project: Project, uri: Uri, content: String, fire: Boolean = true) {
+    private suspend fun changeFile(project: Project, uri: Uri, content: String, fire: Boolean = true) {
         val document = AnalysisEntrypoint.filesManager.getDocument(uri) ?: return
         document.setText(content)
         PsiDocumentManager.getInstance(project).commitDocument(document)
@@ -139,9 +167,9 @@ object GlobalFileState {
     }
 
     interface GlobalFileStateListener {
-        fun changed(uri: Uri)
-        fun deleted(uri: Uri)
-        fun created(uri: Uri)
+        suspend fun changed(uri: Uri)
+        suspend fun deleted(uri: Uri)
+        suspend fun created(uri: Uri)
     }
 
     @JvmInline

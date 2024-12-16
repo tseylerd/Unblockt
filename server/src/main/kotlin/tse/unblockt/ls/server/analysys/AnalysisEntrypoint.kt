@@ -2,6 +2,7 @@
 
 package tse.unblockt.ls.server.analysys
 
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.util.Disposer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -11,6 +12,7 @@ import org.apache.logging.log4j.kotlin.logger
 import tse.unblockt.ls.protocol.HealthStatus
 import tse.unblockt.ls.protocol.HealthStatusInformation
 import tse.unblockt.ls.protocol.progress.report
+import tse.unblockt.ls.server.GlobalServerState
 import tse.unblockt.ls.server.analysys.completion.LsCompletionMachine
 import tse.unblockt.ls.server.analysys.declaration.LsGoToDeclarationProvider
 import tse.unblockt.ls.server.analysys.higlighting.LsHighlightingProvider
@@ -22,7 +24,7 @@ import tse.unblockt.ls.server.client.ClientLog
 import tse.unblockt.ls.server.fs.LsFileManager
 import tse.unblockt.ls.server.project.ProjectImportError
 import tse.unblockt.ls.server.project.ProjectImportResult
-import tse.unblockt.ls.server.project.importGradleProject
+import tse.unblockt.ls.server.project.ProjectImporter
 import java.nio.file.Path
 
 object AnalysisEntrypoint {
@@ -57,15 +59,23 @@ object AnalysisEntrypoint {
             }
         }
 
+    init {
+        applicationEnvironment // initializing
+
+        GlobalServerState.onShutdown(ApplicationManager.getApplication()) {
+            shutdown()
+        }
+    }
+
     suspend fun init(
         rootPath: Path,
         storagePath: Path,
     ) {
-        report("Importing gradle project...")
+        report("importing gradle project...")
 
         val import = coroutineScope {
             async(Dispatchers.IO) {
-                importGradleProject(rootPath) {
+                ProjectImporter.instance.import(rootPath) {
                     launch {
                         report(it)
                         tse.unblockt.ls.server.client.message(ClientLog.GRADLE, it)
@@ -85,7 +95,7 @@ object AnalysisEntrypoint {
             shutdown()
             _services = SessionBasedServices.create(rootPath, import.model, storagePath)
         } catch (e: Exception) {
-            logger.error(e)
+            logger.error(e.stackTraceToString(), e)
             kotlin.runCatching { shutdown() }
             _services = NoSessionServices(rootPath, storagePath, ProjectImportError.FailedToImportProject(e))
         }

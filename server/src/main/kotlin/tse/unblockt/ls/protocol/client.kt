@@ -37,6 +37,7 @@ interface LanguageClient {
 
 interface Workspace {
     fun <T> semanticTokens(call: ClientSemanticTokens.() -> T): T
+    fun <T> diagnostic(call: ClientDiagnostic.() -> T): T
     fun applyEdit(call: DataBag<ApplyEditsParams>.() -> Unit): ApplyEditsResult
 }
 
@@ -54,10 +55,18 @@ interface Gradle {
 }
 
 interface Window {
-    fun workDoneProgress(call: DataBag<ProgressParams>.() -> Unit)
+    fun workDoneProgress(call: WorkspaceWorkDoneProgress.() -> Unit)
+}
+
+interface WorkspaceWorkDoneProgress {
+    fun create(call: DataBag<WorkDoneProgressCreateParams>.() -> Unit)
 }
 
 interface ClientSemanticTokens {
+    fun refresh(call: DataBag<Unit>.() -> Unit)
+}
+
+interface ClientDiagnostic {
     fun refresh(call: DataBag<Unit>.() -> Unit)
 }
 
@@ -135,6 +144,12 @@ private class WorkspaceImpl(private val context: CallContext) : Workspace {
         return tokens.call()
     }
 
+    override fun <T> diagnostic(call: ClientDiagnostic.() -> T): T {
+        context.called("diagnostic")
+        val diagnostics = ClientDiagnosticsImpl(context)
+        return diagnostics.call()
+    }
+
     override fun applyEdit(call: DataBag<ApplyEditsParams>.() -> Unit): ApplyEditsResult {
         context.called(::applyEdit)
 
@@ -179,19 +194,30 @@ private class GradleImpl(private val context: CallContext) : Gradle {
     }
 }
 private class WindowImpl(private val context: CallContext) : Window {
-    override fun workDoneProgress(call: DataBag<ProgressParams>.() -> Unit) {
+    override fun workDoneProgress(call: WorkspaceWorkDoneProgress.() -> Unit) {
         context.called("workDoneProgress")
+        WorkspaceWorkDoneProgressImpl(context).call()
+    }
+}
 
-        val dataBag = DataBagImpl<ProgressParams>()
-        dataBag.call()
-        context.pass(dataBag.data)
+private class WorkspaceWorkDoneProgressImpl(private val context: CallContext) : WorkspaceWorkDoneProgress {
+    override fun create(call: DataBag<WorkDoneProgressCreateParams>.() -> Unit) {
+        context.called("create")
+        val dataBagImpl = DataBagImpl<WorkDoneProgressCreateParams>()
+        dataBagImpl.call()
+        context.pass(dataBagImpl.data)
     }
 }
 
 private class ClientSemanticTokensImpl(private val context: CallContext) : ClientSemanticTokens {
     override fun refresh(call: DataBag<Unit>.() -> Unit) {
         context.called(this::refresh)
-        context.thisIsNotification()
+    }
+}
+
+private class ClientDiagnosticsImpl(private val context: CallContext) : ClientDiagnostic {
+    override fun refresh(call: DataBag<Unit>.() -> Unit) {
+        context.called("refresh")
     }
 }
 

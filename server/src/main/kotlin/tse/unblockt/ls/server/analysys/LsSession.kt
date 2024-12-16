@@ -72,6 +72,7 @@ import org.jetbrains.kotlin.analysis.api.standalone.base.projectStructure.Plugin
 import org.jetbrains.kotlin.analysis.api.standalone.base.projectStructure.StandaloneProjectFactory.createPackagePartsProvider
 import org.jetbrains.kotlin.analysis.api.standalone.base.projectStructure.StandaloneProjectFactory.getAllBinaryRoots
 import org.jetbrains.kotlin.analysis.api.symbols.AdditionalKDocResolutionProvider
+import org.jetbrains.kotlin.analysis.decompiler.konan.KlibMetaFileType
 import org.jetbrains.kotlin.analysis.decompiler.psi.BuiltinsVirtualFileProvider
 import org.jetbrains.kotlin.analysis.decompiler.psi.BuiltinsVirtualFileProviderCliImpl
 import org.jetbrains.kotlin.analysis.decompiler.stub.file.ClsKotlinBinaryClassCache
@@ -108,7 +109,7 @@ import tse.unblockt.ls.server.analysys.project.build.BuildManager
 import tse.unblockt.ls.server.analysys.project.module.LsSourceModule
 import tse.unblockt.ls.server.analysys.storage.PersistentStorage
 import tse.unblockt.ls.server.fs.LsFileSystem
-import tse.unblockt.ls.server.project.ProjectModel
+import tse.unblockt.ls.server.project.UBProjectModel
 import java.net.URI
 import java.nio.file.FileSystems
 import java.nio.file.Path
@@ -141,7 +142,7 @@ private fun Set<VirtualFile>.collectChildren(): List<VirtualFile> {
     }
 }
 
-private const val INDEX_VERSION = 1L
+private const val INDEX_VERSION = 3L
 
 internal class LsSession(
     private val kotlinCoreProjectEnvironment: KotlinCoreProjectEnvironment,
@@ -149,7 +150,7 @@ internal class LsSession(
     companion object {
         val DOCUMENT_KEY = Key.create<Document>("unblockt.document.key")
 
-        suspend fun build(model: ProjectModel, init: suspend Builder.() -> Unit): LsSession {
+        suspend fun build(model: UBProjectModel, init: suspend Builder.() -> Unit): LsSession {
             val builder = Builder(model)
             builder.init()
             return builder.build()
@@ -158,7 +159,7 @@ internal class LsSession(
 
     init {
         Disposer.register(this, kotlinCoreProjectEnvironment.parentDisposable)
-        LsListeners.instance(project).listen(object : LsListeners.FileChangeListener {
+        LsListeners.instance(project).listen(object : LsListeners.FileStateListener {
             override suspend fun created(uri: Uri) {
                 if (!uri.isFolder) {
                     return
@@ -174,7 +175,7 @@ internal class LsSession(
     val project: Project
         get() = kotlinCoreProjectEnvironment.project
 
-    class Builder(private val model: ProjectModel) {
+    class Builder(private val model: UBProjectModel) {
         lateinit var storagePath: Path
 
         private val projectDisposable: Disposable = Disposer.newDisposable()
@@ -247,7 +248,7 @@ internal class LsSession(
                 createPackagePartsProvider(libraryRoots),
             )
 
-            report("Updating indexes...")
+            report("updating indexes...")
             indexer.init()
             indexer.updateIndexes(indexModel)
             BuildManager.instance(project).indexBuildModel(model)
@@ -435,6 +436,7 @@ val applicationEnvironment = run {
     CoreApplicationEnvironment.registerExtensionPoint(
         env.application.extensionArea, DocumentWriteAccessGuard.EP_NAME.name, LsDocumentWriteAccessGuard::class.java
     )
+    env.registerFileType(KlibMetaFileType, "knm")
     env
 }
 

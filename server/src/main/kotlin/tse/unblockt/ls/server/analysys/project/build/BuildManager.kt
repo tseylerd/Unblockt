@@ -6,8 +6,8 @@ import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.VirtualFileManager
-import tse.unblockt.ls.logger
 import tse.unblockt.ls.protocol.Uri
+import tse.unblockt.ls.server.GlobalServerState
 import tse.unblockt.ls.server.analysys.AnalysisEntrypoint
 import tse.unblockt.ls.server.analysys.LsListeners
 import tse.unblockt.ls.server.analysys.files.isBuildFile
@@ -17,7 +17,7 @@ import tse.unblockt.ls.server.analysys.project.ProjectBuildEntry
 import tse.unblockt.ls.server.analysys.project.ProjectBuildModel
 import tse.unblockt.ls.server.analysys.service.SessionBasedServices
 import tse.unblockt.ls.server.fs.LsFileSystem
-import tse.unblockt.ls.server.project.ProjectModel
+import tse.unblockt.ls.server.project.UBProjectModel
 import java.io.IOException
 import java.nio.file.*
 import java.nio.file.attribute.BasicFileAttributes
@@ -35,7 +35,7 @@ internal class BuildManager(project: Project) {
     private val fileSystem = LsFileSystem.instance()
 
     init {
-        LsListeners.instance(project).listen(object : LsListeners.FileChangeListener {
+        LsListeners.instance(project).listen(object : LsListeners.FileStateListener {
             override suspend fun created(uri: Uri) {
                 processFileCreated(uri)
             }
@@ -59,7 +59,7 @@ internal class BuildManager(project: Project) {
         })
     }
 
-    fun indexBuildModel(projectModel: ProjectModel) {
+    fun indexBuildModel(projectModel: UBProjectModel) {
         val buildModel = projectToBuildModel(projectModel)
         currentModel = buildModel
     }
@@ -70,17 +70,15 @@ internal class BuildManager(project: Project) {
     }
 
     suspend fun reload(rootPath: Path) {
-        logger.warn("Reloading....")
         AnalysisEntrypoint.init(rootPath, AnalysisEntrypoint.services.serviceInformation.storagePath)
-        logger.warn("OnInitialized....")
-        AnalysisEntrypoint.services.onInitialized()
+        GlobalServerState.initialized()
     }
 
-    private fun projectToBuildModel(projectModel: ProjectModel): ProjectBuildModel {
+    private fun projectToBuildModel(projectModel: UBProjectModel): ProjectBuildModel {
         val entries = mutableSetOf<ProjectBuildEntry>()
-        val graph = SessionBasedServices.buildGradleProjectsGraph(projectModel.projects)
+        val graph = SessionBasedServices.buildGradleProjectsGraph(projectModel.modules)
         val manager = VirtualFileManager.getInstance()
-        for (gradleProject in projectModel.projects) {
+        for (gradleProject in projectModel.modules) {
             val isRoot = graph.values.none { it.contains(gradleProject) }
             val files = gradleProject.path.collectGradleBuildFiles(isRoot).toMutableSet()
             files.add(gradleProject.buildFile)

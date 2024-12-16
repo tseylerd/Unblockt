@@ -17,7 +17,7 @@ class LsStubCache(project: Project) {
         }
     }
 
-    private val cache = ContainerUtil.createConcurrentSoftKeySoftValueMap<VirtualFile, PsiFileStub<*>?>()
+    private val cache = ContainerUtil.createConcurrentWeakMap<VirtualFile, PsiFileStub<*>?>()
     private val kotlinMachinery = LanguageMachinery.Kotlin.instance(project)
     private val javaMachinery = LanguageMachinery.Java.instance(project)
     private val binaryClassCache = ClsKotlinBinaryClassCache()

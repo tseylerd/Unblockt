@@ -35,7 +35,9 @@ class CodeCompletionTest {
     @Test
     fun keywordCompletion(info: TestInfo) = rkTest {
         simulateClient(testProjectPath, info) {
-            complete()
+            complete { items ->
+                items.first { it.label == "fun" }
+            }
         }
     }
 
@@ -60,7 +62,9 @@ class CodeCompletionTest {
     @Test
     fun valKeywordCompletion(info: TestInfo) = rkTest {
         simulateClient(testProjectPath, info) {
-            complete()
+            complete { items ->
+                items.first { it.label == "val" }
+            }
         }
     }
 
@@ -83,7 +87,9 @@ class CodeCompletionTest {
     @Test
     fun simpleFunction(info: TestInfo) = rkTest {
         simulateClient(testProjectPath, info) {
-            complete()
+            complete { items ->
+                items.first { it.insertText?.startsWith("runCatching") == true }
+            }
         }
     }
 
@@ -174,7 +180,9 @@ class CodeCompletionTest {
     @Test
     fun stringCompletion(info: TestInfo) = rkTest {
         simulateClient(testProjectPath, info) {
-            complete()
+            complete { items ->
+                items.first { it.label == "String" }
+            }
         }
     }
 

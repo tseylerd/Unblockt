@@ -6,18 +6,22 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInfo
 import tse.unblockt.ls.protocol.*
 import tse.unblockt.ls.server.framework.simulateClient
+import tse.unblockt.ls.server.fs.asPath
 import tse.unblockt.ls.server.fs.uri
 import tse.unblockt.ls.util.*
+import java.nio.file.Files
 
 class ChangesTest {
     @Test
     fun incrementalChangesWork(info: TestInfo) = rkTest {
         init(testProjectPath)
 
+        val uri = Uri("file://$testProjectPath/src/main/java/tse/com/test.kt")
+        languageServer.textDocument.didOpen(DidOpenTextDocumentParams(TextDocumentItem(uri = uri, languageId = "kotlin", 4, Files.readString(uri.asPath()))))
         languageServer.textDocument.didChange(
             DidChangeTextDocumentParams(
                 VersionedTextDocumentIdentifier(
-                    uri = Uri("file://$testProjectPath/src/main/java/tse/com/test.kt"), version = 4
+                    uri = uri, version = 4
                 ), contentChanges = listOf(
                     TextDocumentContentChangeEvent(
                         "",
@@ -30,7 +34,7 @@ class ChangesTest {
         val report = languageServer.textDocument.diagnostic(
             DiagnosticTextDocumentParams(
                 TextDocumentIdentifier(
-                    Uri("file://$testProjectPath/src/main/java/tse/com/test.kt")
+                    uri
                 )
             )
         )
@@ -54,8 +58,10 @@ class ChangesTest {
     @Test
     fun lineMovedCorrectly(info: TestInfo) = rkTest {
         simulateClient(testProjectPath, info) {
+            val uri = fileToWorkWith.uri
+            languageServer.textDocument.didOpen(DidOpenTextDocumentParams(TextDocumentItem(uri = uri, languageId = "kotlin", 4, Files.readString(uri.asPath()))))
             languageServer.textDocument.didChange(DidChangeTextDocumentParams(
-                VersionedTextDocumentIdentifier(fileToWorkWith.uri, version = 1),
+                VersionedTextDocumentIdentifier(uri, version = 1),
                 contentChanges = listOf(
                     TextDocumentContentChangeEvent(text="", range=Range(start=Position(line=2, character=13), end=Position(line=3, character=12))),
                     TextDocumentContentChangeEvent(text="    ", range=Range(start=Position(line=2, character=0), end=Position(line=2, character=0))),

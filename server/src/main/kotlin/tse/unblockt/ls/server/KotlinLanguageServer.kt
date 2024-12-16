@@ -2,7 +2,6 @@
 
 package tse.unblockt.ls.server
 
-import tse.unblockt.ls.server.analysys.completion.changeFile
 import com.intellij.openapi.util.TextRange
 import kotlinx.coroutines.coroutineScope
 import kotlinx.serialization.json.Json
@@ -11,10 +10,10 @@ import org.apache.logging.log4j.io.IoBuilder
 import org.jetbrains.kotlin.psi.KtFile
 import tse.unblockt.ls.protocol.*
 import tse.unblockt.ls.server.analysys.AnalysisEntrypoint
+import tse.unblockt.ls.server.analysys.completion.changeFile
 import tse.unblockt.ls.server.analysys.completion.imports.PsiImportManager
 import tse.unblockt.ls.server.analysys.files.isKotlin
 import tse.unblockt.ls.server.analysys.files.isSupportedByLanguageServer
-import tse.unblockt.ls.server.fs.GlobalFileState
 import tse.unblockt.ls.server.threading.Cancellable
 import java.io.PrintStream
 import java.nio.file.Paths
@@ -132,12 +131,16 @@ class KotlinLanguageServer(client: LanguageClient) : LanguageServer {
     }
 
     private class Initializer(@Suppress("unused") private val client: LanguageClient) : LanguageServer.Initializer {
-        override suspend fun shutdown() {
-            AnalysisEntrypoint.shutdown()
-            GlobalFileState.shutdown()
-            if (client.data.name != "test") {
-                exitProcess(0)
-            }
+        override val asyncInitializerResponse: InitializationResponse
+            get() = DEFAULT_INITIALIZATION_RESPONSE
+
+        override suspend fun shutdown(): Any? {
+            GlobalServerState.shutdown()
+            return null
+        }
+
+        override suspend fun exit() {
+            exitProcess(0)
         }
 
         override suspend fun initialize(params: InitializationRequestParameters): InitializationResponse {
@@ -152,7 +155,8 @@ class KotlinLanguageServer(client: LanguageClient) : LanguageServer {
         }
 
         override suspend fun initialized() {
-            AnalysisEntrypoint.services.onInitialized()
+            GlobalServerState.initialized()
+
             client.registerCapability {
                 data = RegistrationParams(
                     registrations = listOf(
@@ -169,6 +173,16 @@ class KotlinLanguageServer(client: LanguageClient) : LanguageServer {
                         )
                     )
                 )
+            }
+            client.workspace {
+                semanticTokens {
+                    refresh {}
+                }
+            }
+            client.workspace {
+                diagnostic {
+                    refresh {}
+                }
             }
         }
 
@@ -234,6 +248,7 @@ class KotlinLanguageServer(client: LanguageClient) : LanguageServer {
         }
 
         override suspend fun didClose(params: DidCloseTextDocumentParams) {
+            AnalysisEntrypoint.services.notificationsService.handleDocumentClosed(params.textDocument.uri)
         }
 
         override suspend fun didSave(params: DidSaveTextDocumentParams) {

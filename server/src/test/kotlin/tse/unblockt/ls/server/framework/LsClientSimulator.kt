@@ -271,6 +271,7 @@ class LsClientSimulator(private val projectRoot: Path, private val info: TestInf
                 )
             )
         } else {
+            languageServer.textDocument.didOpen(DidOpenTextDocumentParams(TextDocumentItem(uri = path.uri, languageId = "kotlin", 4, Files.readString(path))))
             @Suppress("BlockingMethodInNonBlockingContext")
             languageServer.textDocument.didChange(
                 DidChangeTextDocumentParams(
@@ -575,7 +576,6 @@ context(RkTestEnvironment)
 suspend fun simulateClient(root: Path, info: TestInfo, create: Boolean = false, call: suspend LsClientSimulator.() -> Unit) {
     val fileTestingFramework = LsClientSimulator(root, info)
     init(root)
-    languageServer.initializer.initialized()
     try {
         with(fileTestingFramework) {
             applyTestData(create)

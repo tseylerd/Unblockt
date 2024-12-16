@@ -1,6 +1,6 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-val kotlinVersion = "2.1.0-dev-7930"
+val kotlinVersion = "2.1.0"
 val intellijVersion = "241.194"
 
 plugins {

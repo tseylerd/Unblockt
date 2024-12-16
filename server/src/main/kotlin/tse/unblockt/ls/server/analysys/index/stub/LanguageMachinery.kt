@@ -1,5 +1,7 @@
 // Copyright 2024 Dmitrii Tseiler. Licensed under the PolyForm Perimeter License 1.0.0 (https://polyformproject.org/licenses/perimeter/1.0.0)
 
+@file:OptIn(KaImplementationDetail::class)
+
 package tse.unblockt.ls.server.analysys.index.stub
 
 import com.intellij.ide.highlighter.JavaClassFileType
@@ -7,6 +9,7 @@ import com.intellij.ide.highlighter.JavaFileType
 import com.intellij.openapi.components.service
 import com.intellij.openapi.fileTypes.FileType
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.io.FileUtilRt
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.*
 import com.intellij.psi.impl.compiled.ClsFileImpl
@@ -16,6 +19,8 @@ import com.intellij.psi.stubs.PsiFileStub
 import com.intellij.psi.stubs.PsiFileStubImpl
 import com.intellij.util.indexing.FileContent
 import com.intellij.util.indexing.FileContentImpl
+import org.jetbrains.kotlin.analysis.api.KaImplementationDetail
+import org.jetbrains.kotlin.analysis.api.symbols.pointers.SmartPointerIncompatiblePsiFile
 import org.jetbrains.kotlin.analysis.decompiler.konan.K2KotlinNativeMetadataDecompiler
 import org.jetbrains.kotlin.analysis.decompiler.konan.KlibMetaFileType
 import org.jetbrains.kotlin.analysis.decompiler.psi.BuiltinsVirtualFileProvider
@@ -55,6 +60,9 @@ interface LanguageMachinery<S: PsiFileStub<*>> {
         }
 
         override fun build(file: VirtualFile, cache: ClsKotlinBinaryClassCache): KotlinFileStubImpl? {
+            if (FileUtilRt.isTooLarge(file.length)) {
+                return null
+            }
             val fileContent = FileContentImpl.createByFile(file)
             val fileType = file.fileType
             val builtInDecompiler = KotlinBuiltInDecompiler()
@@ -67,7 +75,7 @@ interface LanguageMachinery<S: PsiFileStub<*>> {
 
             val kotlinFileStubImpl = stubBuilder.buildFileStub(fileContent) as? KotlinFileStubImpl
             if (kotlinFileStubImpl != null) {
-                setFakePsi(psiManager, kotlinFileStubImpl, file, true)
+                setFakePsi(psiManager, kotlinFileStubImpl, file, false)
             }
             return kotlinFileStubImpl
         }
@@ -110,10 +118,10 @@ interface LanguageMachinery<S: PsiFileStub<*>> {
             return fakeFile
         }
 
-        private class KtClassFileViewProvider(
+        class KtClassFileViewProvider(
             psiManager: PsiManager,
             virtualFile: VirtualFile,
-        ) : SingleRootFileViewProvider(psiManager, virtualFile, true, KotlinLanguage.INSTANCE)
+        ) : SingleRootFileViewProvider(psiManager, virtualFile, true, KotlinLanguage.INSTANCE), SmartPointerIncompatiblePsiFile
     }
 
     class Java(project: Project): LanguageMachinery<PsiFileStubImpl<*>> {

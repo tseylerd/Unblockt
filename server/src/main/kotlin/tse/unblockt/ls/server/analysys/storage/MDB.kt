@@ -7,6 +7,7 @@ import org.eclipse.collections.impl.map.mutable.ConcurrentHashMap
 import org.mapdb.DBMaker
 import org.mapdb.Serializer
 import org.mapdb.serializer.SerializerArrayTuple
+import java.nio.file.Files
 import java.nio.file.Path
 import java.util.*
 import kotlin.io.path.ExperimentalPathApi
@@ -16,13 +17,28 @@ import org.mapdb.DB as MapDB
 
 class MDB(private val project: Project, private val root: Path): DB {
     companion object {
-        fun indexesPath(path: Path): Path {
-            return path.resolve("indexes").resolve("index")
+        private fun indexesPath(path: Path): Path {
+            return path.resolve("index")
+        }
+
+        fun makeDB(dbPath: Path): MapDB {
+            return DBMaker
+                .fileDB(dbPath.toFile())
+                .allocateStartSize(1 * 1024 * 1024)
+                .allocateIncrement(1 * 1024 * 1024)
+                .fileMmapEnable()
+                .executorEnable()
+                .fileLockDisable()
+                .fileSyncDisable()
+                .make()
         }
     }
 
     private lateinit var db: MapDB
     private val stores = ConcurrentHashMap<String, MapDBStore<*, *, *>>()
+
+    override val isValid: Boolean
+        get() = Files.exists(indexesPath(root))
 
     override val isClosed: Boolean
         get() = !::db.isInitialized || db.isClosed()
@@ -37,18 +53,6 @@ class MDB(private val project: Project, private val root: Path): DB {
             indexesPath.parent.createDirectories()
             makeDB(indexesPath)
         }
-    }
-
-    private fun makeDB(indexesPath: Path): MapDB {
-        return DBMaker
-            .fileDB(indexesPath.toFile())
-            .allocateStartSize(50 * 1024 * 1024)
-            .allocateIncrement(50 * 1024 * 1024)
-            .fileMmapEnable()
-            .executorEnable()
-            .fileLockDisable()
-            .fileSyncDisable()
-            .make()
     }
 
     override fun init(name: String, config: DB.Store.Config) {
@@ -177,14 +181,6 @@ class MDB(private val project: Project, private val root: Path): DB {
             subSet.clear()
             for ((key, value, id) in values) {
                 byKeySet.subSet(arrayOf(key, value, id), true, arrayOf(key, value, id), true).clear()
-            }
-        }
-
-        override fun sequenceByMeta(meta: M): Sequence<Pair<K, V>> {
-            return byMetaSet.asSequence().mapNotNull { any ->
-                val key = attribute.stringToKey(project, any.keyFromTriple) ?: return@mapNotNull null
-                val value = attribute.stringToValue(project, any.valueFromTriple) ?: return@mapNotNull null
-                Pair(key, value)
             }
         }
 

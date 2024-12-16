@@ -9,8 +9,12 @@ import kotlinx.serialization.Serializable
 data class ProgressParams(val token: ProgressToken, val value: ProgressEvent)
 
 @Serializable
+data class WorkDoneProgressCreateParams(val token: ProgressToken)
+
+@Serializable
 data class ProgressEvent(
     val kind: ProgressEventKind,
+    val title: String?,
     val cancellable: Boolean?,
     val message: String?,
     val percentage: Int? = null,
@@ -19,21 +23,20 @@ data class ProgressEvent(
 @Suppress("FunctionName")
 fun ProgressBegin(
     cancellable: Boolean,
-    message: String,
-    percentage: Int? = null
-) = ProgressEvent(ProgressEventKind.BEGIN, cancellable, message, percentage)
+    title: String,
+) = ProgressEvent(ProgressEventKind.BEGIN, title, cancellable, null, null)
 
 @Suppress("FunctionName")
 fun ProgressReport(
     cancellable: Boolean? = null,
     message: String? = null,
     percentage: Int? = null
-) = ProgressEvent(ProgressEventKind.REPORT, cancellable, message, percentage)
+) = ProgressEvent(ProgressEventKind.REPORT, null, cancellable, message, percentage)
 
 @Suppress("FunctionName")
 fun ProgressEnd(
     message: String? = null
-) = ProgressEvent(ProgressEventKind.END, null, message, null)
+) = ProgressEvent(ProgressEventKind.END, null, null, message, null)
 
 @Serializable
 enum class ProgressEventKind {

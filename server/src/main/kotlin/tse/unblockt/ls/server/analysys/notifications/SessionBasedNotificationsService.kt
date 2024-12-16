@@ -5,7 +5,6 @@ package tse.unblockt.ls.server.analysys.notifications
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.impl.DocumentImpl
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.TextRange
 import org.apache.logging.log4j.kotlin.logger
 import tse.unblockt.ls.protocol.TextDocumentContentChangeEvent
 import tse.unblockt.ls.protocol.Uri
@@ -51,15 +50,15 @@ class SessionBasedNotificationsService(private val project: Project, private val
         if (!uri.isSupportedByLanguageServer) {
             return
         }
-        val asPath = uri.asPath()
-        val read = runCatching { Files.readString(asPath) }.getOrNull() ?: return
-        if (read == text) {
+        LsListeners.instance(project).fileChangedListener.opened(uri, text)
+    }
+
+    override suspend fun handleDocumentClosed(uri: Uri) {
+        if (!uri.isSupportedByLanguageServer) {
             return
         }
-        handleDocumentChanged(uri, listOf(TextDocumentContentChangeEvent(
-            text,
-            Offsets.textRangeToRange(TextRange.create(0, read.length), read)
-        )))
+
+        LsListeners.instance(project).fileChangedListener.closed(uri)
     }
 
     override suspend fun handleFileDeleted(uri: Uri) {

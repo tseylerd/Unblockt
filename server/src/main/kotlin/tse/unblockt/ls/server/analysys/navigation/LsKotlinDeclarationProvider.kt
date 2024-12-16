@@ -11,12 +11,19 @@ import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.psi.*
 import tse.unblockt.ls.server.analysys.index.LsKotlinPsiIndex
+import tse.unblockt.ls.server.analysys.storage.UniversalCache
 import java.util.concurrent.CompletableFuture
 
 class LsKotlinDeclarationProvider(
     private val index: LsKotlinPsiIndex,
     internal val scope: GlobalSearchScope,
+    private val cache: UniversalCache,
 ) : KotlinDeclarationProvider {
+    companion object {
+        private val ourTopLevelClassifiersPackagesKey = UniversalCache.Key<Set<String>>("ourTopLevelClassifiersPackagesKey")
+        private val ourTopLevelCallablesPackagesKey = UniversalCache.Key<Set<String>>("ourTopLevelCallablesPackagesKey")
+    }
+
     override val hasSpecificClassifierPackageNamesComputation: Boolean = true
     override val hasSpecificCallablePackageNamesComputation: Boolean = true
 
@@ -77,10 +84,16 @@ class LsKotlinDeclarationProvider(
     }
 
     override fun computePackageNamesWithTopLevelClassifiers(): Set<String> {
-        return buildPackageNamesSetFrom(index.getAllPackagesWithTopLevelClassesOrTypeAliases())
+        return cache.getOrCompute(ourTopLevelClassifiersPackagesKey) {
+            buildPackageNamesSetFrom(index.getAllPackagesWithTopLevelClassesOrTypeAliases())
+        }
     }
 
-    override fun computePackageNamesWithTopLevelCallables(): Set<String> = buildPackageNamesSetFrom(index.getAllPackagesWithTopLevelCallables())
+    override fun computePackageNamesWithTopLevelCallables(): Set<String> {
+        return cache.getOrCompute(ourTopLevelCallablesPackagesKey) {
+            buildPackageNamesSetFrom(index.getAllPackagesWithTopLevelCallables())
+        }
+    }
 
     override fun getTopLevelProperties(callableId: CallableId): Collection<KtProperty> {
         return index.getTopLevelPropertiesInPackage(callableId.packageName).filter { ktProperty ->

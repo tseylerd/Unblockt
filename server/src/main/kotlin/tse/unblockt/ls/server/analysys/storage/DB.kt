@@ -5,8 +5,17 @@
 package tse.unblockt.ls.server.analysys.storage
 
 import com.intellij.openapi.project.Project
+import java.nio.file.Path
 
 interface DB: AutoCloseable {
+    companion object {
+        fun indexesPath(path: Path): Path {
+            return path.resolve("indexes")
+        }
+    }
+
+    val isValid: Boolean
+
     val isClosed: Boolean
     fun init()
     fun init(name: String, config: Store.Config)
@@ -33,7 +42,6 @@ interface DB: AutoCloseable {
 
         fun sequence(): Sequence<Triple<M, K, V>>
         fun values(key: K): Sequence<V>
-        fun sequenceByMeta(meta: M): Sequence<Pair<K, V>>
         fun deleteByMeta(meta: M)
         fun exists(key: K): Boolean
 

@@ -4,20 +4,30 @@ package tse.unblockt.ls.server.project
 
 import java.nio.file.Path
 
-data class ProjectModel(
+data class UBProjectModel(
     val path: Path,
-    val projects: List<GradleProject>,
+    val modules: List<UBModule>,
     val javaHome: Path
 )
 
-data class GradleProject(
+data class UBModule(
     val name: String,
     val path: Path,
-    val dependencies: List<Dependency>,
+    val dependencies: Set<UBDependency>,
     val buildFile: Path,
+    val platforms: Set<Platform>,
 )
 
-sealed class Dependency {
-    data class Library(val name: String, val paths: List<Path>) : Dependency()
-    data class Module(val name: String, val path: Path) : Dependency()
+enum class Platform {
+    common,
+    jvm,
+    js,
+    androidJvm,
+    native,
+    wasm;
+}
+
+sealed class UBDependency {
+    data class Library(val name: String, val paths: List<Path>, val sources: List<Path>) : UBDependency()
+    data class Module(val name: String, val path: Path) : UBDependency()
 }

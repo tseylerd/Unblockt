@@ -11,7 +11,6 @@ import kotlinx.coroutines.*
 import org.jetbrains.kotlin.analysis.api.analyzeCopy
 import org.jetbrains.kotlin.analysis.api.projectStructure.KaDanglingFileResolutionMode
 import org.jetbrains.kotlin.name.FqName
-import org.jetbrains.kotlin.platform.jvm.JvmPlatforms
 import org.jetbrains.kotlin.psi.KtFile
 import tse.unblockt.ls.protocol.*
 import tse.unblockt.ls.server.analysys.LsSession
@@ -30,6 +29,13 @@ import tse.unblockt.ls.server.analysys.text.buildEdits
 import tse.unblockt.ls.server.analysys.text.ij.CamelCaseMatcher
 import tse.unblockt.ls.server.fs.LsFileManager
 import tse.unblockt.ls.server.threading.Cancellable
+import tse.unblockt.ls.server.util.platform
+import java.util.*
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.atomic.AtomicInteger
+
+const val COMPLETION_ITEMS_PROPERTY_KEY = "unblockt.completion.items.limit"
+private val ourMaxCompletionItems = System.getProperty(COMPLETION_ITEMS_PROPERTY_KEY, "50").toInt()
 
 internal class SessionBasedCompletionMachine(
     @Suppress("unused") private val session: LsSession,
@@ -139,7 +145,7 @@ internal class SessionBasedCompletionMachine(
             leaf,
             params,
             matcher,
-            JvmPlatforms.defaultJvmPlatform,
+            psiFile.platform,
             CalculatedImports(psiFile),
             prefix,
             document,
@@ -175,7 +181,8 @@ internal class SessionBasedCompletionMachine(
 
     context(Cancellable)
     private suspend fun framedCompletion(@Suppress("UNUSED_PARAMETER") context: CompletionContext?, request: LsCompletionRequest): CompletionList {
-        val result = mutableSetOf<CompletionItem>()
+        val result: MutableSet<CompletionItem> = Collections.newSetFromMap(ConcurrentHashMap())
+        val items = AtomicInteger(0)
         return try {
             val cancellable = this@Cancellable
             coroutineScope {
@@ -192,6 +199,10 @@ internal class SessionBasedCompletionMachine(
                                 for (completionItem in provider.provide(request)) {
                                     cancellationPoint()
                                     if (request.matcher.isPrefixMatch(completionItem.label)) {
+                                        val andIncrement = items.incrementAndGet()
+                                        if (andIncrement > ourMaxCompletionItems) {
+                                            return@analyzeCopy
+                                        }
                                         result += completionItem
                                     }
                                 }
@@ -199,7 +210,7 @@ internal class SessionBasedCompletionMachine(
                         }
                     }
                     jobs.joinAll()
-                    CompletionList(false, result.toList())
+                    CompletionList(items.get() > ourMaxCompletionItems, result.toList())
                 }
             }
         } catch (e: TimeoutCancellationException) {

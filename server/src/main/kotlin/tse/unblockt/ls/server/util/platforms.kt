@@ -2,24 +2,13 @@
 
 package tse.unblockt.ls.server.util
 
+import org.jetbrains.kotlin.analysis.api.platform.projectStructure.KotlinProjectStructureProvider
 import org.jetbrains.kotlin.platform.TargetPlatform
-import org.jetbrains.kotlin.platform.jvm.JvmPlatforms
 import org.jetbrains.kotlin.psi.KtElement
-import org.jetbrains.kotlin.psi.KtFile
-import org.jetbrains.kotlin.psi.analysisContext
 
 val KtElement.platform: TargetPlatform
-    get() = calculateTargetPlatform(containingKtFile) ?: JvmPlatforms.defaultJvmPlatform
-
-private fun calculateTargetPlatform(file: KtFile): TargetPlatform? {
-    val context = file.analysisContext
-    if (context != null) {
-        return when (val contextFile = context.containingFile) {
-            is KtFile -> return calculateTargetPlatform(contextFile)
-            else -> JvmPlatforms.unspecifiedJvmPlatform
-        }
+    get() {
+        val module = KotlinProjectStructureProvider.getInstance(containingKtFile.project).getModule(containingKtFile, null)
+        return module.targetPlatform
     }
-
-    return JvmPlatforms.defaultJvmPlatform
-}
 

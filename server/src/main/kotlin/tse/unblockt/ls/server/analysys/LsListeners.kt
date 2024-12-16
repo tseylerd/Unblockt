@@ -13,9 +13,9 @@ class LsListeners {
         }
     }
 
-    private val fileChangedList = mutableListOf<FileChangeListener>()
+    private val fileChangedList = mutableListOf<FileStateListener>()
 
-    val fileChangedListener = object : FileChangeListener {
+    val fileChangedListener = object : FileStateListener {
         override suspend fun changed(uri: Uri, content: String) {
             for (fileChangeListener in fileChangedList) {
                 fileChangeListener.changed(uri, content)
@@ -25,6 +25,18 @@ class LsListeners {
         override suspend fun changed(uri: Uri) {
             for (fileChangeListener in fileChangedList) {
                 fileChangeListener.changed(uri)
+            }
+        }
+
+        override suspend fun opened(uri: Uri, content: String) {
+            for (fileStateListener in fileChangedList) {
+                fileStateListener.opened(uri, content)
+            }
+        }
+
+        override suspend fun closed(uri: Uri) {
+            for (fileStateListener in fileChangedList) {
+                fileStateListener.closed(uri)
             }
         }
 
@@ -53,11 +65,14 @@ class LsListeners {
         }
     }
 
-    fun listen(fileChanged: FileChangeListener) {
+    fun listen(fileChanged: FileStateListener) {
         fileChangedList += fileChanged
     }
 
-    interface FileChangeListener {
+    interface FileStateListener {
+        suspend fun opened(uri: Uri, content: String) {}
+        suspend fun closed(uri: Uri) {}
+
         suspend fun changed(uri: Uri, content: String) {}
         suspend fun changed(uri: Uri) {}
         suspend fun deleted(uri: Uri) {}

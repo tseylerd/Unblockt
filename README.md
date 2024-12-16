@@ -5,13 +5,12 @@
 **Note:** This extension is in its early stages and does not yet support all build systems or Kotlin features. It may also be unstable — please report any issues or unexpected behavior you experience.
 Currently:
 - Projects need to use Gradle as the build system.
-- Projects should follow the basic Gradle directory layout.
-- The extension works best with small projects and may be unstable or perform poorly on relatively large projects.
+- The extension works best with small JVM projects and may be unstable or perform poorly on larger or multiplatform projects.
 - For more details, see the [limitations](#limitations) section.
 
-Your feedback is invaluable—please [report](https://github.com/tseylerd/Unblockt/issues) any issues you encounter.
+Your feedback is invaluable — please [report](https://github.com/tseylerd/Unblockt/issues) any issues you encounter.
 ## Installation
-1. Install the `Unblockt` extension from the Visual Studio Code Marketplace.
+1. Install the [Unblockt](https://marketplace.visualstudio.com/items?itemName=tseylerd.unblockt) extension from the Visual Studio Code Marketplace.
 2. Open any `.kt` or `.kts` file to activate the extension.
 
 Upon activation, the extension will:
@@ -48,33 +47,15 @@ Once indexing is complete, you're ready to code!
 
 ## Limitations
 - Only Gradle projects are supported.
-- Only the basic Gradle directory layout is supported:
-  - The `main` and `test` source sets must be located inside the `src` directory of the module.
-
-  **Example of a supported layout:**  
-  ```
-  <project-root>
-  └── src
-      ├── main
-      │   ├── java
-      │   │   └── <source files>
-      │   └── kotlin
-      │       └── <source files>
-      └── test
-          ├── java
-          │   └── <test source files>
-          └── kotlin
-              └── <test source files>
-  ```
-- Code analysis is supported only for Kotlin code targeting the JVM.
+- Only default source code locations are supported for source sets.
 - Code analysis for Gradle build scripts is not available.
-- The extension works best with small projects and may be unstable or perform poorly on relatively big projects. Please report any performance issues encountered.
+- Gradle Kotlin plugin version 2.1.0 or later is required for non-JVM projects.
+- The extension works best with small JVM projects and may be unstable or perform poorly on larger or multiplatform projects. Please report any issues encountered.
 
 ## Roadmap
 Future features will depend on user feedback. Currently planned:
 - Find Usages
 - Rename Refactoring
-- Kotlin Multiplatform Support
 - Standalone Language Server
 
 ## Feedback

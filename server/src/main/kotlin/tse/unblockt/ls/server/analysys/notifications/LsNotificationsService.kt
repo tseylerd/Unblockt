@@ -13,4 +13,5 @@ interface LsNotificationsService {
     suspend fun handleFileCreated(uri: Uri)
     suspend fun handleFileDeleted(uri: Uri)
     suspend fun handleDocumentOpened(uri: Uri, text: String)
+    suspend fun handleDocumentClosed(uri: Uri)
 }

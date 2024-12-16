@@ -24,7 +24,7 @@ class LsPsiCache(project: Project) {
     }
 
     init {
-        LsListeners.instance(project).listen(object : LsListeners.FileChangeListener {
+        LsListeners.instance(project).listen(object : LsListeners.FileStateListener {
             override suspend fun deleted(uri: Uri) {
                 if (!uri.isKotlin) {
                     return

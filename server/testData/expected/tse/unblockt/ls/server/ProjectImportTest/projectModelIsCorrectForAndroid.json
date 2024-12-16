@@ -1,0 +1,3333 @@
+{
+  "path": "TestAndroidProject",
+  "projects": [
+    {
+      "name": "app",
+      "path": "app",
+      "dependencies": [],
+      "buildFile": "build.gradle.kts",
+      "platforms": []
+    },
+    {
+      "name": "app.androidTest",
+      "path": "androidTest",
+      "dependencies": [
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "activity",
+          "paths": [
+            "activity-1.8.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "annotation",
+          "paths": [
+            "annotation-1.0.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "annotation-experimental",
+          "paths": [
+            "annotation-experimental-1.3.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "annotation-jvm",
+          "paths": [
+            "annotation-jvm-1.6.0.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "annotations",
+          "paths": [
+            "annotations-13.0.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableModule",
+          "name": "app.debug",
+          "path": "debug"
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableModule",
+          "name": "app.main",
+          "path": "main"
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "appcompat",
+          "paths": [
+            "appcompat-1.6.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "appcompat-resources",
+          "paths": [
+            "appcompat-resources-1.6.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "cardview",
+          "paths": [
+            "cardview-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "collection",
+          "paths": [
+            "collection-1.1.0.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "concurrent-futures",
+          "paths": [
+            "concurrent-futures-1.1.0.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "constraintlayout",
+          "paths": [
+            "constraintlayout-2.0.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "constraintlayout-solver",
+          "paths": [
+            "constraintlayout-solver-2.0.1.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "coordinatorlayout",
+          "paths": [
+            "coordinatorlayout-1.1.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "core",
+          "paths": [
+            "core-1.10.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "core",
+          "paths": [
+            "core-1.5.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "core-common",
+          "paths": [
+            "core-common-2.2.0.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "core-ktx",
+          "paths": [
+            "core-ktx-1.10.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "core-runtime",
+          "paths": [
+            "core-runtime-2.1.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "cursoradapter",
+          "paths": [
+            "cursoradapter-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "customview",
+          "paths": [
+            "customview-1.1.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "documentfile",
+          "paths": [
+            "documentfile-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "drawerlayout",
+          "paths": [
+            "drawerlayout-1.1.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "dynamicanimation",
+          "paths": [
+            "dynamicanimation-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "espresso-core",
+          "paths": [
+            "espresso-core-3.5.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "espresso-idling-resource",
+          "paths": [
+            "espresso-idling-resource-3.5.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "fragment",
+          "paths": [
+            "fragment-1.3.6.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "hamcrest-core",
+          "paths": [
+            "hamcrest-core-1.3.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "hamcrest-integration",
+          "paths": [
+            "hamcrest-integration-1.3.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "hamcrest-library",
+          "paths": [
+            "hamcrest-library-1.3.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "interpolator",
+          "paths": [
+            "interpolator-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "javawriter",
+          "paths": [
+            "javawriter-2.1.1.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "javax.inject",
+          "paths": [
+            "javax.inject-1.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "jsr305",
+          "paths": [
+            "jsr305-2.0.2.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "junit",
+          "paths": [
+            "junit-1.1.5.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "junit",
+          "paths": [
+            "junit-4.13.2.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "kotlin-stdlib",
+          "paths": [
+            "kotlin-stdlib-1.8.22.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "kotlin-stdlib-jdk7",
+          "paths": [
+            "kotlin-stdlib-jdk7-1.6.21.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "kotlin-stdlib-jdk8",
+          "paths": [
+            "kotlin-stdlib-jdk8-1.6.21.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "kotlinx-coroutines-android",
+          "paths": [
+            "kotlinx-coroutines-android-1.6.4.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "kotlinx-coroutines-core-jvm",
+          "paths": [
+            "kotlinx-coroutines-core-jvm-1.6.4.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "legacy-support-core-utils",
+          "paths": [
+            "legacy-support-core-utils-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "lifecycle-common",
+          "paths": [
+            "lifecycle-common-2.6.1.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "lifecycle-livedata",
+          "paths": [
+            "lifecycle-livedata-2.6.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "lifecycle-livedata-core",
+          "paths": [
+            "lifecycle-livedata-core-2.6.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "lifecycle-runtime",
+          "paths": [
+            "lifecycle-runtime-2.6.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "lifecycle-viewmodel",
+          "paths": [
+            "lifecycle-viewmodel-2.6.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "lifecycle-viewmodel-savedstate",
+          "paths": [
+            "lifecycle-viewmodel-savedstate-2.6.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "listenablefuture",
+          "paths": [
+            "listenablefuture-1.0.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "loader",
+          "paths": [
+            "loader-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "localbroadcastmanager",
+          "paths": [
+            "localbroadcastmanager-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "material",
+          "paths": [
+            "material-1.10.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "monitor",
+          "paths": [
+            "monitor-1.6.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "print",
+          "paths": [
+            "print-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "recyclerview",
+          "paths": [
+            "recyclerview-1.1.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "resourceinspection-annotation",
+          "paths": [
+            "resourceinspection-annotation-1.0.1.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "runner",
+          "paths": [
+            "runner-1.5.2.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "savedstate",
+          "paths": [
+            "savedstate-1.2.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "storage",
+          "paths": [
+            "storage-1.4.2.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "tracing",
+          "paths": [
+            "tracing-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "transition",
+          "paths": [
+            "transition-1.2.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "vectordrawable",
+          "paths": [
+            "vectordrawable-1.1.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "vectordrawable-animated",
+          "paths": [
+            "vectordrawable-animated-1.1.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "versionedparcelable",
+          "paths": [
+            "versionedparcelable-1.1.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "viewpager",
+          "paths": [
+            "viewpager-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "viewpager2",
+          "paths": [
+            "viewpager2-1.0.0.aar"
+          ]
+        }
+      ],
+      "buildFile": "build.gradle.kts",
+      "platforms": [
+        "androidJvm"
+      ]
+    },
+    {
+      "name": "app.androidTestDebug",
+      "path": "androidTestDebug",
+      "dependencies": [
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "activity",
+          "paths": [
+            "activity-1.8.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "annotation-experimental",
+          "paths": [
+            "annotation-experimental-1.3.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "annotation-jvm",
+          "paths": [
+            "annotation-jvm-1.6.0.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "annotations",
+          "paths": [
+            "annotations-13.0.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableModule",
+          "name": "app.debug",
+          "path": "debug"
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableModule",
+          "name": "app.main",
+          "path": "main"
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "appcompat",
+          "paths": [
+            "appcompat-1.6.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "appcompat-resources",
+          "paths": [
+            "appcompat-resources-1.6.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "cardview",
+          "paths": [
+            "cardview-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "collection",
+          "paths": [
+            "collection-1.1.0.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "constraintlayout",
+          "paths": [
+            "constraintlayout-2.0.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "constraintlayout-solver",
+          "paths": [
+            "constraintlayout-solver-2.0.1.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "coordinatorlayout",
+          "paths": [
+            "coordinatorlayout-1.1.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "core",
+          "paths": [
+            "core-1.10.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "core-common",
+          "paths": [
+            "core-common-2.2.0.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "core-ktx",
+          "paths": [
+            "core-ktx-1.10.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "core-runtime",
+          "paths": [
+            "core-runtime-2.1.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "cursoradapter",
+          "paths": [
+            "cursoradapter-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "customview",
+          "paths": [
+            "customview-1.1.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "documentfile",
+          "paths": [
+            "documentfile-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "drawerlayout",
+          "paths": [
+            "drawerlayout-1.1.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "dynamicanimation",
+          "paths": [
+            "dynamicanimation-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "fragment",
+          "paths": [
+            "fragment-1.3.6.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "interpolator",
+          "paths": [
+            "interpolator-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "kotlin-stdlib",
+          "paths": [
+            "kotlin-stdlib-1.8.22.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "kotlin-stdlib-jdk7",
+          "paths": [
+            "kotlin-stdlib-jdk7-1.6.21.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "kotlin-stdlib-jdk8",
+          "paths": [
+            "kotlin-stdlib-jdk8-1.6.21.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "kotlinx-coroutines-android",
+          "paths": [
+            "kotlinx-coroutines-android-1.6.4.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "kotlinx-coroutines-core-jvm",
+          "paths": [
+            "kotlinx-coroutines-core-jvm-1.6.4.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "legacy-support-core-utils",
+          "paths": [
+            "legacy-support-core-utils-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "lifecycle-common",
+          "paths": [
+            "lifecycle-common-2.6.1.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "lifecycle-livedata",
+          "paths": [
+            "lifecycle-livedata-2.6.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "lifecycle-livedata-core",
+          "paths": [
+            "lifecycle-livedata-core-2.6.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "lifecycle-runtime",
+          "paths": [
+            "lifecycle-runtime-2.6.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "lifecycle-viewmodel",
+          "paths": [
+            "lifecycle-viewmodel-2.6.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "lifecycle-viewmodel-savedstate",
+          "paths": [
+            "lifecycle-viewmodel-savedstate-2.6.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "loader",
+          "paths": [
+            "loader-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "localbroadcastmanager",
+          "paths": [
+            "localbroadcastmanager-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "material",
+          "paths": [
+            "material-1.10.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "print",
+          "paths": [
+            "print-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "recyclerview",
+          "paths": [
+            "recyclerview-1.1.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "resourceinspection-annotation",
+          "paths": [
+            "resourceinspection-annotation-1.0.1.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "savedstate",
+          "paths": [
+            "savedstate-1.2.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "transition",
+          "paths": [
+            "transition-1.2.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "vectordrawable",
+          "paths": [
+            "vectordrawable-1.1.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "vectordrawable-animated",
+          "paths": [
+            "vectordrawable-animated-1.1.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "versionedparcelable",
+          "paths": [
+            "versionedparcelable-1.1.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "viewpager",
+          "paths": [
+            "viewpager-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "viewpager2",
+          "paths": [
+            "viewpager2-1.0.0.aar"
+          ]
+        }
+      ],
+      "buildFile": "build.gradle.kts",
+      "platforms": [
+        "androidJvm"
+      ]
+    },
+    {
+      "name": "app.androidTestRelease",
+      "path": "androidTestRelease",
+      "dependencies": [],
+      "buildFile": "build.gradle.kts",
+      "platforms": [
+        "common"
+      ]
+    },
+    {
+      "name": "app.debug",
+      "path": "debug",
+      "dependencies": [],
+      "buildFile": "build.gradle.kts",
+      "platforms": [
+        "androidJvm"
+      ]
+    },
+    {
+      "name": "app.debugAndroidTest",
+      "path": "debugAndroidTest",
+      "dependencies": [
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "activity",
+          "paths": [
+            "activity-1.8.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "annotation-experimental",
+          "paths": [
+            "annotation-experimental-1.3.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "annotation-jvm",
+          "paths": [
+            "annotation-jvm-1.6.0.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "annotations",
+          "paths": [
+            "annotations-13.0.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableModule",
+          "name": "app.debug",
+          "path": "debug"
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableModule",
+          "name": "app.main",
+          "path": "main"
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "appcompat",
+          "paths": [
+            "appcompat-1.6.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "appcompat-resources",
+          "paths": [
+            "appcompat-resources-1.6.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "cardview",
+          "paths": [
+            "cardview-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "collection",
+          "paths": [
+            "collection-1.1.0.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "constraintlayout",
+          "paths": [
+            "constraintlayout-2.0.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "constraintlayout-solver",
+          "paths": [
+            "constraintlayout-solver-2.0.1.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "coordinatorlayout",
+          "paths": [
+            "coordinatorlayout-1.1.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "core",
+          "paths": [
+            "core-1.10.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "core-common",
+          "paths": [
+            "core-common-2.2.0.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "core-ktx",
+          "paths": [
+            "core-ktx-1.10.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "core-runtime",
+          "paths": [
+            "core-runtime-2.1.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "cursoradapter",
+          "paths": [
+            "cursoradapter-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "customview",
+          "paths": [
+            "customview-1.1.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "documentfile",
+          "paths": [
+            "documentfile-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "drawerlayout",
+          "paths": [
+            "drawerlayout-1.1.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "dynamicanimation",
+          "paths": [
+            "dynamicanimation-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "fragment",
+          "paths": [
+            "fragment-1.3.6.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "interpolator",
+          "paths": [
+            "interpolator-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "kotlin-stdlib",
+          "paths": [
+            "kotlin-stdlib-1.8.22.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "kotlin-stdlib-jdk7",
+          "paths": [
+            "kotlin-stdlib-jdk7-1.6.21.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "kotlin-stdlib-jdk8",
+          "paths": [
+            "kotlin-stdlib-jdk8-1.6.21.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "kotlinx-coroutines-android",
+          "paths": [
+            "kotlinx-coroutines-android-1.6.4.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "kotlinx-coroutines-core-jvm",
+          "paths": [
+            "kotlinx-coroutines-core-jvm-1.6.4.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "legacy-support-core-utils",
+          "paths": [
+            "legacy-support-core-utils-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "lifecycle-common",
+          "paths": [
+            "lifecycle-common-2.6.1.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "lifecycle-livedata",
+          "paths": [
+            "lifecycle-livedata-2.6.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "lifecycle-livedata-core",
+          "paths": [
+            "lifecycle-livedata-core-2.6.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "lifecycle-runtime",
+          "paths": [
+            "lifecycle-runtime-2.6.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "lifecycle-viewmodel",
+          "paths": [
+            "lifecycle-viewmodel-2.6.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "lifecycle-viewmodel-savedstate",
+          "paths": [
+            "lifecycle-viewmodel-savedstate-2.6.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "loader",
+          "paths": [
+            "loader-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "localbroadcastmanager",
+          "paths": [
+            "localbroadcastmanager-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "material",
+          "paths": [
+            "material-1.10.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "print",
+          "paths": [
+            "print-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "recyclerview",
+          "paths": [
+            "recyclerview-1.1.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "resourceinspection-annotation",
+          "paths": [
+            "resourceinspection-annotation-1.0.1.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "savedstate",
+          "paths": [
+            "savedstate-1.2.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "transition",
+          "paths": [
+            "transition-1.2.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "vectordrawable",
+          "paths": [
+            "vectordrawable-1.1.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "vectordrawable-animated",
+          "paths": [
+            "vectordrawable-animated-1.1.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "versionedparcelable",
+          "paths": [
+            "versionedparcelable-1.1.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "viewpager",
+          "paths": [
+            "viewpager-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "viewpager2",
+          "paths": [
+            "viewpager2-1.0.0.aar"
+          ]
+        }
+      ],
+      "buildFile": "build.gradle.kts",
+      "platforms": [
+        "androidJvm"
+      ]
+    },
+    {
+      "name": "app.debugUnitTest",
+      "path": "debugUnitTest",
+      "dependencies": [
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "activity",
+          "paths": [
+            "activity-1.8.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "annotation-experimental",
+          "paths": [
+            "annotation-experimental-1.3.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "annotation-jvm",
+          "paths": [
+            "annotation-jvm-1.6.0.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "annotations",
+          "paths": [
+            "annotations-13.0.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableModule",
+          "name": "app.debug",
+          "path": "debug"
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableModule",
+          "name": "app.main",
+          "path": "main"
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "appcompat",
+          "paths": [
+            "appcompat-1.6.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "appcompat-resources",
+          "paths": [
+            "appcompat-resources-1.6.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "cardview",
+          "paths": [
+            "cardview-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "collection",
+          "paths": [
+            "collection-1.1.0.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "constraintlayout",
+          "paths": [
+            "constraintlayout-2.0.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "constraintlayout-solver",
+          "paths": [
+            "constraintlayout-solver-2.0.1.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "coordinatorlayout",
+          "paths": [
+            "coordinatorlayout-1.1.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "core",
+          "paths": [
+            "core-1.10.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "core-common",
+          "paths": [
+            "core-common-2.2.0.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "core-ktx",
+          "paths": [
+            "core-ktx-1.10.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "core-runtime",
+          "paths": [
+            "core-runtime-2.1.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "cursoradapter",
+          "paths": [
+            "cursoradapter-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "customview",
+          "paths": [
+            "customview-1.1.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "documentfile",
+          "paths": [
+            "documentfile-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "drawerlayout",
+          "paths": [
+            "drawerlayout-1.1.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "dynamicanimation",
+          "paths": [
+            "dynamicanimation-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "fragment",
+          "paths": [
+            "fragment-1.3.6.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "interpolator",
+          "paths": [
+            "interpolator-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "kotlin-stdlib",
+          "paths": [
+            "kotlin-stdlib-1.8.22.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "kotlin-stdlib-jdk7",
+          "paths": [
+            "kotlin-stdlib-jdk7-1.6.21.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "kotlin-stdlib-jdk8",
+          "paths": [
+            "kotlin-stdlib-jdk8-1.6.21.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "kotlinx-coroutines-android",
+          "paths": [
+            "kotlinx-coroutines-android-1.6.4.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "kotlinx-coroutines-core-jvm",
+          "paths": [
+            "kotlinx-coroutines-core-jvm-1.6.4.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "legacy-support-core-utils",
+          "paths": [
+            "legacy-support-core-utils-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "lifecycle-common",
+          "paths": [
+            "lifecycle-common-2.6.1.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "lifecycle-livedata",
+          "paths": [
+            "lifecycle-livedata-2.6.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "lifecycle-livedata-core",
+          "paths": [
+            "lifecycle-livedata-core-2.6.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "lifecycle-runtime",
+          "paths": [
+            "lifecycle-runtime-2.6.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "lifecycle-viewmodel",
+          "paths": [
+            "lifecycle-viewmodel-2.6.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "lifecycle-viewmodel-savedstate",
+          "paths": [
+            "lifecycle-viewmodel-savedstate-2.6.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "loader",
+          "paths": [
+            "loader-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "localbroadcastmanager",
+          "paths": [
+            "localbroadcastmanager-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "material",
+          "paths": [
+            "material-1.10.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "print",
+          "paths": [
+            "print-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "recyclerview",
+          "paths": [
+            "recyclerview-1.1.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "resourceinspection-annotation",
+          "paths": [
+            "resourceinspection-annotation-1.0.1.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "savedstate",
+          "paths": [
+            "savedstate-1.2.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "transition",
+          "paths": [
+            "transition-1.2.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "vectordrawable",
+          "paths": [
+            "vectordrawable-1.1.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "vectordrawable-animated",
+          "paths": [
+            "vectordrawable-animated-1.1.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "versionedparcelable",
+          "paths": [
+            "versionedparcelable-1.1.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "viewpager",
+          "paths": [
+            "viewpager-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "viewpager2",
+          "paths": [
+            "viewpager2-1.0.0.aar"
+          ]
+        }
+      ],
+      "buildFile": "build.gradle.kts",
+      "platforms": [
+        "androidJvm"
+      ]
+    },
+    {
+      "name": "app.main",
+      "path": "main",
+      "dependencies": [
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "activity",
+          "paths": [
+            "activity-1.8.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "annotation-experimental",
+          "paths": [
+            "annotation-experimental-1.3.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "annotation-jvm",
+          "paths": [
+            "annotation-jvm-1.6.0.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "annotations",
+          "paths": [
+            "annotations-13.0.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "appcompat",
+          "paths": [
+            "appcompat-1.6.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "appcompat-resources",
+          "paths": [
+            "appcompat-resources-1.6.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "cardview",
+          "paths": [
+            "cardview-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "collection",
+          "paths": [
+            "collection-1.1.0.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "constraintlayout",
+          "paths": [
+            "constraintlayout-2.0.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "constraintlayout-solver",
+          "paths": [
+            "constraintlayout-solver-2.0.1.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "coordinatorlayout",
+          "paths": [
+            "coordinatorlayout-1.1.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "core",
+          "paths": [
+            "core-1.10.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "core-common",
+          "paths": [
+            "core-common-2.2.0.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "core-ktx",
+          "paths": [
+            "core-ktx-1.10.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "core-runtime",
+          "paths": [
+            "core-runtime-2.1.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "cursoradapter",
+          "paths": [
+            "cursoradapter-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "customview",
+          "paths": [
+            "customview-1.1.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "documentfile",
+          "paths": [
+            "documentfile-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "drawerlayout",
+          "paths": [
+            "drawerlayout-1.1.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "dynamicanimation",
+          "paths": [
+            "dynamicanimation-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "fragment",
+          "paths": [
+            "fragment-1.3.6.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "interpolator",
+          "paths": [
+            "interpolator-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "kotlin-stdlib",
+          "paths": [
+            "kotlin-stdlib-1.8.22.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "kotlin-stdlib-jdk7",
+          "paths": [
+            "kotlin-stdlib-jdk7-1.6.21.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "kotlin-stdlib-jdk8",
+          "paths": [
+            "kotlin-stdlib-jdk8-1.6.21.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "kotlinx-coroutines-android",
+          "paths": [
+            "kotlinx-coroutines-android-1.6.4.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "kotlinx-coroutines-core-jvm",
+          "paths": [
+            "kotlinx-coroutines-core-jvm-1.6.4.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "legacy-support-core-utils",
+          "paths": [
+            "legacy-support-core-utils-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "lifecycle-common",
+          "paths": [
+            "lifecycle-common-2.6.1.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "lifecycle-livedata",
+          "paths": [
+            "lifecycle-livedata-2.6.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "lifecycle-livedata-core",
+          "paths": [
+            "lifecycle-livedata-core-2.6.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "lifecycle-runtime",
+          "paths": [
+            "lifecycle-runtime-2.6.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "lifecycle-viewmodel",
+          "paths": [
+            "lifecycle-viewmodel-2.6.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "lifecycle-viewmodel-savedstate",
+          "paths": [
+            "lifecycle-viewmodel-savedstate-2.6.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "loader",
+          "paths": [
+            "loader-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "localbroadcastmanager",
+          "paths": [
+            "localbroadcastmanager-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "material",
+          "paths": [
+            "material-1.10.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "print",
+          "paths": [
+            "print-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "recyclerview",
+          "paths": [
+            "recyclerview-1.1.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "resourceinspection-annotation",
+          "paths": [
+            "resourceinspection-annotation-1.0.1.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "savedstate",
+          "paths": [
+            "savedstate-1.2.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "transition",
+          "paths": [
+            "transition-1.2.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "vectordrawable",
+          "paths": [
+            "vectordrawable-1.1.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "vectordrawable-animated",
+          "paths": [
+            "vectordrawable-animated-1.1.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "versionedparcelable",
+          "paths": [
+            "versionedparcelable-1.1.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "viewpager",
+          "paths": [
+            "viewpager-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "viewpager2",
+          "paths": [
+            "viewpager2-1.0.0.aar"
+          ]
+        }
+      ],
+      "buildFile": "build.gradle.kts",
+      "platforms": [
+        "androidJvm"
+      ]
+    },
+    {
+      "name": "app.release",
+      "path": "release",
+      "dependencies": [],
+      "buildFile": "build.gradle.kts",
+      "platforms": [
+        "androidJvm"
+      ]
+    },
+    {
+      "name": "app.releaseUnitTest",
+      "path": "releaseUnitTest",
+      "dependencies": [
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "activity",
+          "paths": [
+            "activity-1.8.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "annotation-experimental",
+          "paths": [
+            "annotation-experimental-1.3.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "annotation-jvm",
+          "paths": [
+            "annotation-jvm-1.6.0.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "annotations",
+          "paths": [
+            "annotations-13.0.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableModule",
+          "name": "app.main",
+          "path": "main"
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableModule",
+          "name": "app.release",
+          "path": "release"
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "appcompat",
+          "paths": [
+            "appcompat-1.6.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "appcompat-resources",
+          "paths": [
+            "appcompat-resources-1.6.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "cardview",
+          "paths": [
+            "cardview-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "collection",
+          "paths": [
+            "collection-1.1.0.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "constraintlayout",
+          "paths": [
+            "constraintlayout-2.0.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "constraintlayout-solver",
+          "paths": [
+            "constraintlayout-solver-2.0.1.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "coordinatorlayout",
+          "paths": [
+            "coordinatorlayout-1.1.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "core",
+          "paths": [
+            "core-1.10.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "core-common",
+          "paths": [
+            "core-common-2.2.0.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "core-ktx",
+          "paths": [
+            "core-ktx-1.10.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "core-runtime",
+          "paths": [
+            "core-runtime-2.1.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "cursoradapter",
+          "paths": [
+            "cursoradapter-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "customview",
+          "paths": [
+            "customview-1.1.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "documentfile",
+          "paths": [
+            "documentfile-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "drawerlayout",
+          "paths": [
+            "drawerlayout-1.1.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "dynamicanimation",
+          "paths": [
+            "dynamicanimation-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "fragment",
+          "paths": [
+            "fragment-1.3.6.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "interpolator",
+          "paths": [
+            "interpolator-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "kotlin-stdlib",
+          "paths": [
+            "kotlin-stdlib-1.8.22.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "kotlin-stdlib-jdk7",
+          "paths": [
+            "kotlin-stdlib-jdk7-1.6.21.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "kotlin-stdlib-jdk8",
+          "paths": [
+            "kotlin-stdlib-jdk8-1.6.21.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "kotlinx-coroutines-android",
+          "paths": [
+            "kotlinx-coroutines-android-1.6.4.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "kotlinx-coroutines-core-jvm",
+          "paths": [
+            "kotlinx-coroutines-core-jvm-1.6.4.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "legacy-support-core-utils",
+          "paths": [
+            "legacy-support-core-utils-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "lifecycle-common",
+          "paths": [
+            "lifecycle-common-2.6.1.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "lifecycle-livedata",
+          "paths": [
+            "lifecycle-livedata-2.6.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "lifecycle-livedata-core",
+          "paths": [
+            "lifecycle-livedata-core-2.6.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "lifecycle-runtime",
+          "paths": [
+            "lifecycle-runtime-2.6.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "lifecycle-viewmodel",
+          "paths": [
+            "lifecycle-viewmodel-2.6.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "lifecycle-viewmodel-savedstate",
+          "paths": [
+            "lifecycle-viewmodel-savedstate-2.6.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "loader",
+          "paths": [
+            "loader-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "localbroadcastmanager",
+          "paths": [
+            "localbroadcastmanager-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "material",
+          "paths": [
+            "material-1.10.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "print",
+          "paths": [
+            "print-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "recyclerview",
+          "paths": [
+            "recyclerview-1.1.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "resourceinspection-annotation",
+          "paths": [
+            "resourceinspection-annotation-1.0.1.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "savedstate",
+          "paths": [
+            "savedstate-1.2.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "transition",
+          "paths": [
+            "transition-1.2.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "vectordrawable",
+          "paths": [
+            "vectordrawable-1.1.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "vectordrawable-animated",
+          "paths": [
+            "vectordrawable-animated-1.1.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "versionedparcelable",
+          "paths": [
+            "versionedparcelable-1.1.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "viewpager",
+          "paths": [
+            "viewpager-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "viewpager2",
+          "paths": [
+            "viewpager2-1.0.0.aar"
+          ]
+        }
+      ],
+      "buildFile": "build.gradle.kts",
+      "platforms": [
+        "androidJvm"
+      ]
+    },
+    {
+      "name": "app.test",
+      "path": "test",
+      "dependencies": [
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "activity",
+          "paths": [
+            "activity-1.8.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "annotation-experimental",
+          "paths": [
+            "annotation-experimental-1.3.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "annotation-jvm",
+          "paths": [
+            "annotation-jvm-1.6.0.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "annotations",
+          "paths": [
+            "annotations-13.0.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableModule",
+          "name": "app.main",
+          "path": "main"
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "appcompat",
+          "paths": [
+            "appcompat-1.6.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "appcompat-resources",
+          "paths": [
+            "appcompat-resources-1.6.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "cardview",
+          "paths": [
+            "cardview-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "collection",
+          "paths": [
+            "collection-1.1.0.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "constraintlayout",
+          "paths": [
+            "constraintlayout-2.0.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "constraintlayout-solver",
+          "paths": [
+            "constraintlayout-solver-2.0.1.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "coordinatorlayout",
+          "paths": [
+            "coordinatorlayout-1.1.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "core",
+          "paths": [
+            "core-1.10.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "core-common",
+          "paths": [
+            "core-common-2.2.0.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "core-ktx",
+          "paths": [
+            "core-ktx-1.10.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "core-runtime",
+          "paths": [
+            "core-runtime-2.1.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "cursoradapter",
+          "paths": [
+            "cursoradapter-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "customview",
+          "paths": [
+            "customview-1.1.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "documentfile",
+          "paths": [
+            "documentfile-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "drawerlayout",
+          "paths": [
+            "drawerlayout-1.1.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "dynamicanimation",
+          "paths": [
+            "dynamicanimation-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "fragment",
+          "paths": [
+            "fragment-1.3.6.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "hamcrest-core",
+          "paths": [
+            "hamcrest-core-1.3.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "interpolator",
+          "paths": [
+            "interpolator-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "junit",
+          "paths": [
+            "junit-4.13.2.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "kotlin-stdlib",
+          "paths": [
+            "kotlin-stdlib-1.8.22.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "kotlin-stdlib-jdk7",
+          "paths": [
+            "kotlin-stdlib-jdk7-1.6.21.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "kotlin-stdlib-jdk8",
+          "paths": [
+            "kotlin-stdlib-jdk8-1.6.21.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "kotlinx-coroutines-android",
+          "paths": [
+            "kotlinx-coroutines-android-1.6.4.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "kotlinx-coroutines-core-jvm",
+          "paths": [
+            "kotlinx-coroutines-core-jvm-1.6.4.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "legacy-support-core-utils",
+          "paths": [
+            "legacy-support-core-utils-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "lifecycle-common",
+          "paths": [
+            "lifecycle-common-2.6.1.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "lifecycle-livedata",
+          "paths": [
+            "lifecycle-livedata-2.6.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "lifecycle-livedata-core",
+          "paths": [
+            "lifecycle-livedata-core-2.6.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "lifecycle-runtime",
+          "paths": [
+            "lifecycle-runtime-2.6.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "lifecycle-viewmodel",
+          "paths": [
+            "lifecycle-viewmodel-2.6.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "lifecycle-viewmodel-savedstate",
+          "paths": [
+            "lifecycle-viewmodel-savedstate-2.6.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "loader",
+          "paths": [
+            "loader-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "localbroadcastmanager",
+          "paths": [
+            "localbroadcastmanager-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "material",
+          "paths": [
+            "material-1.10.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "print",
+          "paths": [
+            "print-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "recyclerview",
+          "paths": [
+            "recyclerview-1.1.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "resourceinspection-annotation",
+          "paths": [
+            "resourceinspection-annotation-1.0.1.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "savedstate",
+          "paths": [
+            "savedstate-1.2.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "transition",
+          "paths": [
+            "transition-1.2.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "vectordrawable",
+          "paths": [
+            "vectordrawable-1.1.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "vectordrawable-animated",
+          "paths": [
+            "vectordrawable-animated-1.1.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "versionedparcelable",
+          "paths": [
+            "versionedparcelable-1.1.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "viewpager",
+          "paths": [
+            "viewpager-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "viewpager2",
+          "paths": [
+            "viewpager2-1.0.0.aar"
+          ]
+        }
+      ],
+      "buildFile": "build.gradle.kts",
+      "platforms": [
+        "androidJvm"
+      ]
+    },
+    {
+      "name": "app.testDebug",
+      "path": "testDebug",
+      "dependencies": [
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "activity",
+          "paths": [
+            "activity-1.8.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "annotation-experimental",
+          "paths": [
+            "annotation-experimental-1.3.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "annotation-jvm",
+          "paths": [
+            "annotation-jvm-1.6.0.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "annotations",
+          "paths": [
+            "annotations-13.0.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableModule",
+          "name": "app.debug",
+          "path": "debug"
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableModule",
+          "name": "app.main",
+          "path": "main"
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "appcompat",
+          "paths": [
+            "appcompat-1.6.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "appcompat-resources",
+          "paths": [
+            "appcompat-resources-1.6.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "cardview",
+          "paths": [
+            "cardview-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "collection",
+          "paths": [
+            "collection-1.1.0.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "constraintlayout",
+          "paths": [
+            "constraintlayout-2.0.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "constraintlayout-solver",
+          "paths": [
+            "constraintlayout-solver-2.0.1.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "coordinatorlayout",
+          "paths": [
+            "coordinatorlayout-1.1.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "core",
+          "paths": [
+            "core-1.10.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "core-common",
+          "paths": [
+            "core-common-2.2.0.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "core-ktx",
+          "paths": [
+            "core-ktx-1.10.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "core-runtime",
+          "paths": [
+            "core-runtime-2.1.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "cursoradapter",
+          "paths": [
+            "cursoradapter-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "customview",
+          "paths": [
+            "customview-1.1.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "documentfile",
+          "paths": [
+            "documentfile-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "drawerlayout",
+          "paths": [
+            "drawerlayout-1.1.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "dynamicanimation",
+          "paths": [
+            "dynamicanimation-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "fragment",
+          "paths": [
+            "fragment-1.3.6.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "interpolator",
+          "paths": [
+            "interpolator-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "kotlin-stdlib",
+          "paths": [
+            "kotlin-stdlib-1.8.22.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "kotlin-stdlib-jdk7",
+          "paths": [
+            "kotlin-stdlib-jdk7-1.6.21.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "kotlin-stdlib-jdk8",
+          "paths": [
+            "kotlin-stdlib-jdk8-1.6.21.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "kotlinx-coroutines-android",
+          "paths": [
+            "kotlinx-coroutines-android-1.6.4.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "kotlinx-coroutines-core-jvm",
+          "paths": [
+            "kotlinx-coroutines-core-jvm-1.6.4.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "legacy-support-core-utils",
+          "paths": [
+            "legacy-support-core-utils-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "lifecycle-common",
+          "paths": [
+            "lifecycle-common-2.6.1.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "lifecycle-livedata",
+          "paths": [
+            "lifecycle-livedata-2.6.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "lifecycle-livedata-core",
+          "paths": [
+            "lifecycle-livedata-core-2.6.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "lifecycle-runtime",
+          "paths": [
+            "lifecycle-runtime-2.6.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "lifecycle-viewmodel",
+          "paths": [
+            "lifecycle-viewmodel-2.6.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "lifecycle-viewmodel-savedstate",
+          "paths": [
+            "lifecycle-viewmodel-savedstate-2.6.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "loader",
+          "paths": [
+            "loader-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "localbroadcastmanager",
+          "paths": [
+            "localbroadcastmanager-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "material",
+          "paths": [
+            "material-1.10.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "print",
+          "paths": [
+            "print-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "recyclerview",
+          "paths": [
+            "recyclerview-1.1.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "resourceinspection-annotation",
+          "paths": [
+            "resourceinspection-annotation-1.0.1.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "savedstate",
+          "paths": [
+            "savedstate-1.2.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "transition",
+          "paths": [
+            "transition-1.2.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "vectordrawable",
+          "paths": [
+            "vectordrawable-1.1.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "vectordrawable-animated",
+          "paths": [
+            "vectordrawable-animated-1.1.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "versionedparcelable",
+          "paths": [
+            "versionedparcelable-1.1.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "viewpager",
+          "paths": [
+            "viewpager-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "viewpager2",
+          "paths": [
+            "viewpager2-1.0.0.aar"
+          ]
+        }
+      ],
+      "buildFile": "build.gradle.kts",
+      "platforms": [
+        "androidJvm"
+      ]
+    },
+    {
+      "name": "app.testFixtures",
+      "path": "testFixtures",
+      "dependencies": [],
+      "buildFile": "build.gradle.kts",
+      "platforms": [
+        "common"
+      ]
+    },
+    {
+      "name": "app.testFixturesDebug",
+      "path": "testFixturesDebug",
+      "dependencies": [],
+      "buildFile": "build.gradle.kts",
+      "platforms": [
+        "common"
+      ]
+    },
+    {
+      "name": "app.testFixturesRelease",
+      "path": "testFixturesRelease",
+      "dependencies": [],
+      "buildFile": "build.gradle.kts",
+      "platforms": [
+        "common"
+      ]
+    },
+    {
+      "name": "app.testRelease",
+      "path": "testRelease",
+      "dependencies": [
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "activity",
+          "paths": [
+            "activity-1.8.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "annotation-experimental",
+          "paths": [
+            "annotation-experimental-1.3.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "annotation-jvm",
+          "paths": [
+            "annotation-jvm-1.6.0.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "annotations",
+          "paths": [
+            "annotations-13.0.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableModule",
+          "name": "app.main",
+          "path": "main"
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableModule",
+          "name": "app.release",
+          "path": "release"
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "appcompat",
+          "paths": [
+            "appcompat-1.6.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "appcompat-resources",
+          "paths": [
+            "appcompat-resources-1.6.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "cardview",
+          "paths": [
+            "cardview-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "collection",
+          "paths": [
+            "collection-1.1.0.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "constraintlayout",
+          "paths": [
+            "constraintlayout-2.0.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "constraintlayout-solver",
+          "paths": [
+            "constraintlayout-solver-2.0.1.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "coordinatorlayout",
+          "paths": [
+            "coordinatorlayout-1.1.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "core",
+          "paths": [
+            "core-1.10.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "core-common",
+          "paths": [
+            "core-common-2.2.0.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "core-ktx",
+          "paths": [
+            "core-ktx-1.10.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "core-runtime",
+          "paths": [
+            "core-runtime-2.1.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "cursoradapter",
+          "paths": [
+            "cursoradapter-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "customview",
+          "paths": [
+            "customview-1.1.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "documentfile",
+          "paths": [
+            "documentfile-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "drawerlayout",
+          "paths": [
+            "drawerlayout-1.1.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "dynamicanimation",
+          "paths": [
+            "dynamicanimation-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "fragment",
+          "paths": [
+            "fragment-1.3.6.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "interpolator",
+          "paths": [
+            "interpolator-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "kotlin-stdlib",
+          "paths": [
+            "kotlin-stdlib-1.8.22.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "kotlin-stdlib-jdk7",
+          "paths": [
+            "kotlin-stdlib-jdk7-1.6.21.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "kotlin-stdlib-jdk8",
+          "paths": [
+            "kotlin-stdlib-jdk8-1.6.21.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "kotlinx-coroutines-android",
+          "paths": [
+            "kotlinx-coroutines-android-1.6.4.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "kotlinx-coroutines-core-jvm",
+          "paths": [
+            "kotlinx-coroutines-core-jvm-1.6.4.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "legacy-support-core-utils",
+          "paths": [
+            "legacy-support-core-utils-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "lifecycle-common",
+          "paths": [
+            "lifecycle-common-2.6.1.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "lifecycle-livedata",
+          "paths": [
+            "lifecycle-livedata-2.6.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "lifecycle-livedata-core",
+          "paths": [
+            "lifecycle-livedata-core-2.6.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "lifecycle-runtime",
+          "paths": [
+            "lifecycle-runtime-2.6.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "lifecycle-viewmodel",
+          "paths": [
+            "lifecycle-viewmodel-2.6.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "lifecycle-viewmodel-savedstate",
+          "paths": [
+            "lifecycle-viewmodel-savedstate-2.6.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "loader",
+          "paths": [
+            "loader-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "localbroadcastmanager",
+          "paths": [
+            "localbroadcastmanager-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "material",
+          "paths": [
+            "material-1.10.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "print",
+          "paths": [
+            "print-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "recyclerview",
+          "paths": [
+            "recyclerview-1.1.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "resourceinspection-annotation",
+          "paths": [
+            "resourceinspection-annotation-1.0.1.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "savedstate",
+          "paths": [
+            "savedstate-1.2.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "transition",
+          "paths": [
+            "transition-1.2.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "vectordrawable",
+          "paths": [
+            "vectordrawable-1.1.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "vectordrawable-animated",
+          "paths": [
+            "vectordrawable-animated-1.1.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "versionedparcelable",
+          "paths": [
+            "versionedparcelable-1.1.1.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "viewpager",
+          "paths": [
+            "viewpager-1.0.0.aar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "viewpager2",
+          "paths": [
+            "viewpager2-1.0.0.aar"
+          ]
+        }
+      ],
+      "buildFile": "build.gradle.kts",
+      "platforms": [
+        "androidJvm"
+      ]
+    }
+  ],
+  "javaHome": "Home"
+}

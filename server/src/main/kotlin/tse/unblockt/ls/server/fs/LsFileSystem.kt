@@ -9,7 +9,9 @@ import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.impl.DocumentImpl
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.VirtualFileManager
+import com.intellij.util.containers.ContainerUtil
 import tse.unblockt.ls.protocol.Uri
+import tse.unblockt.ls.server.GlobalServerState
 import tse.unblockt.ls.server.analysys.AnalysisEntrypoint
 import tse.unblockt.ls.server.analysys.LsSession
 
@@ -20,6 +22,26 @@ class LsFileSystem {
         }
     }
 
+    init {
+        GlobalFileState.subscribe(object : GlobalFileState.GlobalFileStateListener {
+            override suspend fun changed(uri: Uri) {
+            }
+
+            override suspend fun deleted(uri: Uri) {
+                cache.remove(uri.asIJUrl)
+            }
+
+            override suspend fun created(uri: Uri) {
+            }
+
+        }, ApplicationManager.getApplication())
+        GlobalServerState.onShutdown(ApplicationManager.getApplication()) {
+            cache.clear()
+        }
+    }
+
+    private val cache = ContainerUtil.createConcurrentWeakMap<String, VirtualFile>()
+
     fun getModificationStamp(file: VirtualFile): Long {
         return GlobalFileState.modificationStamp(GlobalFileState.IJUrl(file.url)) ?: file.timeStamp
     }
@@ -29,7 +51,9 @@ class LsFileSystem {
     }
 
     fun getVirtualFileByUrl(url: String): VirtualFile? {
-        return VirtualFileManager.getInstance().findFileByUrl(url)
+        return cache.computeIfAbsent(url) {
+            VirtualFileManager.getInstance().findFileByUrl(url)
+        }
     }
 
     class FileDocumentManager: MockFileDocumentManagerImpl(LsSession.DOCUMENT_KEY, { DocumentImpl(it) }) {

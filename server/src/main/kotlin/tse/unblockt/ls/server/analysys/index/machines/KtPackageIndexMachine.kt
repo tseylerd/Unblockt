@@ -9,10 +9,10 @@ import tse.unblockt.ls.server.analysys.psi.packageName
 import tse.unblockt.ls.server.analysys.storage.DB
 import tse.unblockt.ls.server.analysys.storage.PersistentStorage
 
-class PackageIndexMachine : IndexMachine<String, Boolean>{
+class KtPackageIndexMachine : IndexMachine<String, Boolean>{
     companion object {
         private val ourAttribute = DB.Attribute(
-            name = "just_package",
+            name = "kt_package",
             metaToString = { it },
             stringToMeta = { it },
             keyToString = { it },
@@ -26,9 +26,13 @@ class PackageIndexMachine : IndexMachine<String, Boolean>{
         get() = ourAttribute
 
     override val namespace: PersistentStorage.Namespace
-        get() = Namespaces.ourNeutralNamespace
+        get() = Namespaces.ourKotlinNamespace
 
     override fun index(entry: IndexFileEntry): List<Pair<String, Boolean>> {
+        if (!entry.isKotlin) {
+            return listOf()
+        }
+
         val packageName = entry.psiFile.packageName ?: return emptyList()
         val fqName = FqName(packageName)
         val list = mutableListOf<String>()

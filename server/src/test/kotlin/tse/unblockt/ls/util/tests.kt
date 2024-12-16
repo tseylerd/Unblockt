@@ -18,6 +18,7 @@ import tse.unblockt.ls.protocol.*
 import tse.unblockt.ls.rpc.RPCMethodCall
 import tse.unblockt.ls.rpc.Transport
 import tse.unblockt.ls.server.KotlinLanguageServer
+import tse.unblockt.ls.server.analysys.completion.COMPLETION_ITEMS_PROPERTY_KEY
 import tse.unblockt.ls.server.analysys.files.Offsets
 import tse.unblockt.ls.server.analysys.text.OffsetBasedEdit
 import tse.unblockt.ls.server.analysys.text.applyEdits
@@ -28,11 +29,9 @@ import kotlin.test.assertEquals
 
 private const val OVERWRITE_TEST_DATA: Boolean = false
 
-private object Server {
-    private var server: LanguageServer? = null
-}
-
 fun rkTest(block: suspend RkTestEnvironment.() -> Unit) {
+    System.setProperty(COMPLETION_ITEMS_PROPERTY_KEY, "10000")
+
     configureStdOutLogger()
     coroutineTest {
         val toSend = Channel<String>()
@@ -85,6 +84,8 @@ suspend fun RkTestEnvironment.init(path: Path) {
             workDoneToken = ProgressToken("test")
         )
     )
+    languageServer.initializer.initialized()
+    languageServer.service.pollAllRequests()
 }
 
 val project: Project
@@ -93,6 +94,16 @@ val project: Project
 val testProjectPath: Path
     get() {
         return Paths.get(".").resolve("testData").resolve("TestKotlin").toAbsolutePath().normalize()
+    }
+
+val testAndroidProjectPath: Path
+    get() {
+        return Paths.get(".").resolve("testData").resolve("TestAndroidProject").toAbsolutePath().normalize()
+    }
+
+val testMultiplatformProjectPath: Path
+    get() {
+        return Paths.get(".").resolve("testData").resolve("TestMultiplatform").toAbsolutePath().normalize()
     }
 
 val fastProjectPath: Path
@@ -184,11 +195,6 @@ fun projectTokens(file: Path, semanticTokens: SemanticTokens?): String {
 
     val markup = buildEdits(content, semanticTokens).sortedBy { it.start }
     return applyEdits(markup, content)
-}
-
-fun projectDiagnostics(file: Path, report: DocumentDiagnosticReport?): String {
-    val content = Files.readString(file)
-    return projectDiagnostics(content, report)
 }
 
 fun projectDiagnostics(content: String, report: DocumentDiagnosticReport?): String {

@@ -16,6 +16,7 @@ import org.jetbrains.kotlin.analysis.low.level.api.fir.projectStructure.LLFirBui
 import org.jetbrains.kotlin.platform.TargetPlatform
 import org.jetbrains.kotlin.platform.jvm.JvmPlatforms
 import org.jetbrains.kotlin.serialization.deserialization.builtins.BuiltInSerializerProtocol
+import tse.unblockt.ls.server.analysys.index.stub.LanguageMachinery
 import tse.unblockt.ls.server.analysys.project.module.LsNotUnderContentRootModuleImpl
 
 internal class LsProjectStructureProvider(
@@ -53,7 +54,11 @@ internal class LsProjectStructureProvider(
             return builtinsModule
         }
 
-        val special = computeSpecialModule(containingFile)
+        val special = if (containingFile.viewProvider is LanguageMachinery.Kotlin.KtClassFileViewProvider) {
+            null
+        } else {
+            computeSpecialModule(containingFile)
+        }
         if (special != null) {
             return special
         }

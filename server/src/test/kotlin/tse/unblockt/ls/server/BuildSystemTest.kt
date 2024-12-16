@@ -74,6 +74,7 @@ class BuildSystemTest {
         val pathToBuildFile = testProjectPath.resolve("build.gradle.kts")
         val contentBefore = Files.readString(pathToBuildFile)
         try {
+            val buildFileUri = Uri("file://$pathToBuildFile")
             val newContent = """
                             plugins {
                                 kotlin("jvm")
@@ -100,10 +101,16 @@ class BuildSystemTest {
                                 jvmToolchain(22)
                             }
                         """.trimIndent()
+            languageServer.textDocument.didOpen(DidOpenTextDocumentParams(TextDocumentItem(
+                buildFileUri,
+                "kotlin",
+                4,
+                contentBefore,
+            )))
             languageServer.textDocument.didChange(
                 DidChangeTextDocumentParams(
                     VersionedTextDocumentIdentifier(
-                        uri = Uri("file://$pathToBuildFile"),
+                        uri = buildFileUri,
                         version = 4
                     ),
                     contentChanges = listOf(
@@ -115,10 +122,9 @@ class BuildSystemTest {
                 )
             )
             Files.writeString(pathToBuildFile, newContent)
-            val uri = Uri("file://$pathToBuildFile")
             languageServer.textDocument.didSave(
                 DidSaveTextDocumentParams(
-                    textDocument = TextDocumentIdentifier(uri)
+                    textDocument = TextDocumentIdentifier(buildFileUri)
                 )
             )
             languageServer.service.pollAllRequests()
@@ -129,7 +135,7 @@ class BuildSystemTest {
             languageServer.textDocument.didChange(
                 DidChangeTextDocumentParams(
                     VersionedTextDocumentIdentifier(
-                        uri = Uri("file://$pathToBuildFile"),
+                        uri = buildFileUri,
                         version = 4
                     ),
                     contentChanges = listOf(
@@ -142,7 +148,7 @@ class BuildSystemTest {
             )
             Files.writeString(pathToBuildFile, contentBefore)
             languageServer.textDocument.didSave(DidSaveTextDocumentParams(
-                textDocument = TextDocumentIdentifier(uri)
+                textDocument = TextDocumentIdentifier(buildFileUri)
             ))
             languageServer.service.pollAllRequests()
             val buildModelAfter = BuildManager.instance(project).getCurrentModel()

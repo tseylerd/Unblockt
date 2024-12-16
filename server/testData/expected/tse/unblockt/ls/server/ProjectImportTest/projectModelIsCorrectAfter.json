@@ -5,7 +5,8 @@
       "name": "Submodule1",
       "path": "Submodule1",
       "dependencies": [],
-      "buildFile": "build.gradle.kts"
+      "buildFile": "build.gradle.kts",
+      "platforms": []
     },
     {
       "name": "Submodule1.main",
@@ -36,28 +37,21 @@
           "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
           "name": "kotlin-stdlib",
           "paths": [
-            "kotlin-stdlib-1.8.22.jar"
-          ]
-        },
-        {
-          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
-          "name": "kotlin-stdlib-common",
-          "paths": [
-            "kotlin-stdlib-common-1.8.22.jar"
+            "kotlin-stdlib-2.0.10.jar"
           ]
         },
         {
           "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
           "name": "kotlin-stdlib-jdk7",
           "paths": [
-            "kotlin-stdlib-jdk7-1.8.22.jar"
+            "kotlin-stdlib-jdk7-2.0.10.jar"
           ]
         },
         {
           "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
           "name": "kotlin-stdlib-jdk8",
           "paths": [
-            "kotlin-stdlib-jdk8-1.8.22.jar"
+            "kotlin-stdlib-jdk8-2.0.10.jar"
           ]
         },
         {
@@ -131,7 +125,10 @@
           ]
         }
       ],
-      "buildFile": "build.gradle.kts"
+      "buildFile": "build.gradle.kts",
+      "platforms": [
+        "jvm"
+      ]
     },
     {
       "name": "Submodule1.test",
@@ -202,28 +199,21 @@
           "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
           "name": "kotlin-stdlib",
           "paths": [
-            "kotlin-stdlib-1.8.22.jar"
-          ]
-        },
-        {
-          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
-          "name": "kotlin-stdlib-common",
-          "paths": [
-            "kotlin-stdlib-common-1.8.22.jar"
+            "kotlin-stdlib-2.0.10.jar"
           ]
         },
         {
           "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
           "name": "kotlin-stdlib-jdk7",
           "paths": [
-            "kotlin-stdlib-jdk7-1.8.22.jar"
+            "kotlin-stdlib-jdk7-2.0.10.jar"
           ]
         },
         {
           "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
           "name": "kotlin-stdlib-jdk8",
           "paths": [
-            "kotlin-stdlib-jdk8-1.8.22.jar"
+            "kotlin-stdlib-jdk8-2.0.10.jar"
           ]
         },
         {
@@ -304,13 +294,17 @@
           ]
         }
       ],
-      "buildFile": "build.gradle.kts"
+      "buildFile": "build.gradle.kts",
+      "platforms": [
+        "jvm"
+      ]
     },
     {
       "name": "Submodule2",
       "path": "Submodule2",
       "dependencies": [],
-      "buildFile": "build.gradle.kts"
+      "buildFile": "build.gradle.kts",
+      "platforms": []
     },
     {
       "name": "Submodule2.main",
@@ -320,9 +314,26 @@
           "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableModule",
           "name": "Submodule1.main",
           "path": "main"
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "annotations",
+          "paths": [
+            "annotations-13.0.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "kotlin-stdlib",
+          "paths": [
+            "kotlin-stdlib-2.0.10.jar"
+          ]
         }
       ],
-      "buildFile": "build.gradle.kts"
+      "buildFile": "build.gradle.kts",
+      "platforms": [
+        "jvm"
+      ]
     },
     {
       "name": "Submodule2.test",
@@ -337,6 +348,13 @@
           "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableModule",
           "name": "Submodule2.main",
           "path": "main"
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "annotations",
+          "paths": [
+            "annotations-13.0.jar"
+          ]
         },
         {
           "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
@@ -375,19 +393,30 @@
         },
         {
           "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "kotlin-stdlib",
+          "paths": [
+            "kotlin-stdlib-2.0.10.jar"
+          ]
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
           "name": "opentest4j",
           "paths": [
             "opentest4j-1.3.0.jar"
           ]
         }
       ],
-      "buildFile": "build.gradle.kts"
+      "buildFile": "build.gradle.kts",
+      "platforms": [
+        "jvm"
+      ]
     },
     {
       "name": "TestKotlin",
       "path": "TestKotlin",
       "dependencies": [],
-      "buildFile": "build.gradle.kts"
+      "buildFile": "build.gradle.kts",
+      "platforms": []
     },
     {
       "name": "TestKotlin.main",
@@ -513,7 +542,10 @@
           ]
         }
       ],
-      "buildFile": "build.gradle.kts"
+      "buildFile": "build.gradle.kts",
+      "platforms": [
+        "jvm"
+      ]
     },
     {
       "name": "TestKotlin.test",
@@ -686,7 +718,10 @@
           ]
         }
       ],
-      "buildFile": "build.gradle.kts"
+      "buildFile": "build.gradle.kts",
+      "platforms": [
+        "jvm"
+      ]
     }
   ],
   "javaHome": "Home"

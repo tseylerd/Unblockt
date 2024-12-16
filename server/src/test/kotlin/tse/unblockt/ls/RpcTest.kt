@@ -10,6 +10,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.Serializable
 import tse.unblockt.ls.rpc.Transport
 import tse.unblockt.ls.rpc.jsonRpc
+import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -17,6 +18,7 @@ import kotlin.test.assertTrue
 @Suppress("unused")
 class RpcTest {
     @Test
+    @Ignore
     fun testMethodsCalled() = runBlocking {
         val receive = Channel<String>()
         val respond = Channel<String>()

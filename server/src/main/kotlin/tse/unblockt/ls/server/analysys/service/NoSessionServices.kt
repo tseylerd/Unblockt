@@ -3,13 +3,12 @@
 package tse.unblockt.ls.server.analysys.service
 
 import com.intellij.openapi.editor.Document
-import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
 import tse.unblockt.ls.protocol.*
+import tse.unblockt.ls.server.GlobalServerState
 import tse.unblockt.ls.server.analysys.AnalysisEntrypoint
 import tse.unblockt.ls.server.analysys.completion.LsCompletionMachine
 import tse.unblockt.ls.server.analysys.declaration.LsGoToDeclarationProvider
-import tse.unblockt.ls.server.analysys.files.Offsets
 import tse.unblockt.ls.server.analysys.higlighting.LsHighlightingProvider
 import tse.unblockt.ls.server.analysys.notifications.LsNotificationsService
 import tse.unblockt.ls.server.analysys.parameters.NoSessionParameterHintService
@@ -19,11 +18,9 @@ import tse.unblockt.ls.server.analysys.project.NoSessionProjectService
 import tse.unblockt.ls.server.analysys.project.build.LsBuildService
 import tse.unblockt.ls.server.client.ClientLog
 import tse.unblockt.ls.server.fs.LsFileManager
-import tse.unblockt.ls.server.fs.asPath
 import tse.unblockt.ls.server.project.ProjectImportError
 import tse.unblockt.ls.server.threading.Cancellable
 import tse.unblockt.ls.server.util.ServiceInformation
-import java.nio.file.Files
 import java.nio.file.Path
 import java.util.concurrent.ConcurrentHashMap
 
@@ -32,6 +29,12 @@ internal class NoSessionServices(
     storagePath: Path,
     private val error: ProjectImportError
 ): LsServices {
+    init {
+        GlobalServerState.onInitialized(this) {
+            tse.unblockt.ls.server.client.error(ClientLog.GRADLE, error.description)
+        }
+    }
+
     override val filesManager: LsFileManager = NoSessionFileManager()
     override val goToDeclarationProvider: LsGoToDeclarationProvider = NoSessionGTDProvider()
     override val completionMachine: LsCompletionMachine = NoSessionCompletionMachine()
@@ -49,10 +52,6 @@ internal class NoSessionServices(
         )
 
     override val serviceInformation: ServiceInformation = ServiceInformation(storagePath)
-
-    override suspend fun onInitialized() {
-        tse.unblockt.ls.server.client.error(ClientLog.GRADLE, error.description)
-    }
 
     override suspend fun cleanup() {
     }
@@ -91,15 +90,20 @@ internal class NoSessionServices(
         override suspend fun reload() {
             AnalysisEntrypoint.init(root, AnalysisEntrypoint.services.serviceInformation.storagePath)
 
+            for ((key, value) in notificationsService.openedMap) {
+                AnalysisEntrypoint.services.notificationsService.handleDocumentOpened(key, value)
+            }
+
             for ((key, values) in notificationsService.changesMap) {
                 AnalysisEntrypoint.services.notificationsService.handleDocumentChanged(key, values)
             }
-            AnalysisEntrypoint.services.onInitialized()
+            GlobalServerState.initialized()
         }
     }
 
     internal class NoSessionNotificationsService: LsNotificationsService {
         val changesMap = ConcurrentHashMap<Uri, MutableList<TextDocumentContentChangeEvent>>()
+        val openedMap = ConcurrentHashMap<Uri, String>()
         override suspend fun handleDocumentChanged(uri: Uri, changes: List<TextDocumentContentChangeEvent>) {
             changesMap.computeIfAbsent(uri) { mutableListOf() }.addAll(changes)
         }
@@ -112,22 +116,11 @@ internal class NoSessionServices(
         }
 
         override suspend fun handleDocumentOpened(uri: Uri, text: String) {
-            val asPath = uri.asPath()
-            @Suppress("BlockingMethodInNonBlockingContext")
-            val read = try {
-                Files.readString(asPath)
-            } catch (e: Exception) {
-                null
-            } ?: return
-            if (text == read) {
-                return
-            }
-            changesMap.computeIfAbsent(uri) {
-                mutableListOf()
-            }.add(TextDocumentContentChangeEvent(
-                text,
-                Offsets.textRangeToRange(TextRange.create(0, read.length), read)
-            ))
+            openedMap[uri] = text
+        }
+
+        override suspend fun handleDocumentClosed(uri: Uri) {
+            openedMap.remove(uri)
         }
 
         override suspend fun handleDocumentSaved(uri: Uri) {

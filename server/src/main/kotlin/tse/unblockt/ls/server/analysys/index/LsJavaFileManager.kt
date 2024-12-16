@@ -20,8 +20,9 @@ import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.resolve.jvm.KotlinCliJavaFileManager
 import tse.unblockt.ls.server.analysys.index.machines.JavaClassIdToClassIndexMachine
+import tse.unblockt.ls.server.analysys.index.machines.JavaPackageIndexMachine
 import tse.unblockt.ls.server.analysys.index.machines.JavaPackageToTopLevelClassIndexMachine
-import tse.unblockt.ls.server.analysys.index.machines.PackageIndexMachine
+import tse.unblockt.ls.server.analysys.index.machines.KtPackageIndexMachine
 import tse.unblockt.ls.server.analysys.index.model.PsiEntry
 import tse.unblockt.ls.server.analysys.storage.PersistentStorage
 
@@ -37,13 +38,19 @@ class LsJavaFileManager(private val project: Project): KotlinCliJavaFileManager,
     }
 
     override fun findPackage(p0: String): PsiPackage? {
-        val machine = indexer[PackageIndexMachine::class]
-        if (!storage.exists(machine.namespace, machine.attribute, p0)) {
-            return null
+        val machine = indexer[JavaPackageIndexMachine::class]
+        if (storage.exists(machine.namespace, machine.attribute, p0)) {
+            return object : PsiPackageImpl(manager, p0) {
+                override fun isValid(): Boolean = true
+            }
         }
-        return object : PsiPackageImpl(manager, p0) {
-            override fun isValid(): Boolean = true
+        val ktMachine = indexer[KtPackageIndexMachine::class]
+        if (storage.exists(ktMachine.namespace, ktMachine.attribute, p0)) {
+            return object : PsiPackageImpl(manager, p0) {
+                override fun isValid(): Boolean = true
+            }
         }
+        return null
     }
 
     override fun findClass(request: JavaClassFinder.Request, searchScope: GlobalSearchScope): JavaClass? {

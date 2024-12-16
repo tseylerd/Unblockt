@@ -51,7 +51,7 @@ class LsModuleScope(
         get() = allFiles
 
     init {
-        LsListeners.instance(project).listen(object : LsListeners.FileChangeListener {
+        LsListeners.instance(project).listen(object : LsListeners.FileStateListener {
             override suspend fun created(uri: Uri) {
                 val vFile = fileSystem.getVirtualFile(uri) ?: return
                 val asPath = uri.asPath()

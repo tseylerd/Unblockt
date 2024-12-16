@@ -12,6 +12,7 @@ fun applyEdits(markup: List<OffsetBasedEdit>, content: String): String {
     return buildString {
         var lastOffset = 0
         for (element in markup) {
+            lastOffset = minOf(lastOffset, element.start)
             append(content, lastOffset, element.start)
             append(element.text)
             lastOffset = element.end

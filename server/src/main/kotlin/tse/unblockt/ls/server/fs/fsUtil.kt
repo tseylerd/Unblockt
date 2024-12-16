@@ -43,3 +43,11 @@ val VirtualFile.isRegularFile: Boolean
 
 val Path.uri: Uri
     get() = Uri("file:///$this")
+
+val String.cutProtocol
+    get() = when {
+        startsWith("file://") -> substringAfter("file://")
+        startsWith("jrt://") -> substringAfter("jrt://")
+        startsWith("jar://") -> substringAfter("jar://")
+        else -> this
+    }

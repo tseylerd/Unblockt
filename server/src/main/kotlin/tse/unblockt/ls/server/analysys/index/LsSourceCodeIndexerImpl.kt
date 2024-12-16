@@ -10,6 +10,11 @@ import com.intellij.openapi.vfs.VfsUtilCore
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.VirtualFileVisitor
 import com.intellij.psi.PsiFile
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.joinAll
+import kotlinx.coroutines.launch
+import org.jetbrains.kotlin.analysis.decompiler.konan.KlibMetaFileType
 import org.jetbrains.kotlin.idea.KotlinFileType
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.stubs.impl.KotlinFileStubImpl
@@ -26,6 +31,7 @@ import tse.unblockt.ls.server.analysys.storage.PersistentStorage
 import tse.unblockt.ls.server.fs.GlobalFileState
 import tse.unblockt.ls.server.fs.LsFileSystem
 import tse.unblockt.ls.server.fs.asIJUrl
+import tse.unblockt.ls.server.fs.cutProtocol
 import kotlin.reflect.KClass
 
 class LsSourceCodeIndexerImpl(private val project: Project): LsSourceCodeIndexer {
@@ -37,16 +43,22 @@ class LsSourceCodeIndexerImpl(private val project: Project): LsSourceCodeIndexer
             }
         }
 
-        private fun indexAll(machines: List<IndexMachine<*, *>>, storage: PersistentStorage, entries: Sequence<IndexFileEntry>) {
-            for (machine in machines) {
-                entries.flatMap { entry ->
-                    machine.index(entry).map { pair ->
-                        Triple(entry.psiFile.virtualFile.url, pair.first, pair.second)
+        private suspend fun indexAll(machines: List<IndexMachine<*, *>>, storage: PersistentStorage, entries: Sequence<IndexFileEntry>) {
+            coroutineScope {
+                for (machine in machines) {
+                    entries.flatMap { entry ->
+                        machine.index(entry).map { pair ->
+                            Triple(entry.psiFile.virtualFile.url, pair.first, pair.second)
+                        }
+                    }.chunked(500).chunked(16).forEach { p: List<List<Triple<String, Any, Any>>> ->
+                        p.map { list ->
+                            launch(Dispatchers.IO) {
+                                val set: Set<Triple<String, Any, Any>> = list.toSet()
+                                @Suppress("UNCHECKED_CAST")
+                                storage.putAll(machine.namespace, machine.attribute as DB.Attribute<String, Any, Any>, set)
+                            }
+                        }.joinAll()
                     }
-                }.chunked(500).forEach { triples: List<Triple<String, Any, Any>> ->
-                    val set: Set<Triple<String, Any, Any>> = triples.toSet()
-                    @Suppress("UNCHECKED_CAST")
-                    storage.putAll(machine.namespace, machine.attribute as DB.Attribute<String, Any, Any>, set)
                 }
             }
         }
@@ -71,7 +83,7 @@ class LsSourceCodeIndexerImpl(private val project: Project): LsSourceCodeIndexer
 
     init {
         GlobalFileState.subscribe(object : GlobalFileState.GlobalFileStateListener {
-            override fun changed(uri: Uri) {
+            override suspend fun changed(uri: Uri) {
                 if (!uri.isKotlin) {
                     return
                 }
@@ -81,7 +93,7 @@ class LsSourceCodeIndexerImpl(private val project: Project): LsSourceCodeIndexer
                 indexKtFiles(listOf(element))
             }
 
-            override fun deleted(uri: Uri) {
+            override suspend fun deleted(uri: Uri) {
                 if (!uri.isKotlin) {
                     return
                 }
@@ -90,7 +102,7 @@ class LsSourceCodeIndexerImpl(private val project: Project): LsSourceCodeIndexer
                 removeByUrls(listOf(ijURL))
             }
 
-            override fun created(uri: Uri) {
+            override suspend fun created(uri: Uri) {
                 if (!uri.isKotlin) {
                     return
                 }
@@ -142,19 +154,24 @@ class LsSourceCodeIndexerImpl(private val project: Project): LsSourceCodeIndexer
             storage.deleteAll()
         }
 
+        report("reading model...")
+        val savedModel = storage.readModel()
+        if (savedModel != null && savedModel.version != modelWithBuiltIns.version) {
+            storage.deleteAll()
+        }
         storage.sync {
-            report("Indexing...")
-            val diff = diff(modelWithBuiltIns)
+            report("checking changes...")
+            val diff = computeDiff(modelWithBuiltIns, savedModel)
             for (entry in diff.delete) {
                 val sequence = filesSequence(entry).toSet()
                 if (sequence.isNotEmpty()) {
                     for (oneEntry in sequence) {
                         val virtualFile = oneEntry.psiFile.virtualFile
-                        report("Cleaning up indexes for ${virtualFile.path}")
+                        report("cleaning up indexes for ${virtualFile.path}")
                         cleanup(ourMachines, storage, virtualFile.url)
                     }
                 } else {
-                    report("Cleaning up indexes for ${entry.url}")
+                    report("cleaning up indexes for ${entry.url.cutProtocol}")
                     cleanup(ourMachines, storage, entry.url)
                 }
 
@@ -162,7 +179,7 @@ class LsSourceCodeIndexerImpl(private val project: Project): LsSourceCodeIndexer
             }
 
             for (entry in diff.add) {
-                report("Indexing ${entry.url}")
+                report("indexing ${entry.url.cutProtocol}")
                 indexAll(ourMachines, storage, filesSequence(entry))
                 put(ProjectModelSetup.namespace, ProjectModelSetup.entryAttribute, entry.url, entry.url, entry)
             }
@@ -179,18 +196,10 @@ class LsSourceCodeIndexerImpl(private val project: Project): LsSourceCodeIndexer
     }
 
     private suspend fun loadAllStubs(modelWithBuiltIns: IndexModel) {
-        report("Loading dependencies...")
+        report("loading dependencies...")
         modelWithBuiltIns.paths.asSequence().filter { it.properties.stub }.flatMap { filesSequence(it) }.forEach {
             stubCache[it.psiFile.virtualFile, it.builtIns]
         }
-    }
-
-    private suspend fun PersistentStorage.diff(modelWithBuiltIns: IndexModel): IndexModelDiff {
-        report("Reading model...")
-        val savedModel = readModel()
-
-        report("Computing difference...")
-        return computeDiff(modelWithBuiltIns, savedModel)
     }
 
     private fun addToModel(vFile: VirtualFile) {
@@ -234,7 +243,7 @@ class LsSourceCodeIndexerImpl(private val project: Project): LsSourceCodeIndexer
 
     private fun filesSequence(virtualFile: VirtualFile, builtIns: Boolean, isBinary: Boolean): Sequence<IndexFileEntry> {
         val fileType = virtualFile.fileType
-        if (fileType != UnknownFileType.INSTANCE && fileType != JavaFileType.INSTANCE && fileType != KotlinFileType.INSTANCE && fileType != JavaClassFileType.INSTANCE) {
+        if (fileType != UnknownFileType.INSTANCE && fileType != KlibMetaFileType && fileType != JavaFileType.INSTANCE && fileType != KotlinFileType.INSTANCE && fileType != JavaClassFileType.INSTANCE) {
             return emptySequence()
         }
         return sequence {
@@ -254,7 +263,7 @@ class LsSourceCodeIndexerImpl(private val project: Project): LsSourceCodeIndexer
                         yieldAll(filesSequence(child, builtIns, isBinary))
                     }
                 }
-                else -> {
+                virtualFile.extension != "a" && virtualFile.extension != "so" -> {
                     val stub = when {
                         isBinary -> stubCache[virtualFile, builtIns] ?: return@sequence
                         else -> null
@@ -269,7 +278,7 @@ class LsSourceCodeIndexerImpl(private val project: Project): LsSourceCodeIndexer
     private fun computeDiff(newModel: IndexModel, oldModel: IndexModel?): IndexModelDiff {
         oldModel ?: return IndexModelDiff(emptySet(), newModel.paths)
         if (oldModel.version != newModel.version) {
-            return IndexModelDiff(oldModel.paths, newModel.paths)
+            return IndexModelDiff(emptySet(), newModel.paths)
         }
         val toDelete = oldModel.paths - newModel.paths
         val toAdd = newModel.paths - oldModel.paths
@@ -283,7 +292,7 @@ class LsSourceCodeIndexerImpl(private val project: Project): LsSourceCodeIndexer
         }
     }
 
-    private fun indexKtFiles(files: Collection<KtFile>) {
+    private suspend fun indexKtFiles(files: Collection<KtFile>) {
         indexAll(ourMachines, storage, files.asSequence().map {
             IndexFileEntry(it, null, isKotlin = true, builtIns = false)
         })

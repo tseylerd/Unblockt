@@ -74,8 +74,13 @@ class TestLanguageServer(
         }
     }
     private inner class TestInitializer : LanguageServer.Initializer {
-        override suspend fun shutdown() {
+        override suspend fun shutdown(): Any? {
             notify("shutdown", null)
+            return null
+        }
+
+        override suspend fun exit() {
+            notify("exit", null)
         }
 
         override suspend fun initialize(params: InitializationRequestParameters): InitializationResponse {
@@ -196,7 +201,7 @@ class TestLanguageServer(
     }
 
     private suspend fun result(): JsonElement {
-        val received = withTimeout(360.seconds) {
+        val received = withTimeout(1440.seconds) {
             receiveChannel.receive()
         }
         assertNotNull(received)

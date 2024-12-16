@@ -9,6 +9,7 @@ import kotlinx.coroutines.launch
 import org.apache.logging.log4j.kotlin.logger
 import org.jetbrains.kotlin.cli.jvm.compiler.setupIdeaStandaloneExecution
 import tse.unblockt.ls.measure
+import tse.unblockt.ls.protocol.progress.startProgress
 import tse.unblockt.ls.protocol.progress.withProgress
 import tse.unblockt.ls.rpc.CancellationType
 import tse.unblockt.ls.rpc.RPCMethodCall
@@ -17,7 +18,6 @@ import tse.unblockt.ls.rpc.jsonRpc
 import tse.unblockt.ls.server.project.ProjectImportError.Companion.collectMessagesMultiline
 import tse.unblockt.ls.server.threading.LsCallEntrypoint
 import tse.unblockt.ls.server.util.Logging
-import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.time.Duration.Companion.seconds
 
@@ -86,9 +86,8 @@ private class LsDelegate(name: String, private val client: LanguageClient, priva
 
     inner class ServiceDelegate: LanguageServer.Service {
         override suspend fun pollAllRequests(): Boolean {
-            return locks.write(LsCallEntrypoint.Operation.WriteOperation("pollAllRequests")) {
-                true
-            }
+            locks.write(LsCallEntrypoint.Operation.WriteOperation("pollAllRequests")) { }
+            return true
         }
 
         override suspend fun cancelRequest(params: CancelRequestParams) {
@@ -97,42 +96,65 @@ private class LsDelegate(name: String, private val client: LanguageClient, priva
     }
 
     inner class InitializerDelegate(private val name: String, private val client: LanguageClient, private val initializer: LanguageServer.Initializer): LanguageServer.Initializer {
-        private val initialized = AtomicBoolean(false)
+        override val asyncInitializerResponse: InitializationResponse?
+            get() = initializer.asyncInitializerResponse
 
-        override suspend fun shutdown() {
-            initialized.set(false)
-            initializer.shutdown()
+        private var params: InitializationRequestParameters? = null
+
+        override suspend fun shutdown(): Any? {
+            locks.shutdown {
+                params = null
+                initializer.shutdown()
+            }
+            return null
+        }
+
+        override suspend fun exit() {
+            initializer.exit()
         }
 
         override suspend fun initialize(params: InitializationRequestParameters): InitializationResponse {
-            return locks.write(LsCallEntrypoint.Operation.WriteOperation("initialize")) {
+            val air = initializer.asyncInitializerResponse ?: return locks.initialize {
                 with(params) {
-                    client.withProgress("Initializing $name...") {
+                    client.withProgress("Initializing...") {
                         initializer.initialize(params)
                     }
                 }
             }
+
+            this.params = params
+
+            return air
         }
 
         override suspend fun initialized() {
-            locks.read(LsCallEntrypoint.Operation.ReadOperation.SimpleOperation("initialized", false)) {
-                initialized.set(true)
-                initializer.initialized()
-            }
-            mainScope.launch {
-                while (true) {
-                    val status = kotlin.runCatching {
-                        server.getStatus()
+            if (asyncInitializerResponse != null) {
+                val paramsLocal = params ?: throw IllegalStateException("Initialization parameters are null")
+                locks.initialize {
+                    client.startProgress("Initializing") {
+                        initializer.initialize(paramsLocal)
                     }
-                    client.unblockt {
-                        status {
-                            data = when {
-                                status.isSuccess -> status.getOrThrow()
-                                else -> HealthStatusInformation("Internal error", status.exceptionOrNull()?.collectMessagesMultiline() ?: "", HealthStatus.ERROR)
+                }
+            }
+
+            locks.write(LsCallEntrypoint.Operation.WriteOperation("initialized")) {
+                initializer.initialized()
+
+                mainScope.launch {
+                    while (true) {
+                        val status = kotlin.runCatching {
+                            server.getStatus()
+                        }
+                        client.unblockt {
+                            status {
+                                data = when {
+                                    status.isSuccess -> status.getOrThrow()
+                                    else -> HealthStatusInformation("Internal error", status.exceptionOrNull()?.collectMessagesMultiline() ?: "", HealthStatus.ERROR)
+                                }
                             }
                         }
+                        delay(1.seconds)
                     }
-                    delay(1.seconds)
                 }
             }
         }
@@ -183,13 +205,14 @@ private class LsDelegate(name: String, private val client: LanguageClient, priva
 
     inner class BuildSystemDelegate(private val delegate: LanguageServer.BuildSystem): LanguageServer.BuildSystem {
         override suspend fun reload(params: JobWithProgressParams): Boolean {
-            return locks.write(LsCallEntrypoint.Operation.WriteOperation("Reload")) {
+            locks.write(LsCallEntrypoint.Operation.WriteOperation("Reload")) {
                 with(params) {
                     client.withProgress("Reloading project...") {
                         delegate.reload(params)
                     }
                 }
             }
+            return true
         }
     }
 
@@ -209,7 +232,7 @@ private class LsDelegate(name: String, private val client: LanguageClient, priva
         }
 
         override suspend fun didOpen(params: DidOpenTextDocumentParams) {
-            return locks.read(LsCallEntrypoint.Operation.ReadOperation.SimpleOperation("didOpen", false)) {
+            return locks.write(LsCallEntrypoint.Operation.WriteOperation("didOpen")) {
                 measure("didOpen") {
                     delegate.didOpen(params)
                 }
@@ -217,7 +240,7 @@ private class LsDelegate(name: String, private val client: LanguageClient, priva
         }
 
         override suspend fun didClose(params: DidCloseTextDocumentParams) {
-            return locks.read(LsCallEntrypoint.Operation.ReadOperation.SimpleOperation("didClose", false)) {
+            return locks.write(LsCallEntrypoint.Operation.WriteOperation("didClose")) {
                 delegate.didClose(params)
             }
         }

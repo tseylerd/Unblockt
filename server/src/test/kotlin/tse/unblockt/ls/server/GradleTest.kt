@@ -23,7 +23,7 @@ class GradleTest {
         init(emptyProjectWithGradlePath)
 
         val health = AnalysisEntrypoint.services.health
-        assertEquals(HealthStatus.MESSAGE, health.status)
+        assertEquals(HealthStatus.ERROR, health.status)
     }
 
     @Test
@@ -31,7 +31,7 @@ class GradleTest {
         init(emptyProjectWithGradleWithoutJVMPath)
 
         val health = AnalysisEntrypoint.services.health
-        assertEquals(HealthStatus.MESSAGE, health.status)
+        assertEquals(HealthStatus.HEALTHY, health.status)
     }
 
     @Test

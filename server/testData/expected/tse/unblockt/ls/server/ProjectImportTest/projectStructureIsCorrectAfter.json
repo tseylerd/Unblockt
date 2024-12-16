@@ -11,109 +11,163 @@
           "paths": []
         }
       ],
-      "buildFile": ""
+      "buildFile": "",
+      "platforms": [
+        "JVM"
+      ]
     },
     {
       "name": "Library ktor-server-core-jvm",
       "path": "",
       "dependencies": [],
-      "buildFile": ""
+      "buildFile": "",
+      "platforms": [
+        "JVM"
+      ]
     },
     {
       "name": "Library ktor-serialization-jvm",
       "path": "",
       "dependencies": [],
-      "buildFile": ""
+      "buildFile": "",
+      "platforms": [
+        "JVM"
+      ]
     },
     {
       "name": "Library ktor-events-jvm",
       "path": "",
       "dependencies": [],
-      "buildFile": ""
+      "buildFile": "",
+      "platforms": [
+        "JVM"
+      ]
     },
     {
       "name": "Library ktor-websockets-jvm",
       "path": "",
       "dependencies": [],
-      "buildFile": ""
+      "buildFile": "",
+      "platforms": [
+        "JVM"
+      ]
     },
     {
       "name": "Library ktor-http-jvm",
       "path": "",
       "dependencies": [],
-      "buildFile": ""
+      "buildFile": "",
+      "platforms": [
+        "JVM"
+      ]
     },
     {
       "name": "Library ktor-utils-jvm",
       "path": "",
       "dependencies": [],
-      "buildFile": ""
+      "buildFile": "",
+      "platforms": [
+        "JVM"
+      ]
     },
     {
       "name": "Library ktor-io-jvm",
       "path": "",
       "dependencies": [],
-      "buildFile": ""
+      "buildFile": "",
+      "platforms": [
+        "JVM"
+      ]
     },
     {
       "name": "Library kotlin-stdlib-jdk7",
       "path": "",
       "dependencies": [],
-      "buildFile": ""
+      "buildFile": "",
+      "platforms": [
+        "JVM"
+      ]
     },
     {
       "name": "Library kotlin-reflect",
       "path": "",
       "dependencies": [],
-      "buildFile": ""
+      "buildFile": "",
+      "platforms": [
+        "JVM"
+      ]
     },
     {
       "name": "Library kotlinx-coroutines-jdk8",
       "path": "",
       "dependencies": [],
-      "buildFile": ""
+      "buildFile": "",
+      "platforms": [
+        "JVM"
+      ]
     },
     {
       "name": "Library kotlinx-coroutines-core-jvm",
       "path": "",
       "dependencies": [],
-      "buildFile": ""
+      "buildFile": "",
+      "platforms": [
+        "JVM"
+      ]
     },
     {
       "name": "Library kotlin-stdlib",
       "path": "",
       "dependencies": [],
-      "buildFile": ""
+      "buildFile": "",
+      "platforms": [
+        "JVM"
+      ]
     },
     {
       "name": "Library kotlin-stdlib-jdk8",
       "path": "",
       "dependencies": [],
-      "buildFile": ""
+      "buildFile": "",
+      "platforms": [
+        "JVM"
+      ]
     },
     {
       "name": "Library commons-lang3",
       "path": "",
       "dependencies": [],
-      "buildFile": ""
+      "buildFile": "",
+      "platforms": [
+        "JVM"
+      ]
     },
     {
       "name": "Library annotations",
       "path": "",
       "dependencies": [],
-      "buildFile": ""
+      "buildFile": "",
+      "platforms": [
+        "JVM"
+      ]
     },
     {
       "name": "Library slf4j-api",
       "path": "",
       "dependencies": [],
-      "buildFile": ""
+      "buildFile": "",
+      "platforms": [
+        "JVM"
+      ]
     },
     {
       "name": "Library config",
       "path": "",
       "dependencies": [],
-      "buildFile": ""
+      "buildFile": "",
+      "platforms": [
+        "JVM"
+      ]
     },
     {
       "name": "Sources of TestKotlin.main",
@@ -210,48 +264,74 @@
           "paths": []
         }
       ],
-      "buildFile": ""
+      "buildFile": "",
+      "platforms": [
+        "JVM"
+      ]
     },
     {
       "name": "Library junit-jupiter",
       "path": "",
       "dependencies": [],
-      "buildFile": ""
+      "buildFile": "",
+      "platforms": [
+        "JVM"
+      ]
     },
     {
       "name": "Library junit-jupiter-params",
       "path": "",
       "dependencies": [],
-      "buildFile": ""
+      "buildFile": "",
+      "platforms": [
+        "JVM"
+      ]
     },
     {
       "name": "Library junit-jupiter-api",
       "path": "",
       "dependencies": [],
-      "buildFile": ""
+      "buildFile": "",
+      "platforms": [
+        "JVM"
+      ]
     },
     {
       "name": "Library junit-platform-commons",
       "path": "",
       "dependencies": [],
-      "buildFile": ""
+      "buildFile": "",
+      "platforms": [
+        "JVM"
+      ]
     },
     {
       "name": "Library opentest4j",
       "path": "",
       "dependencies": [],
-      "buildFile": ""
+      "buildFile": "",
+      "platforms": [
+        "JVM"
+      ]
     },
     {
       "name": "Library apiguardian-api",
       "path": "",
       "dependencies": [],
-      "buildFile": ""
+      "buildFile": "",
+      "platforms": [
+        "JVM"
+      ]
     },
     {
       "name": "Sources of TestKotlin.test",
       "path": "",
       "dependencies": [
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableModule",
+          "name": "TestKotlin.main",
+          "path": ""
+        },
         {
           "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
           "name": "ktor-server-core-jvm",
@@ -368,17 +448,15 @@
           "paths": []
         },
         {
-          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableModule",
-          "name": "TestKotlin.main",
-          "path": ""
-        },
-        {
           "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
           "name": "JDK",
           "paths": []
         }
       ],
-      "buildFile": ""
+      "buildFile": "",
+      "platforms": [
+        "JVM"
+      ]
     },
     {
       "name": "Sources of Submodule1",
@@ -390,31 +468,10 @@
           "paths": []
         }
       ],
-      "buildFile": ""
-    },
-    {
-      "name": "Library kotlin-stdlib-jdk8",
-      "path": "",
-      "dependencies": [],
-      "buildFile": ""
-    },
-    {
-      "name": "Library kotlin-stdlib-jdk7",
-      "path": "",
-      "dependencies": [],
-      "buildFile": ""
-    },
-    {
-      "name": "Library kotlin-stdlib",
-      "path": "",
-      "dependencies": [],
-      "buildFile": ""
-    },
-    {
-      "name": "Library kotlin-stdlib-common",
-      "path": "",
-      "dependencies": [],
-      "buildFile": ""
+      "buildFile": "",
+      "platforms": [
+        "JVM"
+      ]
     },
     {
       "name": "Sources of Submodule1.main",
@@ -457,12 +514,17 @@
         },
         {
           "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
-          "name": "kotlin-stdlib-jdk8",
+          "name": "kotlin-stdlib-jdk7",
           "paths": []
         },
         {
           "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
-          "name": "kotlin-stdlib-jdk7",
+          "name": "kotlin-reflect",
+          "paths": []
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "kotlinx-coroutines-jdk8",
           "paths": []
         },
         {
@@ -472,7 +534,17 @@
         },
         {
           "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
-          "name": "kotlinx-coroutines-jdk8",
+          "name": "kotlin-stdlib",
+          "paths": []
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "kotlin-stdlib-jdk8",
+          "paths": []
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "annotations",
           "paths": []
         },
         {
@@ -487,36 +559,24 @@
         },
         {
           "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
-          "name": "kotlin-reflect",
-          "paths": []
-        },
-        {
-          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
-          "name": "kotlin-stdlib",
-          "paths": []
-        },
-        {
-          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
-          "name": "kotlin-stdlib-common",
-          "paths": []
-        },
-        {
-          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
-          "name": "annotations",
-          "paths": []
-        },
-        {
-          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
           "name": "JDK",
           "paths": []
         }
       ],
-      "buildFile": ""
+      "buildFile": "",
+      "platforms": [
+        "JVM"
+      ]
     },
     {
       "name": "Sources of Submodule1.test",
       "path": "",
       "dependencies": [
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableModule",
+          "name": "Submodule1.main",
+          "path": ""
+        },
         {
           "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
           "name": "ktor-server-core-jvm",
@@ -554,6 +614,31 @@
         },
         {
           "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "kotlin-stdlib-jdk7",
+          "paths": []
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "kotlin-reflect",
+          "paths": []
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "kotlinx-coroutines-jdk8",
+          "paths": []
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "kotlinx-coroutines-core-jvm",
+          "paths": []
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "kotlin-stdlib",
+          "paths": []
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
           "name": "kotlin-stdlib-jdk8",
           "paths": []
         },
@@ -579,17 +664,7 @@
         },
         {
           "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
-          "name": "kotlin-stdlib-jdk7",
-          "paths": []
-        },
-        {
-          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
-          "name": "kotlinx-coroutines-core-jvm",
-          "paths": []
-        },
-        {
-          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
-          "name": "kotlinx-coroutines-jdk8",
+          "name": "annotations",
           "paths": []
         },
         {
@@ -604,21 +679,6 @@
         },
         {
           "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
-          "name": "kotlin-reflect",
-          "paths": []
-        },
-        {
-          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
-          "name": "kotlin-stdlib",
-          "paths": []
-        },
-        {
-          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
-          "name": "kotlin-stdlib-common",
-          "paths": []
-        },
-        {
-          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
           "name": "opentest4j",
           "paths": []
         },
@@ -629,21 +689,14 @@
         },
         {
           "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
-          "name": "annotations",
-          "paths": []
-        },
-        {
-          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableModule",
-          "name": "Submodule1.main",
-          "path": ""
-        },
-        {
-          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
           "name": "JDK",
           "paths": []
         }
       ],
-      "buildFile": ""
+      "buildFile": "",
+      "platforms": [
+        "JVM"
+      ]
     },
     {
       "name": "Sources of Submodule2",
@@ -655,12 +708,29 @@
           "paths": []
         }
       ],
-      "buildFile": ""
+      "buildFile": "",
+      "platforms": [
+        "JVM"
+      ]
+    },
+    {
+      "name": "Library annotations",
+      "path": "",
+      "dependencies": [],
+      "buildFile": "",
+      "platforms": [
+        "JVM"
+      ]
     },
     {
       "name": "Sources of Submodule2.main",
       "path": "",
       "dependencies": [
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "kotlin-stdlib",
+          "paths": []
+        },
         {
           "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableModule",
           "name": "Submodule1.main",
@@ -668,16 +738,34 @@
         },
         {
           "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "annotations",
+          "paths": []
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
           "name": "JDK",
           "paths": []
         }
       ],
-      "buildFile": ""
+      "buildFile": "",
+      "platforms": [
+        "JVM"
+      ]
     },
     {
       "name": "Sources of Submodule2.test",
       "path": "",
       "dependencies": [
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableModule",
+          "name": "Submodule2.main",
+          "path": ""
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "kotlin-stdlib",
+          "paths": []
+        },
         {
           "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableModule",
           "name": "Submodule1.main",
@@ -705,6 +793,11 @@
         },
         {
           "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
+          "name": "annotations",
+          "paths": []
+        },
+        {
+          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
           "name": "opentest4j",
           "paths": []
         },
@@ -714,23 +807,24 @@
           "paths": []
         },
         {
-          "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableModule",
-          "name": "Submodule2.main",
-          "path": ""
-        },
-        {
           "type": "tse.unblockt.ls.server.ProjectImportTest.SerializableDependency.SerializableLibrary",
           "name": "JDK",
           "paths": []
         }
       ],
-      "buildFile": ""
+      "buildFile": "",
+      "platforms": [
+        "JVM"
+      ]
     },
     {
       "name": "SDK JDK",
       "path": "",
       "dependencies": [],
-      "buildFile": ""
+      "buildFile": "",
+      "platforms": [
+        "JVM"
+      ]
     }
   ],
   "javaHome": ""

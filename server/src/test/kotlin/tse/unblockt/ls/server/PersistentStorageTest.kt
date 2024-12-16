@@ -5,7 +5,6 @@ package tse.unblockt.ls.server
 import com.intellij.openapi.project.DefaultProjectFactory
 import org.junit.jupiter.api.BeforeEach
 import tse.unblockt.ls.server.analysys.storage.DB
-import tse.unblockt.ls.server.analysys.storage.MDB
 import tse.unblockt.ls.server.analysys.storage.PersistentStorage
 import tse.unblockt.ls.util.fastProjectPath
 import tse.unblockt.ls.util.init
@@ -36,7 +35,7 @@ class PersistentStorageTest {
     @OptIn(ExperimentalPathApi::class)
     @BeforeEach
     fun setup() {
-        MDB.indexesPath(fastProjectPath.resolve(".unblockt")).deleteRecursively()
+        DB.indexesPath(fastProjectPath.resolve(".unblockt")).deleteRecursively()
     }
 
     @Test

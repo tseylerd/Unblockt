@@ -4,12 +4,12 @@ package tse.unblockt.ls.server
 
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInfo
-import tse.unblockt.ls.protocol.Document
-import tse.unblockt.ls.protocol.SemanticTokensParams
-import tse.unblockt.ls.protocol.Uri
+import tse.unblockt.ls.protocol.*
 import tse.unblockt.ls.server.framework.simulateClient
+import tse.unblockt.ls.server.fs.uri
 import tse.unblockt.ls.util.*
 import java.nio.file.Paths
+import kotlin.io.path.readText
 
 class HighlightingTest {
     @Test
@@ -92,6 +92,7 @@ class HighlightingTest {
     fun packageTypedWithoutException(info: TestInfo) = rkTest {
         simulateClient(emptyProjectWithGradleWithJVMPath, info, true) {
             val text = "package tse"
+            languageServer.textDocument.didOpen(DidOpenTextDocumentParams(TextDocumentItem(fileToWorkWith.uri, "kotlin", 4, fileToWorkWith.readText())))
             type(0, text)
             diagnostics(fileToWorkWith)
             type(text.length, ".com")

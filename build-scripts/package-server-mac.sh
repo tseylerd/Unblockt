@@ -1,8 +1,5 @@
 #!/bin/zsh
 
-JDK_PATH="$(/usr/libexec/java_home)"
-echo "Path to JDK: $JDK_PATH"
-
 pushd ..
 echo "Building language server..."
 ./gradlew clean jar gatherDependencies
@@ -12,7 +9,7 @@ rm -r extension/resources/server
 rm -r jre
 mkdir extension/resources/server
 echo "Running jlink..."
-$JDK_PATH/bin/jlink --no-header-files --no-man-pages --add-modules=java.base,java.management,java.desktop,java.sql,jdk.unsupported,jdk.zipfs --output=jre
+jlink --no-header-files --no-man-pages --add-modules=java.base,java.management,java.desktop,java.sql,jdk.unsupported,jdk.zipfs --output=jre
 JRE_PATH="$(pwd)"/jre
 echo "$JRE_PATH"
 

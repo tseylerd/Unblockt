@@ -105,8 +105,8 @@ data class FileOperationFilter(
 @Serializable
 data class FileOperationPattern(
     val glob: String,
-    val matches: FileOperationPatternKind?,
-    val options: FileOperationsPatternOptions?
+    val matches: FileOperationPatternKind? = null,
+    val options: FileOperationsPatternOptions? = null
 )
 
 @Suppress("unused")
@@ -184,7 +184,7 @@ value class DocumentHighlightKind private constructor(private val value: Int) {
 @Serializable
 data class DocumentHighlight(
     val range: Range,
-    val kind: DocumentHighlightKind?
+    val kind: DocumentHighlightKind? = null
 )
 
 @Serializable
@@ -200,7 +200,7 @@ data class SemanticTokensParams(
 @Serializable
 data class SemanticTokensDeltaParams(
     val textDocument: Document,
-    val previousResultId: String?
+    val previousResultId: String? = null
 )
 
 @Serializable
@@ -213,7 +213,7 @@ sealed interface SemanticTokensDeltaResponse
 
 @Serializable
 data class SemanticTokens(
-    val resultId: String?,
+    val resultId: String? = null,
     val data: IntArray
 ): SemanticTokensDeltaResponse {
     override fun equals(other: Any?): Boolean {
@@ -232,7 +232,7 @@ data class SemanticTokens(
 
 @Serializable
 data class SemanticTokensDelta(
-    val resultId: String?,
+    val resultId: String? = null,
     val edits: List<SemanticTokensEdit>
 ): SemanticTokensDeltaResponse
 
@@ -449,7 +449,7 @@ data class FileRenameEvent(
 
 @Serializable
 data class DiagnosticOptions(
-    val identifier: String?,
+    val identifier: String? = null,
     val interFileDependencies: Boolean,
     val workspaceDiagnostics: Boolean
 )
@@ -464,7 +464,7 @@ data class DiagnosticTextDocumentParams(
 @Serializable
 data class DocumentDiagnosticReport(
     val kind: DocumentDiagnosticReportKind,
-    val resultId: String?,
+    val resultId: String? = null,
     val items: List<DiagnosticItem>
 )
 
@@ -479,11 +479,11 @@ enum class DocumentDiagnosticReportKind {
 data class DiagnosticItem(
     val range: Range,
     val severity: DiagnosticSeverity,
-    val code: Int?,
-    val source: String?,
+    val code: Int? = null,
+    val source: String? = null,
     val message: String,
-    val tags: List<DiagnosticTag>?,
-    val relatedInformation: List<DiagnosticRelatedInformation>?,
+    val tags: List<DiagnosticTag>? = null,
+    val relatedInformation: List<DiagnosticRelatedInformation>? = null,
 )
 
 @Suppress("unused")
@@ -520,10 +520,10 @@ data class CompletionItemOptions(
 )
 @Serializable
 data class CompletionOptions(
-    val triggerCharacters: List<String>?,
-    val allCommitCharacters: List<String>?,
+    val triggerCharacters: List<String>? = null,
+    val allCommitCharacters: List<String>? = null,
     val resolveProvider: Boolean,
-    val completionItem: CompletionItemOptions?
+    val completionItem: CompletionItemOptions? = null
 )
 
 @Serializable
@@ -565,8 +565,8 @@ data class CompletionList(
 
 @Serializable
 data class CompletionItemLabelDetails(
-    val detail: String?,
-    val description: String?
+    val detail: String? = null,
+    val description: String? = null
 )
 
 @Serializable

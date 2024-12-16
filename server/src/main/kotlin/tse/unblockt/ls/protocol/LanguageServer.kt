@@ -13,9 +13,12 @@ interface LanguageServer {
     suspend fun getStatus(): HealthStatusInformation
 
     interface Initializer {
+        val asyncInitializerResponse: InitializationResponse?
+            get() = null
         suspend fun initialize(params: InitializationRequestParameters): InitializationResponse
         suspend fun initialized()
-        suspend fun shutdown()
+        suspend fun shutdown(): Any?
+        suspend fun exit()
     }
 
     interface Service {

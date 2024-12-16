@@ -9,11 +9,12 @@ import kotlinx.coroutines.CancellationException
 import tse.unblockt.ls.logger
 import tse.unblockt.ls.protocol.HealthStatus
 import tse.unblockt.ls.protocol.HealthStatusInformation
-import java.nio.file.Files
 import java.nio.file.Path
 
+private const val SHARDS = 10
+
 class PersistentStorage(private val project: Project, private val root: Path): Disposable {
-    private var db = MDB(project, root)
+    private var db = ShardedDB(project, root, SHARDS)
     private var forciblyValid: Boolean = false
 
     companion object {
@@ -55,7 +56,7 @@ class PersistentStorage(private val project: Project, private val root: Path): D
         if (forciblyValid) {
             return null
         }
-        if (!Files.exists(MDB.indexesPath(root))) {
+        if (!db.isValid) {
             return HealthStatusInformation(
                 "Indexes are corrupted",
                 "Indexes are corrupted",
@@ -195,7 +196,8 @@ class PersistentStorage(private val project: Project, private val root: Path): D
     fun deleteAll() {
         db.close()
         db.delete()
-        db = MDB(project, root)
+        db = ShardedDB(project, root, SHARDS)
+        db.init()
     }
 
     fun clearCache() {

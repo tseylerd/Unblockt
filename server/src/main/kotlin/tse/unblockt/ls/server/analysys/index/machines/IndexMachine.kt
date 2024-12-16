@@ -22,7 +22,8 @@ interface IndexMachine<K: Any, V: Any> {
                 KtPackageToTopLevelCallableIndexMachine(project),
                 JavaPackageToTopLevelClassIndexMachine(project),
                 JavaClassIdToClassIndexMachine(project),
-                PackageIndexMachine(),
+                JavaPackageIndexMachine(),
+                KtPackageIndexMachine(),
             )
         }
     }

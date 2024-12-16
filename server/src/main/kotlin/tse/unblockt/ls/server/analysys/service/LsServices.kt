@@ -12,7 +12,7 @@ import tse.unblockt.ls.server.analysys.parameters.ParameterHintsService
 import tse.unblockt.ls.server.analysys.project.LsProjectService
 import tse.unblockt.ls.server.analysys.project.build.LsBuildService
 import tse.unblockt.ls.server.fs.LsFileManager
-import tse.unblockt.ls.server.project.ProjectModel
+import tse.unblockt.ls.server.project.UBProjectModel
 import tse.unblockt.ls.server.util.ServiceInformation
 
 interface LsServices: Disposable {
@@ -25,13 +25,12 @@ interface LsServices: Disposable {
     val parameterHintsService: ParameterHintsService
     val projectService: LsProjectService
 
-    val projectModel: ProjectModel?
+    val projectModel: UBProjectModel?
         get() = null
 
     val health: HealthStatusInformation
 
     val serviceInformation: ServiceInformation
 
-    suspend fun onInitialized()
     suspend fun cleanup()
 }

@@ -28,6 +28,7 @@ class JsonRpcContext {
     internal val json = Json {
         ignoreUnknownKeys = true
         useArrayPolymorphism = false
+        explicitNulls = false
     }
 
     internal val codes = mutableMapOf<StandardError, Int>()
@@ -138,7 +139,9 @@ private suspend fun process(context: JsonRpcContext, request: InternalRpcMethodC
       throw c
     } catch (t: Throwable) {
         val ex = unwrap(t)
-        logger.error(ex.message ?: "No message", ex)
+        if (ex !is RPCCallException || ex.code != ErrorCodes.CANCELLED_BY_SERVER) {
+            logger.error(ex.message ?: "No message", ex)
+        }
         if (request.id != null) {
             return errorAsResponse(request.id, ex)
         } else {

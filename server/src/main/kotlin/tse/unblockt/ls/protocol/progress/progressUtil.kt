@@ -4,17 +4,18 @@ package tse.unblockt.ls.protocol.progress
 
 import kotlinx.coroutines.withContext
 import tse.unblockt.ls.protocol.*
+import java.util.*
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.coroutineContext
 
 context(WorkDoneProgress)
-suspend fun <T> LanguageClient.withProgress(message: String, underProgress: suspend () -> T): T {
+suspend fun <T> LanguageClient.withProgress(title: String, underProgress: suspend () -> T): T {
     val token = workDoneToken ?: return underProgress()
     return withContext(coroutineContext + ProgressElement(token, this)) {
         progress {
             data = ProgressParams(
                 token,
-                ProgressBegin(false, message)
+                ProgressBegin(false, title)
             )
         }
         try {
@@ -27,6 +28,26 @@ suspend fun <T> LanguageClient.withProgress(message: String, underProgress: susp
                 )
             }
         }
+    }
+}
+
+suspend fun <T> LanguageClient.startProgress(title: String, underProgress: suspend () -> T): T {
+    val token = ProgressToken(UUID.randomUUID().toString())
+    window {
+        workDoneProgress {
+            create {
+                data = WorkDoneProgressCreateParams(
+                    token = token
+                )
+            }
+        }
+    }
+    val wdp = object : WorkDoneProgress {
+        override val workDoneToken: ProgressToken
+            get() = token
+    }
+    return with(wdp) {
+        withProgress(title, underProgress)
     }
 }
 
