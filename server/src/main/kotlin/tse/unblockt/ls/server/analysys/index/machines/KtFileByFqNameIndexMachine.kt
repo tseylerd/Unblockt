@@ -13,7 +13,7 @@ class KtFileByFqNameIndexMachine(project: Project) : BaseFileByFqNameIndexMachin
     override val namespace: PersistentStorage.Namespace
         get() = Namespaces.ourKotlinNamespace
 
-    override fun index(entry: IndexFileEntry): List<Pair<FqName, IndexFileEntry>> {
+    override fun index(entry: IndexFileEntry): List<Pair<String, IndexFileEntry>> {
         if (!entry.isKotlin) {
             return emptyList()
         }
@@ -23,6 +23,6 @@ class KtFileByFqNameIndexMachine(project: Project) : BaseFileByFqNameIndexMachin
             is PsiClassOwner -> FqName(entry.psiFile.packageName)
             else -> null
         } ?: return emptyList()
-        return listOf(packageName to entry)
+        return listOf(packageName.asString() to entry)
     }
 }

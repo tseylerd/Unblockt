@@ -53,7 +53,7 @@ class LsKotlinPsiIndexImpl(private val project: Project): LsKotlinPsiIndex {
     }
 
     override fun getFilesInPackage(fqName: FqName): Sequence<KtFile> {
-        return storage.getSequence(Namespaces.ourKotlinNamespace, indexer[KtFileByFqNameIndexMachine::class].attribute, fqName)
+        return storage.getSequence(Namespaces.ourKotlinNamespace, indexer[KtFileByFqNameIndexMachine::class].attribute, fqName.asString())
             .map { it.psiFile }
             .filterIsInstance<KtFile>()
     }
