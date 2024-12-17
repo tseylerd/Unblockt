@@ -44,6 +44,7 @@ interface DB: AutoCloseable {
         fun values(key: K): Sequence<V>
         fun deleteByMeta(meta: M)
         fun exists(key: K): Boolean
+        fun mayContain(key: K): Boolean
 
         enum class Config {
             UNIQUE_KEY_VALUE,
@@ -62,6 +63,7 @@ interface DB: AutoCloseable {
         val stringToKey: (Project, String) -> K?,
         val stringToValue: (Project, String) -> V?,
         val config: Store.Config,
+        val forceLocal: Boolean = false
     ) {
         init {
             if (name.contains(".")) {

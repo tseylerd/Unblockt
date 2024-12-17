@@ -70,7 +70,7 @@ internal class BuildManager(project: Project) {
     }
 
     suspend fun reload(rootPath: Path) {
-        AnalysisEntrypoint.init(rootPath, AnalysisEntrypoint.services.serviceInformation.storagePath)
+        AnalysisEntrypoint.init(rootPath, AnalysisEntrypoint.services.serviceInformation.storagePath, AnalysisEntrypoint.services.serviceInformation.globalStoragePath)
         GlobalServerState.initialized()
     }
 

@@ -142,7 +142,7 @@ private fun Set<VirtualFile>.collectChildren(): List<VirtualFile> {
     }
 }
 
-private const val INDEX_VERSION = 3L
+private const val INDEX_VERSION = 6L
 
 internal class LsSession(
     private val kotlinCoreProjectEnvironment: KotlinCoreProjectEnvironment,
@@ -177,6 +177,7 @@ internal class LsSession(
 
     class Builder(private val model: UBProjectModel) {
         lateinit var storagePath: Path
+        lateinit var globalStoragePath: Path
 
         private val projectDisposable: Disposable = Disposer.newDisposable()
 
@@ -212,7 +213,7 @@ internal class LsSession(
             project.registerService(LsJavaPsiIndex::class.java, LsJavaPsiIndexImpl::class.java)
             project.registerService(LsSourceCodeIndexer::class.java, LsSourceCodeIndexerImpl::class.java)
             project.registerService(ProjectStructureManager::class.java, ProjectStructureManager(model.path))
-            val ps = PersistentStorage.create(storagePath, project)
+            val ps = PersistentStorage.create(storagePath, globalStoragePath, project, model.path)
             Disposer.register(projectDisposable, ps)
 
             project.registerService(PersistentStorage::class.java, ps)

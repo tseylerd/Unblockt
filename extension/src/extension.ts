@@ -52,7 +52,8 @@ export function activate(context: ExtensionContext) {
             fileEvents: workspace.createFileSystemWatcher('**/*.kt')
         },
         initializationOptions: {
-            storagePath: context.storageUri.path
+            storagePath: context.storageUri.path,
+            globalStoragePath: context.extensionPath
         }
     };
 

@@ -35,7 +35,7 @@ class PersistentStorageTest {
     @OptIn(ExperimentalPathApi::class)
     @BeforeEach
     fun setup() {
-        DB.indexesPath(fastProjectPath.resolve(".unblockt")).deleteRecursively()
+        fastProjectPath.resolve(".unblockt").deleteRecursively()
     }
 
     @Test

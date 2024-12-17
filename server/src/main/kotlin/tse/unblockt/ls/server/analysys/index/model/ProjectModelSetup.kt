@@ -20,6 +20,7 @@ object ProjectModelSetup {
         stringToKey = { _, str -> str },
         stringToValue = { _, str -> Json.decodeFromString(str) },
         config = DB.Store.Config.UNIQUE_KEY,
+        forceLocal = true,
     )
 
     val versionAttribute = DB.Attribute(

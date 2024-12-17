@@ -6,11 +6,14 @@ import com.intellij.openapi.project.Project
 import org.mapdb.Serializer
 import java.nio.file.Files
 import java.nio.file.Path
-import kotlin.io.path.*
+import kotlin.io.path.ExperimentalPathApi
+import kotlin.io.path.createDirectories
+import kotlin.io.path.deleteRecursively
+import kotlin.io.path.exists
 import kotlin.math.abs
 import org.mapdb.DB as MapDB
 
-class ShardedDB(private val project: Project, private val root: Path, private val shards: Int): DB, DBContainer {
+class ShardedDB(private val project: Project, private val root: Path, private val shards: Int, override val appendOnly: Boolean): DB, DBContainer {
     private val dbs = arrayOfNulls<DB>(shards)
     override val all: Collection<DB>
         get() = dbs.filterNotNull().toList()
@@ -25,16 +28,17 @@ class ShardedDB(private val project: Project, private val root: Path, private va
 
     @OptIn(ExperimentalPathApi::class)
     override fun init() {
+        if (::metadataDB.isInitialized) {
+            return
+        }
+
         val indexesPath = DB.indexesPath(root)
         if (!Files.exists(indexesPath)) {
             indexesPath.createDirectories()
         }
         val metadataPath = indexesPath.resolve("metadata.db")
-        metadataDB = try {
-            MDB.makeDB(metadataPath)
-        } catch (t: Throwable) {
-            metadataPath.deleteExisting()
-            MDB.makeDB(metadataPath)
+        metadataDB = MDB.makeOrCreateDB(metadataPath) {
+            PartiallyGlobalDB.makeMetaDB(metadataPath)
         }
         val metadataMap = metadataDB.hashMap("metadata", Serializer.STRING, Serializer.STRING).createOrOpen()
         val shardsCount = metadataMap["shards"]?.toInt()
@@ -63,11 +67,16 @@ class ShardedDB(private val project: Project, private val root: Path, private va
     }
 
     override fun tx(): DB.Tx {
-        return ShardedDBTx(this)
+        if (shards == 1) {
+            return dbs[0]!!.tx()
+        }
+        return ShardedDBTx(this, this)
     }
 
     @OptIn(ExperimentalPathApi::class)
     override fun delete() {
+        close()
+
         val resolve = DB.indexesPath(root)
         if (resolve.exists()) {
             resolve.deleteRecursively()
@@ -81,17 +90,22 @@ class ShardedDB(private val project: Project, private val root: Path, private va
         dbs.forEach { it?.close() }
     }
 
+    fun recreate() {
+        delete()
+        init()
+    }
+
     private fun initBucket(i: Int): DB {
         val bucketDir = DB.indexesPath(root).resolve(i.toString())
         if (!bucketDir.exists()) {
             bucketDir.createDirectories()
         }
-        val mdb = MDB(project, bucketDir)
+        val mdb = MDB(project, bucketDir, appendOnly)
         dbs[i] = mdb
         return mdb
     }
 
-    private class ShardedDBTx(private val dbContainer: DBContainer): DB.Tx {
+    private class ShardedDBTx(private val dbContainer: DBContainer, private val db: ShardedDB): DB.Tx {
         private val dbs = mutableMapOf<String, DB>()
         private val transactions = mutableMapOf<DB, DB.Tx>()
         private val stores = mutableMapOf<Pair<DB.Tx, DB.Attribute<*, *, *>>, DB.Store<Any, Any, Any>>()
@@ -111,15 +125,18 @@ class ShardedDB(private val project: Project, private val root: Path, private va
             return ShardedStore(object : StoreContainer<M, K, V> {
                 override val all: List<DB.Store<M, K, V>>
                     get() = dbContainer.all.map { db ->
-                        transactions.computeIfAbsent(db) {
+                        val tx = transactions.computeIfAbsent(db) {
                             db.tx()
-                        }.store(name, attribute)
+                        }
+                        stores.computeIfAbsent(tx to attribute) {
+                            tx.store(name, attribute) as DB.Store<Any, Any, Any>
+                        } as DB.Store<M, K, V>
                     }
 
                 override fun storeBy(key: String): DB.Store<M, K, V> {
                     return storeBy(name, key, attribute)
                 }
-            }, attribute)
+            }, attribute, dbContainer.appendOnly, db)
         }
 
         override fun revert() {
@@ -145,7 +162,9 @@ class ShardedDB(private val project: Project, private val root: Path, private va
 
     private class ShardedStore<M: Any, K: Any, V: Any>(
         private val container: StoreContainer<M, K, V>,
-        private val attribute: DB.Attribute<M, K, V>
+        private val attribute: DB.Attribute<M, K, V>,
+        private val appendOnly: Boolean,
+        private val db: ShardedDB
     ): DB.Store<M, K, V> {
         override fun putAll(triples: Set<Triple<M, K, V>>) {
             triples.groupBy { (_, k, _) ->
@@ -185,7 +204,16 @@ class ShardedDB(private val project: Project, private val root: Path, private va
             return container.storeBy(attribute.keyToString(key)).exists(key)
         }
 
+        override fun mayContain(key: K): Boolean {
+            return container.storeBy(attribute.keyToString(key)).mayContain(key)
+        }
+
         override fun deleteByMeta(meta: M) {
+            if (appendOnly) {
+                db.recreate()
+                return
+            }
+
             container.all.forEach { s ->
                 s.deleteByMeta(meta)
             }
@@ -208,7 +236,8 @@ class ShardedDB(private val project: Project, private val root: Path, private va
     }
 }
 
-interface DBContainer {
+private interface DBContainer {
     val all: Collection<DB>
+    val appendOnly: Boolean
     fun dbBy(key: String): DB
 }

@@ -70,6 +70,7 @@ object AnalysisEntrypoint {
     suspend fun init(
         rootPath: Path,
         storagePath: Path,
+        globalStoragePath: Path,
     ) {
         report("importing gradle project...")
 
@@ -86,18 +87,18 @@ object AnalysisEntrypoint {
 
         if (import is ProjectImportResult.Failure) {
             shutdown()
-            _services = NoSessionServices(rootPath, storagePath, import.error)
+            _services = NoSessionServices(rootPath, storagePath, globalStoragePath, import.error)
             return
         }
 
         import as ProjectImportResult.Success
         try {
             shutdown()
-            _services = SessionBasedServices.create(rootPath, import.model, storagePath)
+            _services = SessionBasedServices.create(rootPath, import.model, storagePath, globalStoragePath)
         } catch (e: Exception) {
             logger.error(e.stackTraceToString(), e)
             kotlin.runCatching { shutdown() }
-            _services = NoSessionServices(rootPath, storagePath, ProjectImportError.FailedToImportProject(e))
+            _services = NoSessionServices(rootPath, storagePath, globalStoragePath, ProjectImportError.FailedToImportProject(e))
         }
     }
 

@@ -11,10 +11,13 @@ import tse.unblockt.ls.protocol.HealthStatus
 import tse.unblockt.ls.protocol.HealthStatusInformation
 import java.nio.file.Path
 
-private const val SHARDS = 10
-
-class PersistentStorage(private val project: Project, private val root: Path): Disposable {
-    private var db = ShardedDB(project, root, SHARDS)
+class PersistentStorage(
+    private val project: Project,
+    private val workspaceStorage: Path,
+    private val globalStorage: Path,
+    private val projectRoot: Path,
+): Disposable {
+    private var db = PartiallyGlobalDB(project, workspaceStorage, globalStorage, projectRoot)
     private var forciblyValid: Boolean = false
 
     companion object {
@@ -33,10 +36,15 @@ class PersistentStorage(private val project: Project, private val root: Path): D
             return project.service()
         }
 
-        fun create(root: Path, project: Project): PersistentStorage {
+        fun create(storagePath: Path,
+                   globalStoragePath: Path,
+                   project: Project,
+                   projectRoot: Path): PersistentStorage {
             return PersistentStorage(
                 project,
-                root
+                storagePath,
+                globalStoragePath,
+                projectRoot
             )
         }
     }
@@ -196,7 +204,7 @@ class PersistentStorage(private val project: Project, private val root: Path): D
     fun deleteAll() {
         db.close()
         db.delete()
-        db = ShardedDB(project, root, SHARDS)
+        db = PartiallyGlobalDB(project, workspaceStorage, globalStorage, projectRoot)
         db.init()
     }
 

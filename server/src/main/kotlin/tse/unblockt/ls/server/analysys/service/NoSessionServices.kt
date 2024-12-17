@@ -27,6 +27,7 @@ import java.util.concurrent.ConcurrentHashMap
 internal class NoSessionServices(
     root: Path,
     storagePath: Path,
+    globalStoragePath: Path,
     private val error: ProjectImportError
 ): LsServices {
     init {
@@ -51,7 +52,7 @@ internal class NoSessionServices(
             status = HealthStatus.ERROR
         )
 
-    override val serviceInformation: ServiceInformation = ServiceInformation(storagePath)
+    override val serviceInformation: ServiceInformation = ServiceInformation(storagePath, globalStoragePath)
 
     override suspend fun cleanup() {
     }
@@ -88,7 +89,7 @@ internal class NoSessionServices(
             get() = throw UnsupportedOperationException()
 
         override suspend fun reload() {
-            AnalysisEntrypoint.init(root, AnalysisEntrypoint.services.serviceInformation.storagePath)
+            AnalysisEntrypoint.init(root, AnalysisEntrypoint.services.serviceInformation.storagePath, AnalysisEntrypoint.services.serviceInformation.globalStoragePath)
 
             for ((key, value) in notificationsService.openedMap) {
                 AnalysisEntrypoint.services.notificationsService.handleDocumentOpened(key, value)

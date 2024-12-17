@@ -47,12 +47,13 @@ import tse.unblockt.ls.server.util.ServiceInformation
 import java.nio.file.Path
 import kotlin.io.path.extension
 
-internal class SessionBasedServices(root: Path, storagePath: Path, private val session: LsSession, private val model: UBProjectModel): LsServices {
+internal class SessionBasedServices(root: Path, storagePath: Path, globalStoragePath: Path, private val session: LsSession, private val model: UBProjectModel): LsServices {
     companion object {
         suspend fun create(
             root: Path,
             projectModel: UBProjectModel,
             storagePath: Path,
+            globalStoragePath: Path,
         ): LsServices {
             val byName = projectModel.modules.associateBy {
                 it.name
@@ -60,6 +61,7 @@ internal class SessionBasedServices(root: Path, storagePath: Path, private val s
             val graph = buildGradleProjectsGraph(projectModel.modules)
             val session = LsSession.build(projectModel) {
                 this.storagePath = storagePath
+                this.globalStoragePath = globalStoragePath
                 buildProjectStructureProvider {
                     val cache = mutableMapOf<UBModule, KaModule>()
                     val moduleCache = mutableMapOf<UBDependency, KaModule>()
@@ -82,7 +84,7 @@ internal class SessionBasedServices(root: Path, storagePath: Path, private val s
                     addModule(sdkModule)
                 }
             }
-            return SessionBasedServices(root, storagePath, session, projectModel)
+            return SessionBasedServices(root, storagePath, globalStoragePath, session, projectModel)
         }
 
         fun buildGradleProjectsGraph(projects: List<UBModule>): Map<UBModule, List<UBModule>> {
@@ -233,7 +235,7 @@ internal class SessionBasedServices(root: Path, storagePath: Path, private val s
             status = HealthStatus.HEALTHY
         )
 
-    override val serviceInformation: ServiceInformation = ServiceInformation(storagePath)
+    override val serviceInformation: ServiceInformation = ServiceInformation(storagePath, globalStoragePath)
 
     override suspend fun cleanup() {
         PersistentStorage.instance(session.project).deleteAll()

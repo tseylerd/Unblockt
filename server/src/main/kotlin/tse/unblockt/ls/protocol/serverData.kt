@@ -26,6 +26,7 @@ data class InitializationRequestParameters(
 @Serializable
 data class InitializationOptions(
     val storagePath: String,
+    val globalStoragePath: String,
 )
 
 @Serializable
