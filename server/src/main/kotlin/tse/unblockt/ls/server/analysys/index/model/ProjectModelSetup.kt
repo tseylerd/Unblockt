@@ -22,17 +22,4 @@ object ProjectModelSetup {
         config = DB.Store.Config.UNIQUE_KEY,
         forceLocal = true,
     )
-
-    val versionAttribute = DB.Attribute(
-        "model_version",
-        metaToString = { it },
-        stringToMeta = { it },
-        keyToString = { it },
-        valueToString = { it.toString() },
-        stringToKey = { _, str -> str },
-        stringToValue = { _, str -> str.toLong() },
-        config = DB.Store.Config.SINGLE
-    )
-    const val versionKey = "version"
-    const val sourceKey = "source"
 }

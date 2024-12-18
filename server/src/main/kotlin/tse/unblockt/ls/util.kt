@@ -11,7 +11,7 @@ inline fun <T: Any> KotlinLogger.safe(whatever: () -> T?): Result<T?> {
     return try {
         Result.success(whatever())
     } catch (t: Throwable) {
-        error(t.message ?: "null", t)
+        error(t.stackTraceToString(), t)
         Result.failure(t)
     }
 }

@@ -45,8 +45,9 @@ class LsSourceCodeIndexerImpl(private val project: Project): LsSourceCodeIndexer
 
         private suspend fun indexAll(machines: List<IndexMachine<*, *>>, storage: PersistentStorage, entries: Sequence<IndexFileEntry>) {
             coroutineScope {
+                val allFiles = entries.toList()
                 for (machine in machines) {
-                    entries.flatMap { entry ->
+                    allFiles.flatMap { entry ->
                         machine.index(entry).map { pair ->
                             Triple(entry.psiFile.virtualFile.url, pair.first, pair.second)
                         }
@@ -117,7 +118,6 @@ class LsSourceCodeIndexerImpl(private val project: Project): LsSourceCodeIndexer
     override fun init() {
         storage.init()
         storage.init(ProjectModelSetup.namespace, ProjectModelSetup.entryAttribute)
-        storage.init(ProjectModelSetup.namespace, ProjectModelSetup.versionAttribute)
         for (ourMachine in ourMachines) {
             storage.init(ourMachine.namespace, ourMachine.attribute)
         }
@@ -139,7 +139,6 @@ class LsSourceCodeIndexerImpl(private val project: Project): LsSourceCodeIndexer
     override suspend fun updateIndexes(model: IndexModel) {
         val builtIns = indexes.kotlinPsi.builtIns + indexes.javaPsi.builtIns
         val modelWithBuiltIns = model.copy(
-            version = model.version,
             paths = model.paths + builtIns.map {
                 IndexModel.Entry(
                     it.url, IndexModel.EntryProperties(
@@ -150,15 +149,11 @@ class LsSourceCodeIndexerImpl(private val project: Project): LsSourceCodeIndexer
                 )
             }.toSet()
         )
-        if (!storage.isValid()) {
-            storage.deleteAll()
-        }
+
+        storage.validate()
 
         report("reading model...")
         val savedModel = storage.readModel()
-        if (savedModel != null && savedModel.version != modelWithBuiltIns.version) {
-            storage.deleteAll()
-        }
         storage.sync {
             report("checking changes...")
             val diff = computeDiff(modelWithBuiltIns, savedModel)
@@ -179,18 +174,17 @@ class LsSourceCodeIndexerImpl(private val project: Project): LsSourceCodeIndexer
             }
 
             for (entry in diff.add) {
+                if (isFrozen(entry.url)) {
+                    put(ProjectModelSetup.namespace, ProjectModelSetup.entryAttribute, entry.url, entry.url, entry)
+                    continue
+                }
+
                 report("indexing ${entry.url.cutProtocol}")
                 indexAll(ourMachines, storage, filesSequence(entry))
                 put(ProjectModelSetup.namespace, ProjectModelSetup.entryAttribute, entry.url, entry.url, entry)
             }
 
-            put(
-                ProjectModelSetup.namespace,
-                ProjectModelSetup.versionAttribute,
-                ProjectModelSetup.sourceKey,
-                ProjectModelSetup.versionKey,
-                model.version
-            )
+            freeze()
         }
         loadAllStubs(modelWithBuiltIns)
     }
@@ -226,14 +220,10 @@ class LsSourceCodeIndexerImpl(private val project: Project): LsSourceCodeIndexer
 
     private fun PersistentStorage.readModel(): IndexModel? {
         val allEntries = getSequenceOfValues(ProjectModelSetup.namespace, ProjectModelSetup.entryAttribute).map { it }.toList()
-        val version = getSequenceOfValues(ProjectModelSetup.namespace, ProjectModelSetup.versionAttribute).map { it }.toList()
-        if (version.size != 1) {
-            return null
-        }
         if (allEntries.isEmpty()) {
             return null
         }
-        return IndexModel(version = version.single(), allEntries.toSet())
+        return IndexModel(allEntries.toSet())
     }
 
     private fun filesSequence(root: IndexModel.Entry): Sequence<IndexFileEntry> {
@@ -277,9 +267,6 @@ class LsSourceCodeIndexerImpl(private val project: Project): LsSourceCodeIndexer
 
     private fun computeDiff(newModel: IndexModel, oldModel: IndexModel?): IndexModelDiff {
         oldModel ?: return IndexModelDiff(emptySet(), newModel.paths)
-        if (oldModel.version != newModel.version) {
-            return IndexModelDiff(emptySet(), newModel.paths)
-        }
         val toDelete = oldModel.paths - newModel.paths
         val toAdd = newModel.paths - oldModel.paths
         return IndexModelDiff(toDelete, toAdd)

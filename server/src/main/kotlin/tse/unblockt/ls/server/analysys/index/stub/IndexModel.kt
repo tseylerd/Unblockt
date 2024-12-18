@@ -6,7 +6,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class IndexModel(
-    val version: Long,
     val paths: Set<Entry>,
 ) {
     @Serializable

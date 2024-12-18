@@ -34,13 +34,26 @@ class MDB(private val project: Project, private val root: Path, private val appe
                 .make()
         }
 
-        fun makeOrCreateDB(dbPath: Path): MapDB {
-            return makeOrCreateDB(dbPath) {
+        fun openOrCreateDB(dbPath: Path): MapDB {
+            return openOrCreateDB(dbPath) {
                 makeDB(dbPath)
             }
         }
 
-        fun makeOrCreateDB(dbPath: Path, maker: () -> MapDB): MapDB {
+        fun makeMetaDB(dbPath: Path): org.mapdb.DB {
+            return DBMaker
+                .fileDB(dbPath.toFile())
+                .allocateStartSize(128 * 1024)
+                .allocateIncrement(128 * 1024)
+                .fileMmapEnable()
+                .fileLockDisable()
+                .executorEnable()
+                .transactionEnable()
+                .make()
+        }
+
+        @OptIn(ExperimentalPathApi::class)
+        fun openOrCreateDB(dbPath: Path, maker: () -> MapDB): MapDB {
             return try {
                 maker()
             } catch (t: Throwable) {
@@ -62,13 +75,14 @@ class MDB(private val project: Project, private val root: Path, private val appe
     override val isClosed: Boolean
         get() = !::db.isInitialized || db.isClosed()
 
-    override fun init() {
+    override fun init(): Wiped {
         if (::db.isInitialized) {
-            return
+            return Wiped(false)
         }
         val indexesPath = indexesPath(root)
         indexesPath.parent.createDirectories()
-        db = makeOrCreateDB(indexesPath)
+        db = openOrCreateDB(indexesPath)
+        return Wiped(false)
     }
 
     override fun init(name: String, config: DB.Store.Config) {
@@ -104,6 +118,16 @@ class MDB(private val project: Project, private val root: Path, private val appe
         override val isFinished: Boolean
             get() = finished
 
+        override fun put(key: String, value: String) {
+            val atomicString = db.atomicString(key).createOrOpen()
+            atomicString.set(value)
+        }
+
+        override fun get(key: String): String? {
+            val atomicString = db.atomicString(key).createOrOpen()
+            return atomicString.get()
+        }
+
         override fun <M: Any, K : Any, V : Any> store(name: String, attribute: DB.Attribute<M, K, V>): DB.Store<M, K, V> {
             @Suppress("UNCHECKED_CAST")
             return stores.computeIfAbsent(name) {
@@ -114,7 +138,7 @@ class MDB(private val project: Project, private val root: Path, private val appe
                     val allKeys = db.hashSet("${name}_all_keys")
                         .serializer(Serializer.STRING)
                         .createOrOpen()
-                    return@computeIfAbsent MapDBReadAppendOnly(project, hashSet, allKeys, attribute)
+                    return@computeIfAbsent MapDBAppendOnlyStore(project, hashSet, allKeys, attribute)
                 }
                 val byMetaSet: NavigableSet<Array<Any?>> = db.treeSet("${name}_by_meta")
                     .serializer(SerializerArrayTuple(Serializer.STRING, Serializer.STRING, Serializer.STRING, Serializer.STRING))
@@ -152,6 +176,10 @@ class MDB(private val project: Project, private val root: Path, private val appe
         }
 
         override fun values(key: K): Sequence<V> {
+            if (!mayContain(key)) {
+                return emptySequence()
+            }
+
             val keyAsStr = attribute.keyToString(key)
             return byKeySet.subSet(arrayOf(keyAsStr), arrayOf(keyAsStr, null, null)).asSequence().mapNotNull { any ->
                 attribute.stringToValue(project, any.valueFromPair)
@@ -159,7 +187,7 @@ class MDB(private val project: Project, private val root: Path, private val appe
         }
     }
 
-    private class MapDBReadAppendOnly<M: Any, K : Any, V : Any>(
+    private class MapDBAppendOnlyStore<M: Any, K : Any, V : Any>(
         project: Project,
         byKeySet: NavigableSet<Array<Any?>>,
         private val allKeys: MutableSet<String>,
@@ -180,10 +208,11 @@ class MDB(private val project: Project, private val root: Path, private val appe
         }
 
         override fun putAll(triples: Set<Triple<M, K, V>>) {
-            val all = triples.map { (_, k, v) ->
+            val all = triples.map { (m, k, v) ->
                 val keyStr = attribute.keyToString(k)
                 val valueStr = attribute.valueToString(v)
-                arrayOf<Any?>(keyStr, valueStr)
+                val metaStr = attribute.metaToString(m)
+                arrayOf<Any?>(keyStr, valueStr, metaStr)
             }
             byKeySet.addAll(all)
             allKeys.addAll(all.map { it[0] as String })
@@ -209,8 +238,13 @@ class MDB(private val project: Project, private val root: Path, private val appe
             }
         }
 
+        override fun metas(): Sequence<M> {
+            return byKeySet.asSequence().mapNotNull { arr ->
+                attribute.stringToMeta(arr[2] as String)
+            }
+        }
+
         override fun deleteByMeta(meta: M) {
-            throw IllegalStateException("Must not happen")
         }
     }
 
@@ -268,6 +302,12 @@ class MDB(private val project: Project, private val root: Path, private val appe
                 val key = attribute.stringToKey(project, any.keyFromTriple) ?: return@mapNotNull null
                 val value = attribute.stringToValue(project, any.valueFromTriple) ?: return@mapNotNull null
                 Triple(meta, key, value)
+            }
+        }
+
+        override fun metas(): Sequence<M> {
+            return byMetaSet.asSequence().mapNotNull { any ->
+                attribute.stringToMeta(any.metaFromTriple)
             }
         }
 

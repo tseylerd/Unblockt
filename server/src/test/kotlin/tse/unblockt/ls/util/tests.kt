@@ -48,6 +48,11 @@ fun rkTest(block: suspend RkTestEnvironment.() -> Unit) {
         try {
             rkTestEnvironment.block()
         } finally {
+            kotlin.runCatching {
+                for (sf in rkTestEnvironment.after) {
+                    sf()
+                }
+            }
             ls.initializer.shutdown()
             ls.service.pollAllRequests()
             lsJob.cancelAndJoin()
@@ -71,7 +76,12 @@ data class RkTestEnvironment(
     val receiveChannel: ReceiveChannel<String>,
     val clientsCallChannel: Channel<RPCMethodCall<*, *>>,
     val scope: CoroutineScope,
+    val after: MutableList<suspend () -> Unit> = mutableListOf()
 ) {
+    fun after(func: suspend () -> Unit) {
+        after.add(func)
+    }
+
     var root: Path? = null
 }
 

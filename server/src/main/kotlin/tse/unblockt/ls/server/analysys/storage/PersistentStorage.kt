@@ -6,7 +6,7 @@ import com.intellij.openapi.Disposable
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import kotlinx.coroutines.CancellationException
-import tse.unblockt.ls.logger
+import org.apache.logging.log4j.kotlin.logger
 import tse.unblockt.ls.protocol.HealthStatus
 import tse.unblockt.ls.protocol.HealthStatusInformation
 import java.nio.file.Path
@@ -15,9 +15,12 @@ class PersistentStorage(
     private val project: Project,
     private val workspaceStorage: Path,
     private val globalStorage: Path,
-    private val projectRoot: Path,
+    private val projectRoot: Path
 ): Disposable {
-    private var db = PartiallyGlobalDB(project, workspaceStorage, globalStorage, projectRoot)
+    private var db = createDB()
+
+    private fun createDB() = RouterDB(LocalGlobalRouter(project, projectRoot, workspaceStorage, globalStorage))
+
     private var forciblyValid: Boolean = false
 
     companion object {
@@ -27,7 +30,7 @@ class PersistentStorage(
             } catch (e: CancellationException) {
                 throw e
             } catch (t: Throwable) {
-                logger.error(t)
+                logger.error(t.stackTraceToString(), t)
                 null
             }
         }
@@ -36,13 +39,15 @@ class PersistentStorage(
             return project.service()
         }
 
-        fun create(storagePath: Path,
-                   globalStoragePath: Path,
-                   project: Project,
-                   projectRoot: Path): PersistentStorage {
+        fun create(
+            workspaceStoragePath: Path,
+            globalStoragePath: Path,
+            project: Project,
+            projectRoot: Path
+        ): PersistentStorage {
             return PersistentStorage(
                 project,
-                storagePath,
+                workspaceStoragePath,
                 globalStoragePath,
                 projectRoot
             )
@@ -58,6 +63,14 @@ class PersistentStorage(
     fun init(namespace: Namespace, attribute: DB.Attribute<*, *, *>) {
         val attributed = namespace.attributed(attribute)
         db.init(attributed.name, attribute.config)
+    }
+
+    fun freeze() {
+        db.freeze()
+    }
+
+    fun isFrozen(meta: String): Boolean {
+        return db.isFrozen(meta)
     }
 
     fun health(): HealthStatusInformation? {
@@ -100,7 +113,7 @@ class PersistentStorage(
         }
     }
 
-    fun isValid(): Boolean {
+    private fun isValid(): Boolean {
         if (forciblyValid) {
             return true
         }
@@ -204,7 +217,7 @@ class PersistentStorage(
     fun deleteAll() {
         db.close()
         db.delete()
-        db = PartiallyGlobalDB(project, workspaceStorage, globalStorage, projectRoot)
+        db = createDB()
         db.init()
     }
 
@@ -216,6 +229,16 @@ class PersistentStorage(
     }
 
     fun shutdown() {
+    }
+
+    fun validate() {
+        val valid = isValid()
+        if (!valid) {
+            (db.router as LocalGlobalRouter).deleteLocal()
+            db.close()
+            db = createDB()
+            db.init()
+        }
     }
 
     private fun getInProgress(): Boolean {
@@ -247,6 +270,7 @@ class PersistentStorage(
             stringToKey = { _, str -> str },
             stringToValue = { _, str -> str.toBoolean() },
             config = DB.Store.Config.SINGLE,
+            forceLocal = true,
         )
         const val KEY = "inProgress"
         const val SOURCE = "PROGRESS"

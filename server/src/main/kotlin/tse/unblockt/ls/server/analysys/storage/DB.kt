@@ -17,7 +17,7 @@ interface DB: AutoCloseable {
     val isValid: Boolean
 
     val isClosed: Boolean
-    fun init()
+    fun init(): Wiped
     fun init(name: String, config: Store.Config)
 
     fun tx(): Tx
@@ -31,6 +31,9 @@ interface DB: AutoCloseable {
         fun <M: Any, K: Any, V: Any> store(name: String, attribute: Attribute<M, K, V>): Store<M, K, V>
         fun revert()
         fun abort()
+
+        fun put(key: String, value: String)
+        fun get(key: String): String?
     }
 
     interface Store<M, K: Any, V: Any> {
@@ -41,6 +44,7 @@ interface DB: AutoCloseable {
         fun all(): Sequence<Pair<K, V>>
 
         fun sequence(): Sequence<Triple<M, K, V>>
+        fun metas(): Sequence<M>
         fun values(key: K): Sequence<V>
         fun deleteByMeta(meta: M)
         fun exists(key: K): Boolean
@@ -72,6 +76,9 @@ interface DB: AutoCloseable {
         }
     }
 }
+
+@JvmInline
+value class Wiped(val value: Boolean)
 
 inline fun <T> DB.inTx(call: DB.Tx.() -> T): T {
     val tx = tx()

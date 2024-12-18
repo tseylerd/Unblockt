@@ -150,7 +150,7 @@ class KotlinLanguageServer(client: LanguageClient) : LanguageServer {
 
             val rootPath = Paths.get(params.rootPath)
             val indexPath = params.initializationOptions?.storagePath?.let { Paths.get(it) } ?: rootPath.resolve(".unblockt").resolve("local")
-            val globalIndexPath = params.initializationOptions?.globalStoragePath?.let { Paths.get(it).resolve("index").resolve("global") } ?: rootPath.resolve(".unblockt").resolve("global")
+            val globalIndexPath = params.initializationOptions?.globalStoragePath?.let { Paths.get(it).resolve(".unblockt").resolve("global") } ?: rootPath.resolve(".unblockt").resolve("global")
             AnalysisEntrypoint.init(rootPath, indexPath, globalIndexPath)
             return DEFAULT_INITIALIZATION_RESPONSE
         }
