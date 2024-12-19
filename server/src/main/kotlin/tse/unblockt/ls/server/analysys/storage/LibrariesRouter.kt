@@ -21,12 +21,22 @@ import kotlin.io.path.deleteRecursively
 class LibrariesRouter(
     private val project: Project,
     private val globalStorage: Path,
+    private val projectPath: Path,
+    private val librariesRoots: Collection<String>?,
 ): RouterDB.FreezableRouter {
+
     companion object {
         const val LIBRARIES_MAP = "libraries"
         const val CATALOGUE_DB = "metadata.db"
 
-        private val globalDBsKey = UniversalCache.Key<Map<String, Pair<String, Boolean>>>("globalDBs")
+        private val globalDBsIDsKey = UniversalCache.Key<Map<String, Pair<String, Boolean>>>("globalDBsIDs")
+        private val globalDBsKey = UniversalCache.Key<Map<String, DB>>("globalDBsKey")
+
+    }
+
+    private val allLibrariesRoots: Set<String>? = run {
+        val toString = projectPath.toString()
+        librariesRoots?.mapNotNull { libraryRoot(it) }?.filter { !it.startsWith(toString) }?.toSet()
     }
 
     private val pathToMetadata = globalStorage.resolve(CATALOGUE_DB)
@@ -35,14 +45,14 @@ class LibrariesRouter(
         loadLibrariesMap()
     }
 
-    private val actualGlobalDBsIdsCache = UniversalCache {
+    private val cache = UniversalCache {
         state.read { counter ->
             counter.get()
         }
     }
 
     private val actualGlobalDBsIDs: Map<String, Pair<String, Boolean>>
-        get() = actualGlobalDBsIdsCache.getOrCompute(globalDBsKey) {
+        get() = cache.getOrCompute(globalDBsIDsKey) {
             listGlobalDBs()
         }
 
@@ -57,15 +67,24 @@ class LibrariesRouter(
     }
 
     private val globalDBs = ConcurrentHashMap<String, DB>()
+    private val actualGlobalDBs: Map<String, DB>
+        get() = cache.getOrCompute(globalDBsKey) {
+            actualGlobalDBs()
+        }
 
     override val all: Collection<DB>
-        get() = actualGlobalDBs().values
+        get() = actualGlobalDBs.values
 
     override val metadataDB: SafeDB
         get() = globalMetaDB
 
     override fun dbsByMeta(meta: String): Collection<DB> {
-        return listOf(dbForLibrary(libraryRoot(meta)))
+        val root = libraryRoot(meta) ?: return emptyList()
+        return listOf(dbForLibrary(root))
+    }
+
+    override fun dbsToDeleteByMeta(meta: String): Collection<DB> {
+        return emptyList()
     }
 
     override fun dbsByKey(key: String): Collection<DB> {
@@ -73,7 +92,8 @@ class LibrariesRouter(
     }
 
     override fun dbToPut(attribute: DB.Attribute<*, *, *>, meta: String, key: String): DB {
-        return dbForLibrary(libraryRoot(meta))
+        val root = libraryRoot(meta) ?: throw IllegalArgumentException("Cannot find DB for meta: $meta")
+        return dbForLibrary(root)
     }
 
     override fun freeze() {
@@ -144,11 +164,11 @@ class LibrariesRouter(
                 newID to false
             }
         }
-        val result = actualGlobalDBs()[id.first]
-        return result!!
+        val result = actualGlobalDBs[id.first] ?: throw IllegalStateException("No db for $root: id=$id")
+        return result
     }
 
-    private fun libraryRoot(meta: String): String {
+    private fun libraryRoot(meta: String): String? {
         if (!meta.isUrl) {
             return meta
         }
@@ -159,13 +179,15 @@ class LibrariesRouter(
             val root = generateSequence(vFile) { it.parent }.last()
             return root.path
         }
-        throw IllegalStateException("Unknown fs ${fs::class.simpleName} for $meta")
+        return null
     }
 
     private fun actualGlobalDBs(): Map<String, DB> {
         val ids = actualGlobalDBsIDs
-        for ((_, id) in ids) {
-            dbById(id.first)
+        for ((root, id) in ids) {
+            if (allLibrariesRoots == null || allLibrariesRoots.contains(root)) {
+                dbById(id.first)
+            }
         }
         val globalDBsCopy = globalDBs.toMap()
         for ((id, _) in globalDBsCopy) {

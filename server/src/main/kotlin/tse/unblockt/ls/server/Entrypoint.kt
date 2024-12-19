@@ -6,6 +6,7 @@ import kotlinx.coroutines.runBlocking
 import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.core.config.Configurator
 import org.apache.logging.log4j.core.config.builder.api.ConfigurationBuilderFactory
+import org.apache.logging.log4j.kotlin.logger
 import tse.unblockt.ls.protocol.LanguageClient
 import tse.unblockt.ls.protocol.runLanguageServer
 import tse.unblockt.ls.rpc.Transport
@@ -19,6 +20,8 @@ private const val PRODUCT_NAME = "Unblockt"
 
 fun main(args: Array<String>) {
     configureLogger(Paths.get(args.first()))
+    logger("entrypoint").info("Starting language server...")
+
     runBlocking {
         runLanguageServer(PRODUCT_NAME, Transport.StdIO, LanguageClient.Factory.Default) { client ->
             KotlinLanguageServer(client)
@@ -45,7 +48,7 @@ private fun configureLogger(path: Path) {
             ).addComponent(builder.newComponent("DefaultRolloverStrategy")
                 .addAttribute("max", "10"))
     )
-    val rootLogger = builder.newRootLogger(Level.WARN)
+    val rootLogger = builder.newRootLogger(Level.INFO)
     rootLogger.add(builder.newAppenderRef("ROLLING"))
     builder.add(rootLogger)
     Configurator.initialize(builder.build())

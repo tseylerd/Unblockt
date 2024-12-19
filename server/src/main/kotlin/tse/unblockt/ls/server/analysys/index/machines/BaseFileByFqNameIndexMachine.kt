@@ -37,7 +37,6 @@ abstract class BaseFileByFqNameIndexMachine(project: Project) : IndexMachine<Str
             val decoded = Json.decodeFromString<LightFileEntry>(str)
             decoded.asIndexFileEntry(fileSystem, psiCache, stubCache)
         },
-        config = DB.Store.Config.UNIQUE_KEY_VALUE,
     )
 
     override fun index(entry: IndexFileEntry): List<Pair<String, IndexFileEntry>> {

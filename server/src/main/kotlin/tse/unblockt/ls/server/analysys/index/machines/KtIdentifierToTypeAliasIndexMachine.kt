@@ -7,12 +7,10 @@ import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtTypeAlias
 import tse.unblockt.ls.server.analysys.index.common.IndexFileEntry
 import tse.unblockt.ls.server.analysys.index.model.PsiEntry
-import tse.unblockt.ls.server.analysys.storage.DB
 import tse.unblockt.ls.server.analysys.storage.PersistentStorage
 
 class KtIdentifierToTypeAliasIndexMachine(project: Project): PsiIndexMachine<String, KtTypeAlias>(
     KtTypeAlias::class,
-    config = DB.Store.Config.UNIQUE_KEY_VALUE,
     attributeName = "expansion_short_name_to_type_alias",
     project
 ) {

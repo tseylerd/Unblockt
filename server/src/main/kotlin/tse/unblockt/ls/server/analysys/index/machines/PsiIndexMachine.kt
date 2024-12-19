@@ -19,7 +19,6 @@ import kotlin.reflect.KClass
 
 abstract class PsiIndexMachine<K: Any, V: PsiElement>(
     private val clazz: KClass<V>,
-    config: DB.Store.Config,
     attributeName: String,
     project: Project,
 ): IndexMachine<K, PsiEntry<V>> {
@@ -45,7 +44,6 @@ abstract class PsiIndexMachine<K: Any, V: PsiElement>(
             val found = lfe.heavy(fileSystem, psiCache, stubCache)?.find(clazz) ?: return@Attribute null
             PsiEntry(lfe, found)
         },
-        config = config,
     )
 
     override fun index(entry: IndexFileEntry): List<Pair<K, PsiEntry<V>>> {

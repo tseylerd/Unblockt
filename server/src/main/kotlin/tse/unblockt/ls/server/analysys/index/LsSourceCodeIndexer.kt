@@ -3,6 +3,7 @@
 package tse.unblockt.ls.server.analysys.index
 
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import tse.unblockt.ls.server.analysys.index.machines.IndexMachine
 import tse.unblockt.ls.server.analysys.index.stub.IndexModel
@@ -14,6 +15,8 @@ interface LsSourceCodeIndexer {
             return project.getService(LsSourceCodeIndexer::class.java)
         }
     }
+
+    val builtins: Collection<VirtualFile>
 
     operator fun <K: Any, V: Any, I: IndexMachine<K, V>> get(clazz: KClass<I>): I
 

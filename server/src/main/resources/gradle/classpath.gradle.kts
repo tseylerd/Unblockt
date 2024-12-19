@@ -51,7 +51,7 @@ gradle.projectsEvaluated {
                     }
                 }
                 val extensionVersion = kotlinExtension.extensionVersion
-                if (extensionVersion == "2.1.0") {
+                if (isNewVersion(extensionVersion)) {
                     val binaryDependenciesResolverRef = binaryDependenciesResolverRef(this)
                     val binaryDeps = binaryDependenciesResolverRef.resolveRef(kss)
                     printDependencies(binaryDeps)
@@ -59,6 +59,24 @@ gradle.projectsEvaluated {
             }
         }
     }
+}
+
+fun isNewVersion(version: String?): Boolean {
+    version ?: return false
+    val split = version.split('.')
+    if (split.size != 3) {
+        return false
+    }
+
+    val (major, minor, patch) = split.map { str ->
+        kotlin.runCatching {
+            str.toInt()
+        }.getOrNull()
+    }
+    major ?: return false
+    minor ?: return false
+
+    return major == 2 && minor >= 1 || major > 2
 }
 
 fun printDependencies(deps: Set<Any>) {

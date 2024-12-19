@@ -101,6 +101,10 @@ class ShardedRouter(private val project: Project, private val root: Path, privat
         return all
     }
 
+    override fun dbsToDeleteByMeta(meta: String): Collection<DB> {
+        return all
+    }
+
     override fun dbsByKey(key: String): Collection<DB> {
         val bucket = abs(key.hashCode() % shards)
         return listOf(dbs[bucket]!!)

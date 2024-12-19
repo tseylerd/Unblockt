@@ -15,11 +15,18 @@ class PersistentStorage(
     private val project: Project,
     private val workspaceStorage: Path,
     private val globalStorage: Path,
-    private val projectRoot: Path
+    private val projectRoot: Path,
+    private val allLibrariesRoots: Collection<String>,
 ): Disposable {
     private var db = createDB()
 
-    private fun createDB() = RouterDB(LocalGlobalRouter(project, projectRoot, workspaceStorage, globalStorage))
+    private fun createDB() = RouterDB(LocalGlobalRouter(
+        project,
+        projectRoot,
+        workspaceStorage,
+        globalStorage,
+        allLibrariesRoots,
+    ))
 
     private var forciblyValid: Boolean = false
 
@@ -43,13 +50,15 @@ class PersistentStorage(
             workspaceStoragePath: Path,
             globalStoragePath: Path,
             project: Project,
-            projectRoot: Path
+            projectRoot: Path,
+            allLibrariesRoots: Set<String>,
         ): PersistentStorage {
             return PersistentStorage(
                 project,
                 workspaceStoragePath,
                 globalStoragePath,
-                projectRoot
+                projectRoot,
+                allLibrariesRoots,
             )
         }
     }
@@ -62,7 +71,7 @@ class PersistentStorage(
 
     fun init(namespace: Namespace, attribute: DB.Attribute<*, *, *>) {
         val attributed = namespace.attributed(attribute)
-        db.init(attributed.name, attribute.config)
+        db.init(attributed.name)
     }
 
     fun freeze() {
@@ -124,30 +133,21 @@ class PersistentStorage(
     }
 
     fun <K: Any, V: Any> put(namespace: Namespace, attribute: DB.Attribute<String, K, V>, source: String, key: K, value: V) {
-        db.inTx {
-            val attributed = namespace.attributed(attribute)
-            val store = store(attributed.name, attribute)
-            store.put(source, key, value)
-        }
+        val attributed = namespace.attributed(attribute)
+        db.put(attributed.name, attribute, source, key, value)
     }
 
     fun <K: Any, V: Any> putAll(namespace: Namespace, attribute: DB.Attribute<String, K, V>, triples: Set<Triple<String, K, V>>) {
-        db.inTx {
-            val attributed = namespace.attributed(attribute)
-            val store = store(attributed.name, attribute)
-            store.putAll(triples)
-        }
+        val attributed = namespace.attributed(attribute)
+        db.putAll(attributed.name, attribute, triples)
     }
 
     fun <K: Any, V: Any> getSequence(namespace: Namespace, attribute: DB.Attribute<String, K, V>): Sequence<Pair<K, V>> {
         return sequence {
             safely {
-                db.inTx {
-                    val store = store(namespace.attributed(attribute).name, attribute)
-                    val all = store.all()
-                    for (p in all) {
-                        yield(p)
-                    }
+                val all = db.all(namespace.attributed(attribute).name, attribute)
+                for (p in all) {
+                    yield(p)
                 }
             }
         }
@@ -156,13 +156,10 @@ class PersistentStorage(
     fun <K: Any, V: Any> getSequenceOfKeys(namespace: Namespace, attribute: DB.Attribute<String, K, V>): Sequence<K> {
         return sequence {
             safely {
-                db.inTx {
-                    val store = store(namespace.attributed(attribute).name, attribute)
-                    val allKeys = store.allKeys()
+                    val allKeys = db.allKeys(namespace.attributed(attribute).name, attribute)
                     for (key in allKeys) {
                         yield(key)
                     }
-                }
             }
         }
     }
@@ -170,11 +167,9 @@ class PersistentStorage(
     fun <K: Any, V: Any> getSequenceOfValues(namespace: Namespace, attribute: DB.Attribute<String, K, V>): Sequence<V> {
         return sequence {
             safely {
-                db.inTx {
-                    val seq = store(namespace.attributed(attribute).name, attribute).allValues()
-                    for (v in seq) {
-                        yield(v)
-                    }
+                val seq = db.allValues(namespace.attributed(attribute).name, attribute)
+                for (v in seq) {
+                    yield(v)
                 }
             }
         }
@@ -183,11 +178,9 @@ class PersistentStorage(
     fun <K: Any, V: Any> getSequence(namespace: Namespace, attribute: DB.Attribute<String, K, V>, key: K): Sequence<V> {
         return sequence {
             safely {
-                db.inTx {
-                    val store = store(namespace.attributed(attribute).name, attribute)
-                    for (value in store.values(key)) {
-                        yield(value)
-                    }
+                val values = db.values(namespace.attributed(attribute).name, attribute, key)
+                for (value in values) {
+                    yield(value)
                 }
             }
         }
@@ -195,19 +188,13 @@ class PersistentStorage(
 
     fun <K: Any, V: Any> exists(namespace: Namespace, attribute: DB.Attribute<String, K, V>, key: K): Boolean {
         return safely {
-            db.inTx {
-                val store = store(namespace.attributed(attribute).name, attribute)
-                store.exists(key)
-            }
+            db.exists(namespace.attributed(attribute).name, attribute, key)
         } ?: false
     }
 
     fun delete(namespace: Namespace, attribute: DB.Attribute<String, *, *>, source: String) {
-        db.inTx {
-            val attributed = namespace.attributed(attribute)
-            val store = store(attributed.name, attribute)
-            store.deleteByMeta(source)
-        }
+        val attributed = namespace.attributed(attribute)
+        db.deleteByMeta(attributed.name, attribute, source)
     }
 
     override fun dispose() {
@@ -269,7 +256,6 @@ class PersistentStorage(
             valueToString = { it.toString() },
             stringToKey = { _, str -> str },
             stringToValue = { _, str -> str.toBoolean() },
-            config = DB.Store.Config.SINGLE,
             forceLocal = true,
         )
         const val KEY = "inProgress"

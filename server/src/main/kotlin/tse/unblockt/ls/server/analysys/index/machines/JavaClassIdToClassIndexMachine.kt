@@ -7,12 +7,10 @@ import com.intellij.psi.PsiClass
 import org.jetbrains.kotlin.analysis.utils.classId
 import tse.unblockt.ls.server.analysys.index.common.IndexFileEntry
 import tse.unblockt.ls.server.analysys.index.model.PsiEntry
-import tse.unblockt.ls.server.analysys.storage.DB
 import tse.unblockt.ls.server.analysys.storage.PersistentStorage
 
 class JavaClassIdToClassIndexMachine(project: Project): PsiIndexMachine<String, PsiClass>(
     PsiClass::class,
-    config = DB.Store.Config.UNIQUE_KEY_VALUE,
     attributeName = "class_id_to_top_class",
     project = project
 ) {

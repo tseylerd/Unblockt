@@ -8,12 +8,10 @@ import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.psiUtil.isTopLevelKtOrJavaMember
 import tse.unblockt.ls.server.analysys.index.common.IndexFileEntry
 import tse.unblockt.ls.server.analysys.index.model.PsiEntry
-import tse.unblockt.ls.server.analysys.storage.DB
 import tse.unblockt.ls.server.analysys.storage.PersistentStorage
 
 class KtPackageToTopLevelClassIndexMachine(project: Project): PsiIndexMachine<String, KtClassLikeDeclaration>(
     KtClassLikeDeclaration::class,
-    config = DB.Store.Config.UNIQUE_KEY_VALUE,
     attributeName = "package_to_top_level_class",
     project
 ) {

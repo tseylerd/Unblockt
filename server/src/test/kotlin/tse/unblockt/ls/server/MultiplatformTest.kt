@@ -29,4 +29,11 @@ class MultiplatformTest {
             complete()
         }
     }
+
+    @Test
+    fun materCompletionItems(info: TestInfo) = rkTest {
+        simulateClient(testMultiplatformProjectPath, info) {
+            completionItems()
+        }
+    }
 }

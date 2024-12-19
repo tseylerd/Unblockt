@@ -8,12 +8,10 @@ import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.psi.*
 import tse.unblockt.ls.server.analysys.index.common.IndexFileEntry
 import tse.unblockt.ls.server.analysys.index.model.PsiEntry
-import tse.unblockt.ls.server.analysys.storage.DB
 import tse.unblockt.ls.server.analysys.storage.PersistentStorage
 
 class KtReceiverToExtensionIndexMachine(project: Project): PsiIndexMachine<String, KtCallableDeclaration>(
     KtCallableDeclaration::class,
-    config = DB.Store.Config.UNIQUE_KEY_VALUE,
     attributeName = "receiver_to_extension",
     project
 ) {

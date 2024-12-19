@@ -14,16 +14,10 @@ class RouterDB(val router: Router): FreezeableDB {
         return router.init()
     }
 
-    override fun init(name: String, config: DB.Store.Config) {
+    override fun init(name: String) {
         router.all.forEach {
-            it.init(name, config)
+            it.init(name)
         }
-    }
-
-    override fun tx(): DB.Tx {
-        return RouterTx(
-            router
-        )
     }
 
     override fun delete() {
@@ -47,162 +41,94 @@ class RouterDB(val router: Router): FreezeableDB {
         router.close()
     }
 
-    private class RouterTx(private val router: Router): DB.Tx {
-        private val txs = mutableMapOf<DB, DB.Tx>()
-        private val stores = mutableMapOf<Pair<DB.Tx, DB.Attribute<*, *, *>>, DB.Store<Any, Any, Any>>()
-
-        override val isFinished: Boolean
-            get() = txs.values.all { it.isFinished }
-
-        override fun commit(): Boolean {
-            txs.values.forEach {
-                it.commit()
-            }
-            return true
-        }
-
-        override fun put(key: String, value: String) {
-            router.metadataDB.exclusively { db ->
-                val str = db.atomicString(key).createOrOpen()
-                str.set(value)
-            }
-        }
-
-        override fun get(key: String): String? {
-            return router.metadataDB.read { db ->
-                val atomicString = db.atomicString(key).createOrOpen()
-                atomicString.get()
-            }
-        }
-
-        @Suppress("UNCHECKED_CAST")
-        override fun <M : Any, K : Any, V : Any> store(
-            name: String,
-            attribute: DB.Attribute<M, K, V>
-        ): DB.Store<M, K, V> {
-            return RouterStore(
-                router = object : StoreRouter<M, K, V> {
-                    override val dbRouter: Router
-                        get() = router
-
-                    override val all: Collection<DB.Store<M, K, V>>
-                        get() = dbsToStores(router.all)
-
-                    override fun storesByKey(key: String): Collection<DB.Store<M, K, V>> {
-                        val dbsByMeta = router.dbsByKey(key)
-                        return dbsToStores(dbsByMeta)
-                    }
-
-                    override fun storesByMeta(meta: String): Collection<DB.Store<M, K, V>> {
-                        val dbsByMeta = router.dbsByMeta(meta)
-                        return dbsToStores(dbsByMeta)
-                    }
-
-                    override fun storeToPut(attribute: DB.Attribute<M, K, V>, meta: String, key: String): DB.Store<M, K, V> {
-                        return dbsToStores(listOf(router.dbToPut(attribute, meta, key))).single()
-                    }
-
-                    private fun dbsToStores(dbsByMeta: Collection<DB>) =
-                        dbsByMeta.map { db ->
-                            val tx = txs.computeIfAbsent(db) {
-                                it.tx()
-                            }
-                            stores.computeIfAbsent(tx to attribute) {
-                                tx.store(name, attribute) as DB.Store<Any, Any, Any>
-                            } as DB.Store<M, K, V>
-                        }
-                },
-                attribute = attribute,
-            )
-        }
-
-        override fun revert() {
-            txs.values.forEach {
-                it.revert()
-            }
-        }
-
-        override fun abort() {
-            txs.values.forEach {
-                it.abort()
-            }
+    override fun put(key: String, value: String) {
+        router.metadataDB.exclusively { db ->
+            val str = db.atomicString(key).createOrOpen()
+            str.set(value)
         }
     }
 
-    private class RouterStore<M: Any, K: Any, V: Any>(
-        private val router: StoreRouter<M, K, V>,
-        private val attribute: DB.Attribute<M, K, V>,
-    ): DB.Store<M, K, V> {
-        override fun putAll(triples: Set<Triple<M, K, V>>) {
-            val triplesByStores = triples.groupBy { triple ->
-                val meta = triple.first
-                val key = triple.second
-                val metaStr = attribute.metaToString(meta)
-                val keyStr = attribute.keyToString(key)
-                val stores = router.storeToPut(attribute, metaStr, keyStr)
-                stores
-            }
-            for ((store, tpls) in triplesByStores) {
-                store.putAll(tpls.toSet())
-            }
+    override fun get(key: String): String? {
+        return router.metadataDB.read { db ->
+            val atomicString = db.atomicString(key).createOrOpen()
+            atomicString.get()
         }
+    }
 
-        override fun put(meta: M, key: K, value: V) {
+    override fun <M : Any, K : Any, V : Any> put(
+        name: String,
+        attribute: DB.Attribute<M, K, V>,
+        meta: M,
+        key: K,
+        value: V
+    ) {
+        val metaStr = attribute.metaToString(meta)
+        val keyStr = attribute.keyToString(key)
+        router.dbToPut(attribute, metaStr, keyStr).put(name, attribute, meta, key, value)
+    }
+
+    override fun <M : Any, K : Any, V : Any> putAll(
+        name: String,
+        attribute: DB.Attribute<M, K, V>,
+        triples: Set<Triple<M, K, V>>
+    ) {
+        triples.groupBy { (meta, key, _) ->
             val metaStr = attribute.metaToString(meta)
             val keyStr = attribute.keyToString(key)
-            val store = router.storeToPut(attribute, metaStr, keyStr)
-            store.put(meta, key, value)
-        }
-
-        override fun allKeys(): Sequence<K> {
-            return router.all.asSequence().flatMap { it.allKeys() }
-        }
-
-        override fun allValues(): Sequence<V> {
-            return router.all.asSequence().flatMap { it.allValues() }
-        }
-
-        override fun all(): Sequence<Pair<K, V>> {
-            return router.all.asSequence().flatMap { it.all() }
-        }
-
-        override fun sequence(): Sequence<Triple<M, K, V>> {
-            return router.all.asSequence().flatMap { it.sequence() }
-        }
-
-        override fun metas(): Sequence<M> {
-            return router.all.asSequence().flatMap { it.metas() }
-        }
-
-        override fun exists(key: K): Boolean {
-            return router.storesByKey(attribute.keyToString(key)).any { it.exists(key) }
-        }
-
-        override fun mayContain(key: K): Boolean {
-            return router.all.any { it.mayContain(key) }
-        }
-
-        override fun deleteByMeta(meta: M) {
-            if (!router.dbRouter.supportsDeletionByMeta) {
-                return
-            }
-
-            val metaStr = attribute.metaToString(meta)
-            router.storesByMeta(metaStr).forEach { it.deleteByMeta(meta) }
-        }
-
-        override fun values(key: K): Sequence<V> {
-            return router.storesByKey(attribute.keyToString(key)).asSequence().flatMap { it.values(key) }
+            router.dbToPut(attribute, metaStr, keyStr)
+        }.forEach { (db, triples) ->
+            db.putAll(name, attribute, triples.toSet())
         }
     }
 
-    private interface StoreRouter<M: Any, K: Any, V: Any> {
-        val dbRouter: Router
-        val all: Collection<DB.Store<M, K, V>>
+    override fun <M : Any, K : Any, V : Any> allValues(name: String, attribute: DB.Attribute<M, K, V>): Sequence<V> {
+        return router.all.asSequence().flatMap { it.allValues(name, attribute) }
+    }
 
-        fun storesByMeta(meta: String): Collection<DB.Store<M, K, V>>
-        fun storeToPut(attribute: DB.Attribute<M, K, V>, meta: String, key: String): DB.Store<M, K, V>
-        fun storesByKey(key: String): Collection<DB.Store<M, K, V>>
+    override fun <M : Any, K : Any, V : Any> all(name: String, attribute: DB.Attribute<M, K, V>): Sequence<Pair<K, V>> {
+        return router.all.asSequence().flatMap { it.all(name, attribute) }
+    }
+
+    override fun <M : Any, K : Any, V : Any> allKeys(name: String, attribute: DB.Attribute<M, K, V>): Sequence<K> {
+        return router.all.asSequence().flatMap { it.allKeys(name, attribute) }
+    }
+
+    override fun <M : Any, K : Any, V : Any> values(
+        name: String,
+        attribute: DB.Attribute<M, K, V>,
+        key: K
+    ): Sequence<V> {
+        val keyStr = attribute.keyToString(key)
+        return router.dbsByKey(keyStr).asSequence().flatMap { it.values(name, attribute, key) }
+    }
+
+    override fun <M : Any, K : Any, V : Any> metas(name: String, attribute: DB.Attribute<M, K, V>): Sequence<M> {
+        return router.all.asSequence().flatMap { it.metas(name, attribute) }
+    }
+
+    override fun <M : Any, K : Any, V : Any> mayContain(
+        name: String,
+        attribute: DB.Attribute<M, K, V>,
+        key: K
+    ): Boolean {
+        return router.all.any { it.mayContain(name, attribute, key) }
+    }
+
+    override fun <M : Any, K : Any, V : Any> deleteByMeta(name: String, attribute: DB.Attribute<M, K, V>, meta: M) {
+        return router.dbsToDeleteByMeta(attribute.metaToString(meta)).forEach {
+            it.deleteByMeta(name, attribute, meta)
+        }
+    }
+
+    override fun <M : Any, K : Any, V : Any> exists(name: String, attribute: DB.Attribute<M, K, V>, key: K): Boolean {
+        return router.dbsByKey(attribute.keyToString(key)).any { it.exists(name, attribute, key) }
+    }
+
+    override fun <M : Any, K : Any, V : Any> sequence(
+        name: String,
+        attribute: DB.Attribute<M, K, V>
+    ): Sequence<Triple<M, K, V>> {
+        return router.all.asSequence().flatMap { it.sequence(name, attribute) }
     }
 
     interface Router: Closeable {
@@ -216,6 +142,7 @@ class RouterDB(val router: Router): FreezeableDB {
         fun init(): Wiped
 
         fun dbsByMeta(meta: String): Collection<DB>
+        fun dbsToDeleteByMeta(meta: String): Collection<DB>
         fun dbsByKey(key: String): Collection<DB>
         fun dbToPut(attribute: DB.Attribute<*, *, *>, meta: String, key: String): DB
 

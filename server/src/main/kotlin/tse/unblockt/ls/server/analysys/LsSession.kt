@@ -211,40 +211,47 @@ internal class LsSession(
             project.registerService(LsJavaPsiIndex::class.java, LsJavaPsiIndexImpl::class.java)
             project.registerService(LsSourceCodeIndexer::class.java, LsSourceCodeIndexerImpl::class.java)
             project.registerService(ProjectStructureManager::class.java, ProjectStructureManager(model.path))
+            project.registerService(LanguageMachinery.Kotlin::class.java, LanguageMachinery.Kotlin(project))
+            project.registerService(LanguageMachinery.Java::class.java, LanguageMachinery.Java(project))
+            project.registerService(BuildManager::class.java, BuildManager::class.java)
+
+            val libraryRoots: List<JavaRoot> = getAllBinaryRoots(
+                provider.allKtModules,
+                kotlinCoreProjectEnvironment,
+            )
+            val indexer = LsSourceCodeIndexer.instance(project)
+            val libRoots = libraryRoots.map { it.file }
+            val builtins = indexer.builtins
             val ps = PersistentStorage.create(
                 storagePath,
                 globalStoragePath,
                 project,
-                model.path
+                model.path,
+                (libRoots + builtins).map { it.url }.toSet()
             )
             Disposer.register(projectDisposable, ps)
 
             project.registerService(PersistentStorage::class.java, ps)
-            project.registerService(LanguageMachinery.Kotlin::class.java, LanguageMachinery.Kotlin(project))
-            project.registerService(LanguageMachinery.Java::class.java, LanguageMachinery.Java(project))
-            project.registerService(BuildManager::class.java, BuildManager::class.java)
 
             registerServicesForProjectEnvironment(
                 kotlinCoreProjectEnvironment,
                 jdkHome = model.javaHome,
             )
-            val libraryRoots: List<JavaRoot> = getAllBinaryRoots(
-                provider.allKtModules,
-                kotlinCoreProjectEnvironment,
-            )
             declarationProviderFactory = LsKotlinDeclarationProviderFactory(project)
 
             packageProviderFactory = IndexBasedKotlinPackageProviderFactory(project)
 
-            val indexer = LsSourceCodeIndexer.instance(project)
-            val libRoots = libraryRoots.map { it.file }
             val fileSystem = LsFileSystem.instance()
             val indexModel = IndexModel(
                 provider.allFiles.map { IndexModel.Entry(it.url, IndexModel.EntryProperties(fileSystem.getModificationStamp(it),
                     builtIns = false,
                     stub = false
                 )) }.toSet() +
-                libRoots.map { IndexModel.Entry(it.url, IndexModel.EntryProperties(it.timeStamp, false, stub = true)) }
+                libRoots.map {
+                    IndexModel.Entry(it.url, IndexModel.EntryProperties(fileSystem.getModificationStamp(it), false, stub = true))
+                } + builtins.map {
+                    IndexModel.Entry(it.url, IndexModel.EntryProperties(fileSystem.getModificationStamp(it), true, stub = true))
+                }
             )
             registerProjectServices(
                 packageProviderFactory,

@@ -26,10 +26,9 @@ class PersistentStorageTest {
             valueToString = { it.toString() },
             stringToKey = { _, str -> str.toLong() },
             stringToValue = { _, v -> v.toInt() },
-            config = DB.Store.Config.UNIQUE_KEY,
         )
 
-        private val ourDuplicatedAttribute = ourSimpleAttribute.copy(name = "duplicated", config = DB.Store.Config.UNIQUE_KEY_VALUE)
+        private val ourDuplicatedAttribute = ourSimpleAttribute.copy(name = "duplicated")
     }
 
     @OptIn(ExperimentalPathApi::class)

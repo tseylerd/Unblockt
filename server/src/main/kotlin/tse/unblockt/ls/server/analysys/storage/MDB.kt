@@ -3,6 +3,7 @@
 package tse.unblockt.ls.server.analysys.storage
 
 import com.intellij.openapi.project.Project
+import org.apache.logging.log4j.kotlin.logger
 import org.eclipse.collections.impl.map.mutable.ConcurrentHashMap
 import org.mapdb.DBMaker
 import org.mapdb.Serializer
@@ -57,10 +58,16 @@ class MDB(private val project: Project, private val root: Path, private val appe
             return try {
                 maker()
             } catch (t: Throwable) {
+                logger.warn("Wiping mdb: path=$dbPath, message=${t.message}")
+
                 if (dbPath.exists()) {
                     dbPath.deleteRecursively()
                 }
-                dbPath.parent.createDirectories()
+                val parent = dbPath.parent
+                if (!parent.exists()) {
+                    parent.createDirectories()
+                }
+
                 maker()
             }
         }
@@ -85,11 +92,82 @@ class MDB(private val project: Project, private val root: Path, private val appe
         return Wiped(false)
     }
 
-    override fun init(name: String, config: DB.Store.Config) {
+    override fun init(name: String) {
     }
 
-    override fun tx(): DB.Tx {
-        return MapTx(project, db, stores, appendOnly)
+    override fun put(key: String, value: String) {
+        val atomicString = db.atomicString(key).createOrOpen()
+        atomicString.set(value)
+    }
+
+    override fun get(key: String): String? {
+        val atomicString = db.atomicString(key).createOrOpen()
+        return atomicString.get()
+    }
+
+    override fun <M : Any, K : Any, V : Any> put(
+        name: String,
+        attribute: DB.Attribute<M, K, V>,
+        meta: M,
+        key: K,
+        value: V
+    ) {
+        store(name, attribute).put(meta, key, value)
+    }
+
+    override fun <M : Any, K : Any, V : Any> putAll(
+        name: String,
+        attribute: DB.Attribute<M, K, V>,
+        triples: Set<Triple<M, K, V>>
+    ) {
+        store(name, attribute).putAll(triples)
+    }
+
+    override fun <M : Any, K : Any, V : Any> allValues(name: String, attribute: DB.Attribute<M, K, V>): Sequence<V> {
+        return store(name, attribute).allValues()
+    }
+
+    override fun <M : Any, K : Any, V : Any> all(name: String, attribute: DB.Attribute<M, K, V>): Sequence<Pair<K, V>> {
+        return store(name, attribute).all()
+    }
+
+    override fun <M : Any, K : Any, V : Any> allKeys(name: String, attribute: DB.Attribute<M, K, V>): Sequence<K> {
+        return store(name, attribute).allKeys()
+    }
+
+    override fun <M : Any, K : Any, V : Any> metas(name: String, attribute: DB.Attribute<M, K, V>): Sequence<M> {
+        return store(name, attribute).metas()
+    }
+
+    override fun <M : Any, K : Any, V : Any> mayContain(
+        name: String,
+        attribute: DB.Attribute<M, K, V>,
+        key: K
+    ): Boolean {
+        return store(name, attribute).mayContain(key)
+    }
+
+    override fun <M : Any, K : Any, V : Any> exists(name: String, attribute: DB.Attribute<M, K, V>, key: K): Boolean {
+        return store(name, attribute).exists(key)
+    }
+
+    override fun <M : Any, K : Any, V : Any> sequence(
+        name: String,
+        attribute: DB.Attribute<M, K, V>
+    ): Sequence<Triple<M, K, V>> {
+        return store(name, attribute).sequence()
+    }
+
+    override fun <M : Any, K : Any, V : Any> values(
+        name: String,
+        attribute: DB.Attribute<M, K, V>,
+        key: K
+    ): Sequence<V> {
+        return store(name, attribute).values(key)
+    }
+
+    override fun <M : Any, K : Any, V : Any> deleteByMeta(name: String, attribute: DB.Attribute<M, K, V>, meta: M) {
+        return store(name, attribute).deleteByMeta(meta)
     }
 
     override fun delete() {
@@ -102,72 +180,48 @@ class MDB(private val project: Project, private val root: Path, private val appe
         }
     }
 
-    private class MapTx(
-        private val project: Project,
-        private val db: MapDB,
-        private val stores: ConcurrentHashMap<String, AbstractMapDBStore<*, *, *>>,
-        private val appendOnly: Boolean,
-    ): DB.Tx {
-        override fun commit(): Boolean {
-            finished = true
-            return true
-        }
-
-        private var finished = false
-
-        override val isFinished: Boolean
-            get() = finished
-
-        override fun put(key: String, value: String) {
-            val atomicString = db.atomicString(key).createOrOpen()
-            atomicString.set(value)
-        }
-
-        override fun get(key: String): String? {
-            val atomicString = db.atomicString(key).createOrOpen()
-            return atomicString.get()
-        }
-
-        override fun <M: Any, K : Any, V : Any> store(name: String, attribute: DB.Attribute<M, K, V>): DB.Store<M, K, V> {
-            @Suppress("UNCHECKED_CAST")
-            return stores.computeIfAbsent(name) {
-                val hashSet: NavigableSet<Array<Any?>> = db.treeSet(name)
-                    .serializer(SerializerArrayTuple(Serializer.STRING, Serializer.STRING, Serializer.STRING))
+    @Suppress("UNCHECKED_CAST")
+    private fun <M: Any, K : Any, V : Any> store(name: String, attribute: DB.Attribute<M, K, V>): AbstractMapDBStore<M, K, V> {
+        return stores.computeIfAbsent(name) {
+            val hashSet: NavigableSet<Array<Any?>> = db.treeSet(name)
+                .serializer(SerializerArrayTuple(Serializer.STRING, Serializer.STRING, Serializer.STRING))
+                .createOrOpen()
+            if (appendOnly) {
+                val allKeys = db.hashSet("${name}_all_keys")
+                    .serializer(Serializer.STRING)
                     .createOrOpen()
-                if (appendOnly) {
-                    val allKeys = db.hashSet("${name}_all_keys")
-                        .serializer(Serializer.STRING)
-                        .createOrOpen()
-                    return@computeIfAbsent MapDBAppendOnlyStore(project, hashSet, allKeys, attribute)
-                }
-                val byMetaSet: NavigableSet<Array<Any?>> = db.treeSet("${name}_by_meta")
-                    .serializer(SerializerArrayTuple(Serializer.STRING, Serializer.STRING, Serializer.STRING, Serializer.STRING))
-                    .createOrOpen()
-                MapDBStore(project, attribute, byMetaSet, hashSet)
-            } as DB.Store<M, K, V>
-        }
-
-        override fun revert() {
-        }
-
-        override fun abort() {
-            finished = true
-        }
+                return@computeIfAbsent MapDBAppendOnlyStore(project, hashSet, allKeys, attribute)
+            }
+            val byMetaSet: NavigableSet<Array<Any?>> = db.treeSet("${name}_by_meta")
+                .serializer(SerializerArrayTuple(Serializer.STRING, Serializer.STRING, Serializer.STRING, Serializer.STRING))
+                .createOrOpen()
+            MapDBStore(project, attribute, byMetaSet, hashSet)
+        } as AbstractMapDBStore<M, K, V>
     }
 
     private abstract class AbstractMapDBStore<M: Any, K : Any, V : Any>(
         protected val project: Project,
         protected val byKeySet: NavigableSet<Array<Any?>>,
         protected val attribute: DB.Attribute<M, K, V>,
-    ): DB.Store<M, K, V> {
+    ) {
 
-        override fun allValues(): Sequence<V> {
+        abstract fun mayContain(key: K): Boolean
+        abstract fun putAll(triples: Set<Triple<M, K, V>>)
+        abstract fun put(meta: M, key: K, value: V)
+        abstract fun allKeys(): Sequence<K>
+
+        abstract fun sequence(): Sequence<Triple<M, K, V>>
+        abstract fun metas(): Sequence<M>
+        abstract fun deleteByMeta(meta: M)
+        abstract fun exists(key: K): Boolean
+
+        fun allValues(): Sequence<V> {
             return byKeySet.asSequence().mapNotNull { any ->
                 attribute.stringToValue(project, any.valueFromPair)
             }.distinct()
         }
 
-        override fun all(): Sequence<Pair<K, V>> {
+        fun all(): Sequence<Pair<K, V>> {
             return byKeySet.asSequence().mapNotNull { any ->
                 val key = attribute.stringToKey(project, any.keyFromPair) ?: return@mapNotNull null
                 val value = attribute.stringToValue(project, any.valueFromPair) ?: return@mapNotNull null
@@ -175,7 +229,7 @@ class MDB(private val project: Project, private val root: Path, private val appe
             }.distinct()
         }
 
-        override fun values(key: K): Sequence<V> {
+        fun values(key: K): Sequence<V> {
             if (!mayContain(key)) {
                 return emptySequence()
             }
@@ -254,13 +308,13 @@ class MDB(private val project: Project, private val root: Path, private val appe
         val byMetaSet: NavigableSet<Array<Any?>>,
         byKeySet: NavigableSet<Array<Any?>>,
     ): AbstractMapDBStore<M, K, V>(project, byKeySet, attribute) {
+        override fun mayContain(key: K): Boolean {
+            return true
+        }
+
         override fun exists(key: K): Boolean {
             val keyAsStr = attribute.keyToString(key)
             return byKeySet.subSet(arrayOf(keyAsStr), arrayOf(keyAsStr, null, null)).isNotEmpty()
-        }
-
-        override fun mayContain(key: K): Boolean {
-            return true
         }
 
         override fun allKeys(): Sequence<K> {

@@ -1,0 +1,210 @@
+{
+  "isIncomplete": false,
+  "items": [
+    {
+      "label": "AnimationEndReason",
+      "labelDetails": {
+        "detail": " androidx.compose.animation.core",
+        "description": "  AnimationEndReason"
+      },
+      "kind": 7,
+      "insertText": "androidx.compose.animation.core.AnimationEndReason",
+      "command": {
+        "title": "handleInsert",
+        "command": "handleInsert",
+        "arguments": [
+          {
+            "document": "file:///composeApp/src/commonMain/kotlin/tse/test/multiplatform/playground.kt",
+            "start": 160,
+            "end": 165,
+            "shortenReference": {
+              "packageName": "androidx.compose.animation.core",
+              "shortenName": "AnimationEndReason"
+            }
+          }
+        ]
+      },
+      "data": {
+        "document": "file:///composeApp/src/commonMain/kotlin/tse/test/multiplatform/playground.kt",
+        "start": 160,
+        "end": 165,
+        "shortenReference": {
+          "packageName": "androidx.compose.animation.core",
+          "shortenName": "AnimationEndReason"
+        }
+      },
+      "deprecated": false
+    },
+    {
+      "label": "ExperimentalMaterialApi",
+      "labelDetails": {
+        "detail": " androidx.compose.material",
+        "description": "  ExperimentalMaterialApi"
+      },
+      "kind": 7,
+      "insertText": "androidx.compose.material.ExperimentalMaterialApi",
+      "command": {
+        "title": "handleInsert",
+        "command": "handleInsert",
+        "arguments": [
+          {
+            "document": "file:///composeApp/src/commonMain/kotlin/tse/test/multiplatform/playground.kt",
+            "start": 160,
+            "end": 165,
+            "shortenReference": {
+              "packageName": "androidx.compose.material",
+              "shortenName": "ExperimentalMaterialApi"
+            }
+          }
+        ]
+      },
+      "data": {
+        "document": "file:///composeApp/src/commonMain/kotlin/tse/test/multiplatform/playground.kt",
+        "start": 160,
+        "end": 165,
+        "shortenReference": {
+          "packageName": "androidx.compose.material",
+          "shortenName": "ExperimentalMaterialApi"
+        }
+      },
+      "deprecated": false
+    },
+    {
+      "label": "MaterialTheme",
+      "labelDetails": {
+        "detail": " androidx.compose.material",
+        "description": "MaterialTheme"
+      },
+      "kind": 7,
+      "insertText": "androidx.compose.material.MaterialTheme",
+      "command": {
+        "title": "handleInsert",
+        "command": "handleInsert",
+        "arguments": [
+          {
+            "document": "file:///composeApp/src/commonMain/kotlin/tse/test/multiplatform/playground.kt",
+            "start": 160,
+            "end": 165,
+            "shortenReference": {
+              "packageName": "androidx.compose.material",
+              "shortenName": "MaterialTheme"
+            }
+          }
+        ]
+      },
+      "data": {
+        "document": "file:///composeApp/src/commonMain/kotlin/tse/test/multiplatform/playground.kt",
+        "start": 160,
+        "end": 165,
+        "shortenReference": {
+          "packageName": "androidx.compose.material",
+          "shortenName": "MaterialTheme"
+        }
+      },
+      "deprecated": false
+    },
+    {
+      "label": "MaterialTheme(colors: Colors, typography: Typography, shapes: Shapes, content: @Composable (() -> Unit))",
+      "labelDetails": {
+        "detail": " androidx.compose.material",
+        "description": "Unit"
+      },
+      "kind": 3,
+      "insertText": "androidx.compose.material.MaterialTheme { $0 }",
+      "insertTextFormat": 2,
+      "command": {
+        "title": "handleInsert",
+        "command": "handleInsert",
+        "arguments": [
+          {
+            "document": "file:///composeApp/src/commonMain/kotlin/tse/test/multiplatform/playground.kt",
+            "start": 160,
+            "end": 165,
+            "shortenReference": {
+              "packageName": "androidx.compose.material",
+              "shortenName": "MaterialTheme { $0 }"
+            }
+          }
+        ]
+      },
+      "data": {
+        "document": "file:///composeApp/src/commonMain/kotlin/tse/test/multiplatform/playground.kt",
+        "start": 160,
+        "end": 165,
+        "shortenReference": {
+          "packageName": "androidx.compose.material",
+          "shortenName": "MaterialTheme { $0 }"
+        }
+      },
+      "deprecated": false
+    },
+    {
+      "label": "SVGAnimatedPreserveAspectRatio",
+      "labelDetails": {
+        "detail": " org.w3c.dom.svg",
+        "description": "SVGAnimatedPreserveAspectRatio : kotlin.js.JsAny"
+      },
+      "kind": 7,
+      "insertText": "org.w3c.dom.svg.SVGAnimatedPreserveAspectRatio",
+      "command": {
+        "title": "handleInsert",
+        "command": "handleInsert",
+        "arguments": [
+          {
+            "document": "file:///composeApp/src/commonMain/kotlin/tse/test/multiplatform/playground.kt",
+            "start": 160,
+            "end": 165,
+            "shortenReference": {
+              "packageName": "org.w3c.dom.svg",
+              "shortenName": "SVGAnimatedPreserveAspectRatio"
+            }
+          }
+        ]
+      },
+      "data": {
+        "document": "file:///composeApp/src/commonMain/kotlin/tse/test/multiplatform/playground.kt",
+        "start": 160,
+        "end": 165,
+        "shortenReference": {
+          "packageName": "org.w3c.dom.svg",
+          "shortenName": "SVGAnimatedPreserveAspectRatio"
+        }
+      },
+      "deprecated": false
+    },
+    {
+      "label": "SVGAnimatedRect",
+      "labelDetails": {
+        "detail": " org.w3c.dom.svg",
+        "description": "SVGAnimatedRect : kotlin.js.JsAny"
+      },
+      "kind": 7,
+      "insertText": "org.w3c.dom.svg.SVGAnimatedRect",
+      "command": {
+        "title": "handleInsert",
+        "command": "handleInsert",
+        "arguments": [
+          {
+            "document": "file:///composeApp/src/commonMain/kotlin/tse/test/multiplatform/playground.kt",
+            "start": 160,
+            "end": 165,
+            "shortenReference": {
+              "packageName": "org.w3c.dom.svg",
+              "shortenName": "SVGAnimatedRect"
+            }
+          }
+        ]
+      },
+      "data": {
+        "document": "file:///composeApp/src/commonMain/kotlin/tse/test/multiplatform/playground.kt",
+        "start": 160,
+        "end": 165,
+        "shortenReference": {
+          "packageName": "org.w3c.dom.svg",
+          "shortenName": "SVGAnimatedRect"
+        }
+      },
+      "deprecated": false
+    }
+  ]
+}

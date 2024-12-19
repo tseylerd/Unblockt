@@ -7,12 +7,10 @@ import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtProperty
 import tse.unblockt.ls.server.analysys.index.common.IndexFileEntry
 import tse.unblockt.ls.server.analysys.index.model.PsiEntry
-import tse.unblockt.ls.server.analysys.storage.DB
 import tse.unblockt.ls.server.analysys.storage.PersistentStorage
 
 class KtPackageToTopLevelPropertyIndexMachine(project: Project): PsiIndexMachine<String, KtProperty>(
     KtProperty::class,
-    config = DB.Store.Config.UNIQUE_KEY_VALUE,
     attributeName = "package_to_top_level_property",
     project
 ) {

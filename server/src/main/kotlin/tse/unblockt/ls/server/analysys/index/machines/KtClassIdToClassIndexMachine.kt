@@ -8,12 +8,10 @@ import org.jetbrains.kotlin.psi.KtEnumEntry
 import org.jetbrains.kotlin.psi.KtFile
 import tse.unblockt.ls.server.analysys.index.common.IndexFileEntry
 import tse.unblockt.ls.server.analysys.index.model.PsiEntry
-import tse.unblockt.ls.server.analysys.storage.DB
 import tse.unblockt.ls.server.analysys.storage.PersistentStorage
 
 class KtClassIdToClassIndexMachine(project: Project): PsiIndexMachine<String, KtClassLikeDeclaration>(
     KtClassLikeDeclaration::class,
-    config = DB.Store.Config.UNIQUE_KEY_VALUE,
     attributeName = "class_id_to_class",
     project
 ) {

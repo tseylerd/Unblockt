@@ -1,11 +1,8 @@
-![Version Badge](https://img.shields.io/badge/version-0.0.1-red)
+![Version Badge](https://img.shields.io/badge/version-0.0.3-red)
 ![License Badge](https://img.shields.io/badge/license-PolyForm_Perimeter_License_1.0.0-green)
 ## Kotlin Language Support for Visual Studio Code
 **Note:** This extension is in its early stages and does not yet support all build systems or Kotlin features. It may also be unstable — please report any issues or unexpected behavior you experience.
-Currently:
-- Projects need to use Gradle as the build system.
-- The extension works best with small JVM projects and may be unstable or perform poorly on larger or multiplatform projects.
-- For more details, see the [limitations](#limitations) section.
+For more details, see the [limitations](#limitations) section.
 
 Your feedback is invaluable — please [report](https://github.com/tseylerd/Unblockt/issues) any issues you encounter.
 ## Getting started
@@ -48,7 +45,6 @@ Once indexing is complete, you're ready to code!
 - Only default source code locations are supported for source sets.
 - Code analysis for Gradle build scripts is not available.
 - Gradle Kotlin plugin version 2.1.0 or later is required for non-JVM projects.
-- The extension works best with small JVM projects and may be unstable or perform poorly on larger or multiplatform projects. Please report any issues encountered.
 
 ## Roadmap
 Future features will depend on user feedback. Currently planned:

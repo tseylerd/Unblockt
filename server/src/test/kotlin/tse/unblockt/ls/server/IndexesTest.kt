@@ -69,7 +69,7 @@ class IndexesTest {
     fun commonStorageRemainsOnLibraryDeletion(info: TestInfo) = rkTest {
         init(testProjectPath)
 
-        val metadataDB = testProjectPath.resolve(".unblockt").resolve("global").resolve(LibrariesRouter.CATALOGUE_DB)
+        val metadataDB = globalIndexPath.resolve(".unblockt").resolve("global").resolve(LibrariesRouter.CATALOGUE_DB)
         MDB.makeMetaDB(metadataDB).use { mdb ->
             val librariesMap = loadLibrariesMap(mdb)
 
@@ -95,7 +95,7 @@ class IndexesTest {
     fun librariesAreFrozenAfterIndexing(info: TestInfo) = rkTest {
         init(testProjectPath)
 
-        val metadataDB = testProjectPath.resolve(".unblockt").resolve("global").resolve(LibrariesRouter.CATALOGUE_DB)
+        val metadataDB = globalIndexPath.resolve(".unblockt").resolve("global").resolve(LibrariesRouter.CATALOGUE_DB)
         MDB.makeMetaDB(metadataDB).use { mdb ->
             val librariesMap = loadLibrariesMap(mdb)
             assertFalse { librariesMap.isEmpty() }
@@ -123,15 +123,11 @@ class IndexesTest {
         localDB.init()
         globalDB.init()
 
-        val savedVersionLocal = localDB.inTx {
-            get(VersionedDB.VERSION_KEY)
-        }?.toLong()
+        val savedVersionLocal = localDB.get(VersionedDB.VERSION_KEY)?.toLong()
 
         assertNotNull(savedVersionLocal, "Version is null")
 
-        val savedVersionGlobal = globalDB.inTx {
-            get(VersionedDB.VERSION_KEY)
-        }?.toLong()
+        val savedVersionGlobal = globalDB.get(VersionedDB.VERSION_KEY)?.toLong()
 
         assertNotNull(savedVersionGlobal, "Version is null")
 
@@ -162,24 +158,16 @@ class IndexesTest {
         after { localDBAfter.close() }
         after { globalDBAfter.close() }
 
-        val savedVersionLocalAfter = localDBAfter.inTx {
-            get(VersionedDB.VERSION_KEY)
-        }?.toLong()
-        val creationTimeLocalAfter = localDBAfter.inTx {
-            get(VersionedDB.CREATED_TIME_KEY)
-        }?.toLong()
+        val savedVersionLocalAfter = localDBAfter?.get(VersionedDB.VERSION_KEY)?.toLong()
+        val creationTimeLocalAfter = localDBAfter.get(VersionedDB.CREATED_TIME_KEY)?.toLong()
 
         assertNotNull(savedVersionLocalAfter, "Version is null")
         assertEquals(newVersion, savedVersionLocalAfter)
         assertNotNull(creationTimeLocalAfter, "CreationTime is null")
         assertTrue { creationTimeLocalAfter > timeNow }
 
-        val savedVersionGlobalAfter = globalDBAfter.inTx {
-            get(VersionedDB.VERSION_KEY)
-        }?.toLong()
-        val creationTimeGlobalAfter = globalDBAfter.inTx {
-            get(VersionedDB.CREATED_TIME_KEY)
-        }?.toLong()
+        val savedVersionGlobalAfter = globalDBAfter.get(VersionedDB.VERSION_KEY)?.toLong()
+        val creationTimeGlobalAfter = globalDBAfter.get(VersionedDB.CREATED_TIME_KEY)?.toLong()
 
         assertNotNull(savedVersionGlobalAfter, "Version is null")
         assertEquals(newVersion, savedVersionGlobalAfter)
@@ -204,9 +192,7 @@ class IndexesTest {
 
         assertFalse("Storage is wiped") { init.value }
 
-        val allKtPackages = localDB.inTx {
-            store(ktPackage.namespace.attributed(ktPackage.attribute).name, ktPackage.attribute).metas().toList()
-        }
+        val allKtPackages = localDB.metas(ktPackage.namespace.attributed(ktPackage.attribute).name, ktPackage.attribute).toList()
         assertFalse("Kotlin packages are empty") { allKtPackages.isEmpty() }
 
         for (meta in allKtPackages) {
@@ -214,9 +200,8 @@ class IndexesTest {
             assertTrue("Non-project kotlin source found in local storage: $meta") { withoutProtocol.startsWith(testMultiplatformProjectPath.toString()) }
         }
 
-        val allJavaPackages = localDB.inTx {
-            store(javaPackage.namespace.attributed(javaPackage.attribute).name, javaPackage.attribute).sequence().toList()
-        }
+        val allJavaPackages = localDB.sequence(javaPackage.namespace.attributed(javaPackage.attribute).name, javaPackage.attribute).toList()
+
         assertTrue("Java packages in local storage exist") { allJavaPackages.isEmpty() }
     }
 
@@ -238,9 +223,7 @@ class IndexesTest {
 
         assertFalse("Storage wiped") { wiped.value }
 
-        val allKtPackages = globalDB.inTx {
-            store(ktPackage.namespace.attributed(ktPackage.attribute).name, ktPackage.attribute).metas().toList()
-        }
+        val allKtPackages = globalDB.metas(ktPackage.namespace.attributed(ktPackage.attribute).name, ktPackage.attribute).toList()
         assertFalse("Kotlin packages are empty") { allKtPackages.isEmpty() }
 
         for (meta in allKtPackages) {
@@ -248,9 +231,7 @@ class IndexesTest {
             assertFalse("Local kotlin source found in global storage: $meta") { withoutProtocol.startsWith(testMultiplatformProjectPath.toString()) }
         }
 
-        val allJavaPackages = globalDB.inTx {
-            store(javaPackage.namespace.attributed(javaPackage.attribute).name, javaPackage.attribute).metas().toList()
-        }
+        val allJavaPackages = globalDB.metas(javaPackage.namespace.attributed(javaPackage.attribute).name, javaPackage.attribute).toList()
         assertFalse("Java packages are empty") { allJavaPackages.isEmpty() }
         for (meta in allJavaPackages) {
             val withoutProtocol = meta.cutProtocol
@@ -260,9 +241,9 @@ class IndexesTest {
 
 
     private fun globalDB(root: Path): VersionedDB {
-        val globalDBPath = root.resolve(".unblockt").resolve("global")
+        val globalDBPath = globalIndexPath.resolve(".unblockt").resolve("global")
         val globalDB = VersionedDB {
-            RouterDB(LibrariesRouter(project, globalDBPath))
+            RouterDB(LibrariesRouter(project, globalDBPath, root, null))
         }
         return globalDB
     }

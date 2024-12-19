@@ -81,6 +81,9 @@ class LsSourceCodeIndexerImpl(private val project: Project): LsSourceCodeIndexer
     private val stubCache by lazy {
         LsStubCache.instance(project)
     }
+    override val builtins: Collection<VirtualFile> by lazy {
+        indexes.kotlinPsi.builtIns + indexes.javaPsi.builtIns
+    }
 
     init {
         GlobalFileState.subscribe(object : GlobalFileState.GlobalFileStateListener {
@@ -137,26 +140,13 @@ class LsSourceCodeIndexerImpl(private val project: Project): LsSourceCodeIndexer
     }
 
     override suspend fun updateIndexes(model: IndexModel) {
-        val builtIns = indexes.kotlinPsi.builtIns + indexes.javaPsi.builtIns
-        val modelWithBuiltIns = model.copy(
-            paths = model.paths + builtIns.map {
-                IndexModel.Entry(
-                    it.url, IndexModel.EntryProperties(
-                        fileSystem.getModificationStamp(it),
-                        builtIns = true,
-                        stub = true
-                    )
-                )
-            }.toSet()
-        )
-
         storage.validate()
 
         report("reading model...")
         val savedModel = storage.readModel()
         storage.sync {
             report("checking changes...")
-            val diff = computeDiff(modelWithBuiltIns, savedModel)
+            val diff = computeDiff(model, savedModel)
             for (entry in diff.delete) {
                 val sequence = filesSequence(entry).toSet()
                 if (sequence.isNotEmpty()) {
@@ -186,7 +176,7 @@ class LsSourceCodeIndexerImpl(private val project: Project): LsSourceCodeIndexer
 
             freeze()
         }
-        loadAllStubs(modelWithBuiltIns)
+        loadAllStubs(model)
     }
 
     private suspend fun loadAllStubs(modelWithBuiltIns: IndexModel) {

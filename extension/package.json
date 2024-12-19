@@ -8,7 +8,7 @@
   },
   "private": true,
   "publisher": "tseylerd",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "license": "SEE LICENSE IN LICENSE.md",
   "preview": true,
   "icon": "resources/extensionLogo.png",

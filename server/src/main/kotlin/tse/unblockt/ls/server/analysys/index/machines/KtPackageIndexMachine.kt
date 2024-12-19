@@ -19,7 +19,6 @@ class KtPackageIndexMachine : IndexMachine<String, Boolean>{
             valueToString = { it.toString() },
             stringToKey = { _, s -> s },
             stringToValue = { _, s -> s.toBoolean() },
-            config = DB.Store.Config.UNIQUE_RECORD
         )
     }
     override val attribute: DB.Attribute<String, String, Boolean>

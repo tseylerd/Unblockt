@@ -91,7 +91,11 @@ suspend fun RkTestEnvironment.init(path: Path) {
         InitializationRequestParameters(
             0,
             path.toAbsolutePath().normalize().toString(),
-            workDoneToken = ProgressToken("test")
+            workDoneToken = ProgressToken("test"),
+            initializationOptions = InitializationOptions(
+                storagePath = path.resolve(".unblockt").resolve("local").toAbsolutePath().normalize().toString(),
+                globalStoragePath = globalIndexPath.toAbsolutePath().normalize().toString()
+            )
         )
     )
     languageServer.initializer.initialized()
@@ -100,6 +104,9 @@ suspend fun RkTestEnvironment.init(path: Path) {
 
 val project: Project
     get() = DefaultProjectFactory.getInstance().defaultProject
+
+val globalIndexPath: Path
+    get() = Paths.get(".").resolve("testData").resolve("global_index")
 
 val testProjectPath: Path
     get() {

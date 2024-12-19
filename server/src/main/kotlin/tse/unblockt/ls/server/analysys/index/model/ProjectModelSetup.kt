@@ -19,7 +19,6 @@ object ProjectModelSetup {
         valueToString = { Json.encodeToString(it) },
         stringToKey = { _, str -> str },
         stringToValue = { _, str -> Json.decodeFromString(str) },
-        config = DB.Store.Config.UNIQUE_KEY,
         forceLocal = true,
     )
 }

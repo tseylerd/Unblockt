@@ -11,14 +11,15 @@ class LocalGlobalRouter(
     project: Project,
     projectPath: Path,
     localStoragePath: Path,
-    globalStoragePath: Path
+    globalStoragePath: Path,
+    allLibrariesRoots: Collection<String>,
 ): RouterDB.FreezableRouter {
     override val metadataDB: SafeDB
         get() = throw UnsupportedOperationException()
 
     private val projectPathString = projectPath.toString()
     private val localDB = VersionedDB { RouterDB(ShardedRouter(project, localStoragePath, false, 10)) }
-    internal val globalDB = VersionedDB { RouterDB(LibrariesRouter(project, globalStoragePath)) }
+    private val globalDB = VersionedDB { RouterDB(LibrariesRouter(project, globalStoragePath, projectPath, allLibrariesRoots)) }
 
     override val all: Collection<DB> = listOf(localDB, globalDB)
 
@@ -78,6 +79,10 @@ class LocalGlobalRouter(
             return localDB
         }
         return dbsByMeta(meta).single()
+    }
+
+    override fun dbsToDeleteByMeta(meta: String): Collection<DB> {
+        return dbsByMeta(meta)
     }
 
     override fun freeze() {

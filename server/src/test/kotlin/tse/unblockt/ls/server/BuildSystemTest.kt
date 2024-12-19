@@ -141,7 +141,7 @@ class BuildSystemTest {
                     contentChanges = listOf(
                         TextDocumentContentChangeEvent(
                             contentBefore,
-                            wholeText(contentBefore)
+                            wholeText(newContent)
                         )
                     )
                 )

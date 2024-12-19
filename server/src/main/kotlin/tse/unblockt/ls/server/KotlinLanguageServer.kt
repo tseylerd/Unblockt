@@ -7,6 +7,7 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromJsonElement
 import org.apache.logging.log4j.io.IoBuilder
+import org.apache.logging.log4j.kotlin.logger
 import org.jetbrains.kotlin.psi.KtFile
 import tse.unblockt.ls.protocol.*
 import tse.unblockt.ls.server.analysys.AnalysisEntrypoint
@@ -135,29 +136,43 @@ class KotlinLanguageServer(client: LanguageClient) : LanguageServer {
             get() = DEFAULT_INITIALIZATION_RESPONSE
 
         override suspend fun shutdown(): Any? {
+            logger.info("Received shutdown request")
+
             GlobalServerState.shutdown()
             return null
         }
 
         override suspend fun exit() {
+            logger.info("Received exit request")
+
             exitProcess(0)
         }
 
         override suspend fun initialize(params: InitializationRequestParameters): InitializationResponse {
+            logger.info("Received initialization request")
+            logger.info("Client: ${client.data.name}")
+
             if (client.data.name != "test") {
                 configureStdOut()
             }
 
             val rootPath = Paths.get(params.rootPath)
-            val indexPath = params.initializationOptions?.storagePath?.let { Paths.get(it) } ?: rootPath.resolve(".unblockt").resolve("local")
-            val globalIndexPath = params.initializationOptions?.globalStoragePath?.let { Paths.get(it).resolve(".unblockt").resolve("global") } ?: rootPath.resolve(".unblockt").resolve("global")
-            AnalysisEntrypoint.init(rootPath, indexPath, globalIndexPath)
+            val workspaceStoragePath = params.initializationOptions?.storagePath?.let { Paths.get(it) } ?: rootPath.resolve(".unblockt").resolve("local")
+            val globalStoragePath = params.initializationOptions?.globalStoragePath?.let { Paths.get(it).resolve(".unblockt").resolve("global") } ?: rootPath.resolve(".unblockt").resolve("global")
+            logger.info("Workspace storage path: $workspaceStoragePath")
+            logger.info("Global storage path: $globalStoragePath")
+
+            AnalysisEntrypoint.init(rootPath, workspaceStoragePath, globalStoragePath)
+            logger.info("Initialization finished")
+
             return DEFAULT_INITIALIZATION_RESPONSE
         }
 
         override suspend fun initialized() {
+            logger.info("Initialized notification received")
             GlobalServerState.initialized()
 
+            logger.info("Register didChangeWatchFiles capability")
             client.registerCapability {
                 data = RegistrationParams(
                     registrations = listOf(
@@ -175,11 +190,14 @@ class KotlinLanguageServer(client: LanguageClient) : LanguageServer {
                     )
                 )
             }
+            logger.info("Requesting tokens refresh")
             client.workspace {
                 semanticTokens {
                     refresh {}
                 }
             }
+
+            logger.info("Requesting diagnostics refresh")
             client.workspace {
                 diagnostic {
                     refresh {}

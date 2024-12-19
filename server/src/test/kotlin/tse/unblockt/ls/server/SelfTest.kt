@@ -80,6 +80,7 @@ class SelfTest {
                     text = Files.readString(Paths.get("$selfPath/server/src/main/kotlin/tse/unblockt/ls/server/analysys/LsSession.kt"))
                 )
             ))
+            languageServer.service.pollAllRequests()
         }
     }
 

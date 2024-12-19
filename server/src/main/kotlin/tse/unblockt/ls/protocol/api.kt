@@ -29,7 +29,6 @@ internal val mainScope: CoroutineScope
 suspend fun runLanguageServer(name: String, transport: Transport, clientFactory: LanguageClient.Factory, server: (LanguageClient) -> LanguageServer) {
     setupProperties()
 
-    Logging.logger.debug("Starting Language Server")
     val chan = Channel<RPCMethodCall<*, *>>(Channel.UNLIMITED)
     val receiveChannel = Channel<Any?>(Channel.UNLIMITED)
     val client = clientFactory.create {

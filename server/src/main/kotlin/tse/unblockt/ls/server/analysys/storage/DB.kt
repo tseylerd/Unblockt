@@ -17,46 +17,27 @@ interface DB: AutoCloseable {
     val isValid: Boolean
 
     val isClosed: Boolean
-    fun init(): Wiped
-    fun init(name: String, config: Store.Config)
 
-    fun tx(): Tx
+    fun init(): Wiped
+    fun init(name: String)
 
     fun delete()
 
-    interface Tx {
-        fun commit(): Boolean
-        val isFinished: Boolean
+    fun put(key: String, value: String)
+    fun get(key: String): String?
 
-        fun <M: Any, K: Any, V: Any> store(name: String, attribute: Attribute<M, K, V>): Store<M, K, V>
-        fun revert()
-        fun abort()
+    fun <M: Any, K: Any, V: Any> putAll(name: String, attribute: DB.Attribute<M, K, V>, triples: Set<Triple<M, K, V>>)
+    fun <M: Any, K: Any, V: Any> put(name: String, attribute: DB.Attribute<M, K, V>, meta: M, key: K, value: V)
+    fun <M: Any, K: Any, V: Any> allKeys(name: String, attribute: DB.Attribute<M, K, V>, ): Sequence<K>
+    fun <M: Any, K: Any, V: Any> allValues(name: String, attribute: DB.Attribute<M, K, V>, ): Sequence<V>
+    fun <M: Any, K: Any, V: Any> all(name: String, attribute: DB.Attribute<M, K, V>, ): Sequence<Pair<K, V>>
 
-        fun put(key: String, value: String)
-        fun get(key: String): String?
-    }
-
-    interface Store<M, K: Any, V: Any> {
-        fun putAll(triples: Set<Triple<M, K, V>>)
-        fun put(meta: M, key: K, value: V)
-        fun allKeys(): Sequence<K>
-        fun allValues(): Sequence<V>
-        fun all(): Sequence<Pair<K, V>>
-
-        fun sequence(): Sequence<Triple<M, K, V>>
-        fun metas(): Sequence<M>
-        fun values(key: K): Sequence<V>
-        fun deleteByMeta(meta: M)
-        fun exists(key: K): Boolean
-        fun mayContain(key: K): Boolean
-
-        enum class Config {
-            UNIQUE_KEY_VALUE,
-            UNIQUE_KEY,
-            UNIQUE_RECORD,
-            SINGLE
-        }
-    }
+    fun <M: Any, K: Any, V: Any> sequence(name: String, attribute: DB.Attribute<M, K, V>, ): Sequence<Triple<M, K, V>>
+    fun <M: Any, K: Any, V: Any> metas(name: String, attribute: DB.Attribute<M, K, V>, ): Sequence<M>
+    fun <M: Any, K: Any, V: Any> values(name: String, attribute: DB.Attribute<M, K, V>, key: K): Sequence<V>
+    fun <M: Any, K: Any, V: Any> deleteByMeta(name: String, attribute: DB.Attribute<M, K, V>, meta: M)
+    fun <M: Any, K: Any, V: Any> exists(name: String, attribute: DB.Attribute<M, K, V>, key: K): Boolean
+    fun <M: Any, K: Any, V: Any> mayContain(name: String, attribute: DB.Attribute<M, K, V>, key: K): Boolean
 
     data class Attribute<M: Any, K: Any, V: Any>(
         val name: String,
@@ -66,7 +47,6 @@ interface DB: AutoCloseable {
         val valueToString: (V) -> String,
         val stringToKey: (Project, String) -> K?,
         val stringToValue: (Project, String) -> V?,
-        val config: Store.Config,
         val forceLocal: Boolean = false
     ) {
         init {
@@ -79,20 +59,3 @@ interface DB: AutoCloseable {
 
 @JvmInline
 value class Wiped(val value: Boolean)
-
-inline fun <T> DB.inTx(call: DB.Tx.() -> T): T {
-    val tx = tx()
-    try {
-        while (true) {
-            val result = tx.call()
-            if (tx.commit()) {
-                return result
-            }
-            tx.revert()
-        }
-    } finally {
-        if (!tx.isFinished) {
-            tx.abort()
-        }
-    }
-}
