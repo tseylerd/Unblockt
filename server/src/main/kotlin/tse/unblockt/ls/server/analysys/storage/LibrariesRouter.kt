@@ -87,7 +87,7 @@ class LibrariesRouter(
         return emptyList()
     }
 
-    override fun dbsByKey(key: String): Collection<DB> {
+    override fun dbsByKey(attribute: DB.Attribute<*, *, *>, key: String): Collection<DB> {
         return all
     }
 
@@ -97,7 +97,7 @@ class LibrariesRouter(
     }
 
     override fun freeze() {
-        librariesMap.write { map ->
+        librariesMap.writeWithLock { map ->
             val keys = map.keys
             for (key in keys) {
                 val curValue = map[key]!!
@@ -155,10 +155,10 @@ class LibrariesRouter(
                 id
             } else {
                 val newID = UUID.randomUUID().toString()
-                librariesMap.write {
+                librariesMap.writeWithLock {
                     it[root] = arrayOf(newID, false)
                 }
-                state.write {
+                state.writeWithoutLock {
                     it.incrementAndGet()
                 }
                 newID to false
@@ -186,7 +186,7 @@ class LibrariesRouter(
         val ids = actualGlobalDBsIDs
         for ((root, id) in ids) {
             if (allLibrariesRoots == null || allLibrariesRoots.contains(root)) {
-                dbById(id.first)
+                dbById(id.first, id.second)
             }
         }
         val globalDBsCopy = globalDBs.toMap()
@@ -203,9 +203,9 @@ class LibrariesRouter(
         return globalDBs
     }
 
-    private fun dbById(id: String): DB {
+    private fun dbById(id: String, freezed: Boolean): DB {
         return globalDBs.computeIfAbsent(id) {
-            val result = MDB(project, globalStorage.resolve(id), true)
+            val result = MDB(project, globalStorage.resolve(id), true, freezed)
             result.init()
             result
         }

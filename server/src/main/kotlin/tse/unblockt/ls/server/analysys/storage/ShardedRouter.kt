@@ -59,7 +59,7 @@ class ShardedRouter(private val project: Project, private val root: Path, privat
                 }
             }
         }
-        metadataMap.write {
+        metadataMap.writeWithoutLock {
             it["shards"] = shards.toString()
         }
 
@@ -92,7 +92,7 @@ class ShardedRouter(private val project: Project, private val root: Path, privat
         if (!bucketDir.exists()) {
             bucketDir.createDirectories()
         }
-        val mdb = MDB(project, bucketDir, appendOnly)
+        val mdb = MDB(project, bucketDir, appendOnly, false)
         dbs[i] = mdb
         return mdb
     }
@@ -105,12 +105,12 @@ class ShardedRouter(private val project: Project, private val root: Path, privat
         return all
     }
 
-    override fun dbsByKey(key: String): Collection<DB> {
+    override fun dbsByKey(attribute: DB.Attribute<*, *, *>, key: String): Collection<DB> {
         val bucket = abs(key.hashCode() % shards)
         return listOf(dbs[bucket]!!)
     }
 
     override fun dbToPut(attribute: DB.Attribute<*, *, *>, meta: String, key: String): DB {
-        return dbsByKey(key).single()
+        return dbsByKey(attribute, key).single()
     }
 }

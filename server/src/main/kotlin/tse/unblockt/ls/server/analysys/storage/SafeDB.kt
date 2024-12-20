@@ -5,12 +5,17 @@ package tse.unblockt.ls.server.analysys.storage
 import org.mapdb.DB
 
 interface SafeDB: AutoCloseable {
-    fun <T> exclusively(block: (DB) -> T): T
+    fun <T> lock(block: (DB) -> T): T
+    fun <T> write(block: (DB) -> T): T
     fun <T> read(block: (DB) -> T): T
 
     @Suppress("unused")
     class Transparent(private val db: DB): SafeDB {
-        override fun <T> exclusively(block: (DB) -> T): T {
+        override fun <T> lock(block: (DB) -> T): T {
+            return block(db)
+        }
+
+        override fun <T> write(block: (DB) -> T): T {
             return block(db)
         }
 
@@ -24,10 +29,16 @@ interface SafeDB: AutoCloseable {
     }
 }
 
-class SafeDBResource<T>(val db: SafeDB, val resource: T) {
+class SafeDBResource<T>(val db: SafeDB, val resource: T)
+
+inline fun <T> SafeDBResource<T>.writeWithLock(crossinline call: (T) -> Unit) {
+    db.lock {
+        call(resource)
+    }
 }
-inline fun <T> SafeDBResource<T>.write(crossinline call: (T) -> Unit) {
-    db.exclusively {
+
+inline fun <T> SafeDBResource<T>.writeWithoutLock(crossinline call: (T) -> Unit) {
+    db.write {
         call(resource)
     }
 }
@@ -37,7 +48,7 @@ inline fun <T, R> SafeDBResource<T>.read(call: (T) -> R): R {
 }
 
 fun <T> SafeDB.resource(block: (DB) -> T): SafeDBResource<T> {
-    return exclusively { db ->
+    return lock { db ->
         SafeDBResource(this, block(db))
     }
 }

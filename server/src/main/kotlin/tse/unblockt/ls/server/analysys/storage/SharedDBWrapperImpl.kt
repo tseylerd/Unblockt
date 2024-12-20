@@ -9,7 +9,7 @@ class SharedDBWrapperImpl(dbFactory: () -> MapDB): SafeDB {
     private val db = dbFactory()
     private val lock = db.atomicBoolean("exclusive_access").createOrOpen()
 
-    override fun <T> exclusively(block: (MapDB) -> T): T {
+    override fun <T> lock(block: (MapDB) -> T): T {
         var result = lock.compareAndSet(false, true)
         while (!result) {
             Thread.sleep(100)
@@ -19,6 +19,14 @@ class SharedDBWrapperImpl(dbFactory: () -> MapDB): SafeDB {
             return block(db)
         } finally {
             lock.set(false)
+            db.commit()
+        }
+    }
+
+    override fun <T> write(block: (DB) -> T): T {
+        return try {
+            block(db)
+        } finally {
             db.commit()
         }
     }

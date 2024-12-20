@@ -17,27 +17,31 @@ import kotlin.io.path.deleteRecursively
 import kotlin.io.path.exists
 import org.mapdb.DB as MapDB
 
-class MDB(private val project: Project, private val root: Path, private val appendOnly: Boolean): DB {
+class MDB(private val project: Project, private val root: Path, private val appendOnly: Boolean, private val readOnly: Boolean): DB {
     companion object {
         private fun indexesPath(path: Path): Path {
             return path.resolve("index")
         }
 
-        private fun makeDB(dbPath: Path): MapDB {
-            return DBMaker
+        private fun makeDB(dbPath: Path, transactions: Boolean = false, readOnly: Boolean = false): MapDB {
+            val maker = DBMaker
                 .fileDB(dbPath.toFile())
                 .allocateStartSize(1 * 1024 * 1024)
                 .allocateIncrement(1 * 1024 * 1024)
                 .fileMmapEnable()
                 .executorEnable()
                 .fileLockDisable()
-                .fileSyncDisable()
-                .make()
+
+            return when {
+                readOnly -> maker.readOnly().make()
+                transactions -> maker.transactionEnable().make()
+                else -> maker.fileSyncDisable().make() 
+            }
         }
 
-        fun openOrCreateDB(dbPath: Path): MapDB {
+        fun openOrCreateDB(dbPath: Path, transaction: Boolean = false, readOnly: Boolean = false): MapDB {
             return openOrCreateDB(dbPath) {
-                makeDB(dbPath)
+                makeDB(dbPath, transaction, readOnly)
             }
         }
 
@@ -88,7 +92,7 @@ class MDB(private val project: Project, private val root: Path, private val appe
         }
         val indexesPath = indexesPath(root)
         indexesPath.parent.createDirectories()
-        db = openOrCreateDB(indexesPath)
+        db = openOrCreateDB(indexesPath, appendOnly, readOnly)
         return Wiped(false)
     }
 
@@ -96,12 +100,21 @@ class MDB(private val project: Project, private val root: Path, private val appe
     }
 
     override fun put(key: String, value: String) {
+        if (readOnly) {
+            throw IllegalStateException("DB is read only")
+        }
         val atomicString = db.atomicString(key).createOrOpen()
         atomicString.set(value)
     }
 
     override fun get(key: String): String? {
-        val atomicString = db.atomicString(key).createOrOpen()
+        if (!db.exists(key)) {
+            return null
+        }
+        val atomicString = when {
+            readOnly -> db.atomicString(key).open()
+            else -> db.atomicString(key).createOrOpen()
+        }
         return atomicString.get()
     }
 
@@ -183,19 +196,43 @@ class MDB(private val project: Project, private val root: Path, private val appe
     @Suppress("UNCHECKED_CAST")
     private fun <M: Any, K : Any, V : Any> store(name: String, attribute: DB.Attribute<M, K, V>): AbstractMapDBStore<M, K, V> {
         return stores.computeIfAbsent(name) {
-            val hashSet: NavigableSet<Array<Any?>> = db.treeSet(name)
-                .serializer(SerializerArrayTuple(Serializer.STRING, Serializer.STRING, Serializer.STRING))
-                .createOrOpen()
-            if (appendOnly) {
-                val allKeys = db.hashSet("${name}_all_keys")
-                    .serializer(Serializer.STRING)
-                    .createOrOpen()
-                return@computeIfAbsent MapDBAppendOnlyStore(project, hashSet, allKeys, attribute)
+            val treeSet = when {
+                readOnly && !db.exists(name) -> sortedSetOf()
+                else -> {
+                    val treeSetBuilder = db.treeSet(name).serializer(SerializerArrayTuple(Serializer.STRING, Serializer.STRING, Serializer.STRING))
+                    when {
+                        readOnly -> treeSetBuilder.open()
+                        else -> treeSetBuilder.createOrOpen()
+                    }
+                }
             }
-            val byMetaSet: NavigableSet<Array<Any?>> = db.treeSet("${name}_by_meta")
-                .serializer(SerializerArrayTuple(Serializer.STRING, Serializer.STRING, Serializer.STRING, Serializer.STRING))
-                .createOrOpen()
-            MapDBStore(project, attribute, byMetaSet, hashSet)
+            if (appendOnly) {
+                val keysSetName = "${name}_all_keys"
+                val allKeys = when {
+                    readOnly && !db.exists(keysSetName) -> sortedSetOf()
+                    else -> {
+                        val keysSetBuilder = db.hashSet(keysSetName).serializer(Serializer.STRING)
+                        when {
+                            readOnly -> keysSetBuilder.open()
+                            else -> keysSetBuilder.createOrOpen()        
+                        }
+                    }
+                }
+                return@computeIfAbsent MapDBAppendOnlyStore(project, treeSet, allKeys, attribute, db, readOnly)
+            }
+            val metaSetName = "${name}_by_meta"
+            val byMetaSet: NavigableSet<Array<Any?>> = when {
+                readOnly && !db.exists(metaSetName) -> sortedSetOf()
+                else -> {
+                    val metaSetBuilder = db.treeSet(metaSetName).serializer(SerializerArrayTuple(Serializer.STRING, Serializer.STRING, Serializer.STRING, Serializer.STRING))
+                    when {
+                        readOnly -> metaSetBuilder.open()
+                        else -> metaSetBuilder.createOrOpen()        
+                    }
+                }
+            }
+
+            MapDBStore(project, attribute, byMetaSet, treeSet, readOnly)
         } as AbstractMapDBStore<M, K, V>
     }
 
@@ -203,6 +240,7 @@ class MDB(private val project: Project, private val root: Path, private val appe
         protected val project: Project,
         protected val byKeySet: NavigableSet<Array<Any?>>,
         protected val attribute: DB.Attribute<M, K, V>,
+        protected val readOnly: Boolean,
     ) {
 
         abstract fun mayContain(key: K): Boolean
@@ -246,7 +284,9 @@ class MDB(private val project: Project, private val root: Path, private val appe
         byKeySet: NavigableSet<Array<Any?>>,
         private val allKeys: MutableSet<String>,
         attribute: DB.Attribute<M, K, V>,
-    ): AbstractMapDBStore<M, K, V>(project, byKeySet, attribute) {
+        private val db: MapDB,
+        readOnly: Boolean,
+    ): AbstractMapDBStore<M, K, V>(project, byKeySet, attribute, readOnly) {
         override fun exists(key: K): Boolean {
             return allKeys.contains(attribute.keyToString(key))
         }
@@ -262,6 +302,9 @@ class MDB(private val project: Project, private val root: Path, private val appe
         }
 
         override fun putAll(triples: Set<Triple<M, K, V>>) {
+            if (readOnly) {
+                throw IllegalStateException("DB is read-only")
+            }
             val all = triples.map { (m, k, v) ->
                 val keyStr = attribute.keyToString(k)
                 val valueStr = attribute.valueToString(v)
@@ -270,14 +313,19 @@ class MDB(private val project: Project, private val root: Path, private val appe
             }
             byKeySet.addAll(all)
             allKeys.addAll(all.map { it[0] as String })
+            db.commit()
         }
 
         override fun put(meta: M, key: K, value: V) {
+            if (readOnly) {
+                throw IllegalStateException("DB is read-only")
+            }
             val metaStr = attribute.keyToString(key)
             val keyStr = attribute.keyToString(key)
             val valueStr = attribute.valueToString(value)
             byKeySet.add(arrayOf(keyStr, valueStr, metaStr))
             allKeys.add(keyStr)
+            db.commit()
         }
 
         override fun sequence(): Sequence<Triple<M, K, V>> {
@@ -307,7 +355,8 @@ class MDB(private val project: Project, private val root: Path, private val appe
         attribute: DB.Attribute<M, K, V>,
         val byMetaSet: NavigableSet<Array<Any?>>,
         byKeySet: NavigableSet<Array<Any?>>,
-    ): AbstractMapDBStore<M, K, V>(project, byKeySet, attribute) {
+        readOnly: Boolean
+    ): AbstractMapDBStore<M, K, V>(project, byKeySet, attribute, readOnly) {
         override fun mayContain(key: K): Boolean {
             return true
         }
@@ -324,12 +373,18 @@ class MDB(private val project: Project, private val root: Path, private val appe
         }
 
         override fun putAll(triples: Set<Triple<M, K, V>>) {
+            if (readOnly) {
+                throw IllegalStateException("DB is read-only")
+            }
             for (triple in triples) {
                 put(triple.first, triple.second, triple.third)
             }
         }
 
         override fun put(meta: M, key: K, value: V) {
+            if (readOnly) {
+                throw IllegalStateException("DB is read-only")
+            }
             val metaAsStr = attribute.metaToString(meta)
             val keyAsStr = attribute.keyToString(key)
             val valueAsStr = attribute.valueToString(value)

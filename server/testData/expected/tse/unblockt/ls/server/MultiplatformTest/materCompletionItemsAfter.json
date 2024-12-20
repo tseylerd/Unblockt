@@ -36,6 +36,74 @@
       "deprecated": false
     },
     {
+      "label": "AnnotationFormatError",
+      "labelDetails": {
+        "detail": " java.lang.annotation",
+        "description": "AnnotationFormatError : java.lang.Error"
+      },
+      "kind": 7,
+      "insertText": "java.lang.annotation.AnnotationFormatError",
+      "command": {
+        "title": "handleInsert",
+        "command": "handleInsert",
+        "arguments": [
+          {
+            "document": "file:///composeApp/src/commonMain/kotlin/tse/test/multiplatform/playground.kt",
+            "start": 160,
+            "end": 165,
+            "shortenReference": {
+              "packageName": "java.lang.annotation",
+              "shortenName": "AnnotationFormatError"
+            }
+          }
+        ]
+      },
+      "data": {
+        "document": "file:///composeApp/src/commonMain/kotlin/tse/test/multiplatform/playground.kt",
+        "start": 160,
+        "end": 165,
+        "shortenReference": {
+          "packageName": "java.lang.annotation",
+          "shortenName": "AnnotationFormatError"
+        }
+      },
+      "deprecated": false
+    },
+    {
+      "label": "ClassFormatError",
+      "labelDetails": {
+        "detail": " java.lang",
+        "description": "ClassFormatError : java.lang.LinkageError"
+      },
+      "kind": 7,
+      "insertText": "java.lang.ClassFormatError",
+      "command": {
+        "title": "handleInsert",
+        "command": "handleInsert",
+        "arguments": [
+          {
+            "document": "file:///composeApp/src/commonMain/kotlin/tse/test/multiplatform/playground.kt",
+            "start": 160,
+            "end": 165,
+            "shortenReference": {
+              "packageName": "java.lang",
+              "shortenName": "ClassFormatError"
+            }
+          }
+        ]
+      },
+      "data": {
+        "document": "file:///composeApp/src/commonMain/kotlin/tse/test/multiplatform/playground.kt",
+        "start": 160,
+        "end": 165,
+        "shortenReference": {
+          "packageName": "java.lang",
+          "shortenName": "ClassFormatError"
+        }
+      },
+      "deprecated": false
+    },
+    {
       "label": "ExperimentalMaterialApi",
       "labelDetails": {
         "detail": " androidx.compose.material",
@@ -65,6 +133,108 @@
         "shortenReference": {
           "packageName": "androidx.compose.material",
           "shortenName": "ExperimentalMaterialApi"
+        }
+      },
+      "deprecated": false
+    },
+    {
+      "label": "FormatData_en_RW",
+      "labelDetails": {
+        "detail": " sun.text.resources.cldr.ext",
+        "description": "FormatData_en_RW : java.util.ListResourceBundle"
+      },
+      "kind": 7,
+      "insertText": "sun.text.resources.cldr.ext.FormatData_en_RW",
+      "command": {
+        "title": "handleInsert",
+        "command": "handleInsert",
+        "arguments": [
+          {
+            "document": "file:///composeApp/src/commonMain/kotlin/tse/test/multiplatform/playground.kt",
+            "start": 160,
+            "end": 165,
+            "shortenReference": {
+              "packageName": "sun.text.resources.cldr.ext",
+              "shortenName": "FormatData_en_RW"
+            }
+          }
+        ]
+      },
+      "data": {
+        "document": "file:///composeApp/src/commonMain/kotlin/tse/test/multiplatform/playground.kt",
+        "start": 160,
+        "end": 165,
+        "shortenReference": {
+          "packageName": "sun.text.resources.cldr.ext",
+          "shortenName": "FormatData_en_RW"
+        }
+      },
+      "deprecated": false
+    },
+    {
+      "label": "FormatData_ti_ER",
+      "labelDetails": {
+        "detail": " sun.text.resources.cldr.ext",
+        "description": "FormatData_ti_ER : java.util.ListResourceBundle"
+      },
+      "kind": 7,
+      "insertText": "sun.text.resources.cldr.ext.FormatData_ti_ER",
+      "command": {
+        "title": "handleInsert",
+        "command": "handleInsert",
+        "arguments": [
+          {
+            "document": "file:///composeApp/src/commonMain/kotlin/tse/test/multiplatform/playground.kt",
+            "start": 160,
+            "end": 165,
+            "shortenReference": {
+              "packageName": "sun.text.resources.cldr.ext",
+              "shortenName": "FormatData_ti_ER"
+            }
+          }
+        ]
+      },
+      "data": {
+        "document": "file:///composeApp/src/commonMain/kotlin/tse/test/multiplatform/playground.kt",
+        "start": 160,
+        "end": 165,
+        "shortenReference": {
+          "packageName": "sun.text.resources.cldr.ext",
+          "shortenName": "FormatData_ti_ER"
+        }
+      },
+      "deprecated": false
+    },
+    {
+      "label": "GenericSignatureFormatError",
+      "labelDetails": {
+        "detail": " java.lang.reflect",
+        "description": "GenericSignatureFormatError : java.lang.ClassFormatError"
+      },
+      "kind": 7,
+      "insertText": "java.lang.reflect.GenericSignatureFormatError",
+      "command": {
+        "title": "handleInsert",
+        "command": "handleInsert",
+        "arguments": [
+          {
+            "document": "file:///composeApp/src/commonMain/kotlin/tse/test/multiplatform/playground.kt",
+            "start": 160,
+            "end": 165,
+            "shortenReference": {
+              "packageName": "java.lang.reflect",
+              "shortenName": "GenericSignatureFormatError"
+            }
+          }
+        ]
+      },
+      "data": {
+        "document": "file:///composeApp/src/commonMain/kotlin/tse/test/multiplatform/playground.kt",
+        "start": 160,
+        "end": 165,
+        "shortenReference": {
+          "packageName": "java.lang.reflect",
+          "shortenName": "GenericSignatureFormatError"
         }
       },
       "deprecated": false
@@ -139,6 +309,40 @@
       "deprecated": false
     },
     {
+      "label": "P11TlsKeyMaterialGenerator",
+      "labelDetails": {
+        "detail": " sun.security.pkcs11",
+        "description": "P11TlsKeyMaterialGenerator : javax.crypto.KeyGeneratorSpi"
+      },
+      "kind": 7,
+      "insertText": "sun.security.pkcs11.P11TlsKeyMaterialGenerator",
+      "command": {
+        "title": "handleInsert",
+        "command": "handleInsert",
+        "arguments": [
+          {
+            "document": "file:///composeApp/src/commonMain/kotlin/tse/test/multiplatform/playground.kt",
+            "start": 160,
+            "end": 165,
+            "shortenReference": {
+              "packageName": "sun.security.pkcs11",
+              "shortenName": "P11TlsKeyMaterialGenerator"
+            }
+          }
+        ]
+      },
+      "data": {
+        "document": "file:///composeApp/src/commonMain/kotlin/tse/test/multiplatform/playground.kt",
+        "start": 160,
+        "end": 165,
+        "shortenReference": {
+          "packageName": "sun.security.pkcs11",
+          "shortenName": "P11TlsKeyMaterialGenerator"
+        }
+      },
+      "deprecated": false
+    },
+    {
       "label": "SVGAnimatedPreserveAspectRatio",
       "labelDetails": {
         "detail": " org.w3c.dom.svg",
@@ -205,6 +409,108 @@
         }
       },
       "deprecated": false
+    },
+    {
+      "label": "TlsKeyMaterialGenerator",
+      "labelDetails": {
+        "detail": " com.sun.crypto.provider",
+        "description": "TlsKeyMaterialGenerator : javax.crypto.KeyGeneratorSpi"
+      },
+      "kind": 7,
+      "insertText": "com.sun.crypto.provider.TlsKeyMaterialGenerator",
+      "command": {
+        "title": "handleInsert",
+        "command": "handleInsert",
+        "arguments": [
+          {
+            "document": "file:///composeApp/src/commonMain/kotlin/tse/test/multiplatform/playground.kt",
+            "start": 160,
+            "end": 165,
+            "shortenReference": {
+              "packageName": "com.sun.crypto.provider",
+              "shortenName": "TlsKeyMaterialGenerator"
+            }
+          }
+        ]
+      },
+      "data": {
+        "document": "file:///composeApp/src/commonMain/kotlin/tse/test/multiplatform/playground.kt",
+        "start": 160,
+        "end": 165,
+        "shortenReference": {
+          "packageName": "com.sun.crypto.provider",
+          "shortenName": "TlsKeyMaterialGenerator"
+        }
+      },
+      "deprecated": false
+    },
+    {
+      "label": "TlsKeyMaterialParameterSpec",
+      "labelDetails": {
+        "detail": " sun.security.internal.spec",
+        "description": "TlsKeyMaterialParameterSpec : java.security.spec.AlgorithmParameterSpec"
+      },
+      "kind": 7,
+      "insertText": "sun.security.internal.spec.TlsKeyMaterialParameterSpec",
+      "command": {
+        "title": "handleInsert",
+        "command": "handleInsert",
+        "arguments": [
+          {
+            "document": "file:///composeApp/src/commonMain/kotlin/tse/test/multiplatform/playground.kt",
+            "start": 160,
+            "end": 165,
+            "shortenReference": {
+              "packageName": "sun.security.internal.spec",
+              "shortenName": "TlsKeyMaterialParameterSpec"
+            }
+          }
+        ]
+      },
+      "data": {
+        "document": "file:///composeApp/src/commonMain/kotlin/tse/test/multiplatform/playground.kt",
+        "start": 160,
+        "end": 165,
+        "shortenReference": {
+          "packageName": "sun.security.internal.spec",
+          "shortenName": "TlsKeyMaterialParameterSpec"
+        }
+      },
+      "deprecated": true
+    },
+    {
+      "label": "TlsKeyMaterialSpec",
+      "labelDetails": {
+        "detail": " sun.security.internal.spec",
+        "description": "TlsKeyMaterialSpec : java.security.spec.KeySpec, javax.crypto.SecretKey"
+      },
+      "kind": 7,
+      "insertText": "sun.security.internal.spec.TlsKeyMaterialSpec",
+      "command": {
+        "title": "handleInsert",
+        "command": "handleInsert",
+        "arguments": [
+          {
+            "document": "file:///composeApp/src/commonMain/kotlin/tse/test/multiplatform/playground.kt",
+            "start": 160,
+            "end": 165,
+            "shortenReference": {
+              "packageName": "sun.security.internal.spec",
+              "shortenName": "TlsKeyMaterialSpec"
+            }
+          }
+        ]
+      },
+      "data": {
+        "document": "file:///composeApp/src/commonMain/kotlin/tse/test/multiplatform/playground.kt",
+        "start": 160,
+        "end": 165,
+        "shortenReference": {
+          "packageName": "sun.security.internal.spec",
+          "shortenName": "TlsKeyMaterialSpec"
+        }
+      },
+      "deprecated": true
     }
   ]
 }

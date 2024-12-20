@@ -70,7 +70,10 @@ class LocalGlobalRouter(
         }
     }
 
-    override fun dbsByKey(key: String): Collection<DB> {
+    override fun dbsByKey(attribute: DB.Attribute<*, *, *>, key: String): Collection<DB> {
+        if (attribute.forceLocal) {
+            return listOf(localDB)
+        }
         return all
     }
 

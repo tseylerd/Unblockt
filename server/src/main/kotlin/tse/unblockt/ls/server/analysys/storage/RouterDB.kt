@@ -42,7 +42,7 @@ class RouterDB(val router: Router): FreezeableDB {
     }
 
     override fun put(key: String, value: String) {
-        router.metadataDB.exclusively { db ->
+        router.metadataDB.lock { db ->
             val str = db.atomicString(key).createOrOpen()
             str.set(value)
         }
@@ -99,7 +99,7 @@ class RouterDB(val router: Router): FreezeableDB {
         key: K
     ): Sequence<V> {
         val keyStr = attribute.keyToString(key)
-        return router.dbsByKey(keyStr).asSequence().flatMap { it.values(name, attribute, key) }
+        return router.dbsByKey(attribute, keyStr).asSequence().flatMap { it.values(name, attribute, key) }
     }
 
     override fun <M : Any, K : Any, V : Any> metas(name: String, attribute: DB.Attribute<M, K, V>): Sequence<M> {
@@ -121,7 +121,7 @@ class RouterDB(val router: Router): FreezeableDB {
     }
 
     override fun <M : Any, K : Any, V : Any> exists(name: String, attribute: DB.Attribute<M, K, V>, key: K): Boolean {
-        return router.dbsByKey(attribute.keyToString(key)).any { it.exists(name, attribute, key) }
+        return router.dbsByKey(attribute, attribute.keyToString(key)).any { it.exists(name, attribute, key) }
     }
 
     override fun <M : Any, K : Any, V : Any> sequence(
@@ -143,7 +143,7 @@ class RouterDB(val router: Router): FreezeableDB {
 
         fun dbsByMeta(meta: String): Collection<DB>
         fun dbsToDeleteByMeta(meta: String): Collection<DB>
-        fun dbsByKey(key: String): Collection<DB>
+        fun dbsByKey(attribute: DB.Attribute<*, *, *>, key: String): Collection<DB>
         fun dbToPut(attribute: DB.Attribute<*, *, *>, meta: String, key: String): DB
 
         fun delete()
