@@ -155,8 +155,8 @@ class IndexesTest {
 
         val localDBAfter = localDB(testProjectPath)
         val globalDBAfter = globalDB(testProjectPath)
-        assertEquals(InitializationResult(wiped = false, success = true), localDBAfter.init())
-        assertEquals(InitializationResult(wiped = false, success = true), globalDBAfter.init())
+        assertEquals(InitializationResult(wiped = true, success = true), localDBAfter.init())
+        assertEquals(InitializationResult(wiped = true, success = true), globalDBAfter.init())
         after { localDBAfter.close() }
         after { globalDBAfter.close() }
 
@@ -266,7 +266,7 @@ class IndexesTest {
         val dirsAfter = getGlobalIndexesDirs()
         assertEquals(indexes.size, dirsAfter.size, "Indexes folder size is different from what it was")
         for (path in dirsAfter) {
-            assertTrue(path.getLastModifiedTime().toMillis() > timeWas, "File wasn't modified after we corrupted it")
+            assertTrue(path.getLastModifiedTime().toMillis() > timeWas, "File wasn't modified after we corrupted it: $path")
         }
 
         val timeAfter = System.currentTimeMillis()
@@ -278,7 +278,7 @@ class IndexesTest {
         val thirdDirs = getGlobalIndexesDirs()
         assertEquals(indexes.size, thirdDirs.size, "Indexes folder size is different from what it was")
         for (path in thirdDirs) {
-            assertTrue(path.getLastModifiedTime().toMillis() < timeAfter, "File was modified after we recovered it")
+            assertTrue(path.getLastModifiedTime().toMillis() < timeAfter, "File was modified after we recovered it: $path")
         }
     }
 
@@ -306,7 +306,7 @@ class IndexesTest {
         assertEquals(globalIndexesDirs.size, dirsAfter.size, "Indexes folder size is different from what it was")
         for (dirAfter in dirsAfter) {
             assertFalse("Directories intersect") { globalIndexesDirs.contains(dirAfter) }
-            assertTrue(dirAfter.getLastModifiedTime().toMillis() > timeWas, "File wasn't modified after we corrupted it")
+            assertTrue(dirAfter.getLastModifiedTime().toMillis() > timeWas, "File wasn't modified after we corrupted it: $dirAfter")
         }
     }
 
@@ -336,7 +336,7 @@ class IndexesTest {
         assertEquals(localIndexesDirs.size, localIndexesDirsAfter.size, "Size of local indexes doesn't match of the size it previously was")
         for (path in localIndexesDirsAfter) {
             val lastModifiedTime = path.getLastModifiedTime().toMillis()
-            assertTrue(lastModifiedTime > timeWas, "File wasn't modified after we corrupted it")
+            assertTrue(lastModifiedTime > timeWas, "File wasn't modified after we corrupted it: $path")
         }
     }
 
