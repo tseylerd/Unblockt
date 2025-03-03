@@ -161,13 +161,19 @@ private fun GradleProjectModel.modules(): List<UBModule> {
                         }
                         is GradleDepenency.Project -> {
                             val projectDepName = dependency.name
-                            val projectDependsOn = projects.find { prj -> prj.name == projectDepName }!!
-                            if (projectDependsOn.name == project.name) {
+                            val projectDependsOn = projects.find { prj -> prj.name == projectDepName }
+                            if (projectDependsOn == null) {
+                                // usually means non-jvm (java) module dependency
+                                logger.warn("Failed to find project with name $projectDepName")
                                 emptyList()
                             } else {
-                                val allSourceSets = filterSourceSetsForDependencies(sourceSet, projectDependsOn)
-                                allSourceSets.map { ss ->
-                                    UBDependency.Module(projectDepName + "." + ss.name, ss.path)
+                                if (projectDependsOn.name == project.name) {
+                                    emptyList()
+                                } else {
+                                    val allSourceSets = filterSourceSetsForDependencies(sourceSet, projectDependsOn)
+                                    allSourceSets.map { ss ->
+                                        UBDependency.Module(projectDepName + "." + ss.name, ss.path)
+                                    }
                                 }
                             }
                         }
