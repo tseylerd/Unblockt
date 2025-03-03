@@ -29,20 +29,27 @@ class LibrariesRouter(
         const val LIBRARIES_MAP = "libraries"
         const val CATALOGUE_DB = "metadata.db"
 
-        private val globalDBsIDsKey = UniversalCache.Key<Map<String, Pair<String, Boolean>>>("globalDBsIDs")
-        private val globalDBsKey = UniversalCache.Key<Map<String, DB>>("globalDBsKey")
-
+        private val storedLibrariesKey = UniversalCache.Key<Map<String, Pair<String, Boolean>>>("globalDBsIDs")
     }
 
     private val allLibrariesRoots: Set<String>? = run {
-        val toString = projectPath.toString()
-        librariesRoots?.mapNotNull { libraryRoot(it) }?.filter { !it.startsWith(toString) }?.toSet()
+        val projectRoot = projectPath.toString()
+        librariesRoots?.mapNotNull { libraryRoot(it) }?.filter { !it.startsWith(projectRoot) }?.toSet()
     }
 
-    private val pathToMetadata = globalStorage.resolve(CATALOGUE_DB)
+    override val metadataDB: SafeDB = SharedDBWrapperImpl {
+        val pathToMetadata = globalStorage.resolve(CATALOGUE_DB)
+        MDB.openOrCreateDB(pathToMetadata) {
+            MDB.makeMetaDB(pathToMetadata)
+        }.first
+    }
 
     private val librariesMap: SafeDBResource<HTreeMap<String, Array<Any>>> by lazy {
         loadLibrariesMap()
+    }
+
+    private val state: SafeDBResource<Atomic.Long> = metadataDB.resource { db ->
+        db.atomicLong("counter").createOrOpen()
     }
 
     private val cache = UniversalCache {
@@ -51,32 +58,15 @@ class LibrariesRouter(
         }
     }
 
-    private val actualGlobalDBsIDs: Map<String, Pair<String, Boolean>>
-        get() = cache.getOrCompute(globalDBsIDsKey) {
-            listGlobalDBs()
+    private val storedLibraries: Map<String, Pair<String, Boolean>>
+        get() = cache.getOrCompute(storedLibrariesKey) {
+            loadStoredLibraries()
         }
 
-    private val globalMetaDB = SharedDBWrapperImpl {
-        MDB.openOrCreateDB(pathToMetadata) {
-            MDB.makeMetaDB(pathToMetadata)
-        }
-    }
-
-    private val state: SafeDBResource<Atomic.Long> = globalMetaDB.resource { db ->
-        db.atomicLong("counter").createOrOpen()
-    }
-
-    private val globalDBs = ConcurrentHashMap<String, DB>()
-    private val actualGlobalDBs: Map<String, DB>
-        get() = cache.getOrCompute(globalDBsKey) {
-            actualGlobalDBs()
-        }
+    private val databases = ConcurrentHashMap<String, DB>()
 
     override val all: Collection<DB>
-        get() = actualGlobalDBs.values
-
-    override val metadataDB: SafeDB
-        get() = globalMetaDB
+        get() = databases.values
 
     override fun dbsByMeta(meta: String): Collection<DB> {
         val root = libraryRoot(meta) ?: return emptyList()
@@ -125,6 +115,8 @@ class LibrariesRouter(
     }
 
     override fun init(): Wiped {
+        refreshDatabases()
+
         var result = false
         for (db in all) {
             result = db.init().value || result
@@ -142,15 +134,15 @@ class LibrariesRouter(
         }
 
         kotlin.runCatching {
-            globalMetaDB.close()
+            metadataDB.close()
         }.onFailure {
             logger.error(it)
         }
     }
 
     private fun dbForLibrary(root: String): DB {
-        val id = actualGlobalDBsIDs[root] ?: synchronized(this) {
-            val id = actualGlobalDBsIDs[root]
+        val id = storedLibraries[root] ?: synchronized(this) {
+            val id = storedLibraries[root]
             if (id != null) {
                 id
             } else {
@@ -164,7 +156,10 @@ class LibrariesRouter(
                 newID to false
             }
         }
-        val result = actualGlobalDBs[id.first] ?: throw IllegalStateException("No db for $root: id=$id")
+        refreshDatabases()
+
+        val result = databases[id.first] ?: throw IllegalStateException("No db for $root: id=$id")
+        result.init()
         return result
     }
 
@@ -182,17 +177,20 @@ class LibrariesRouter(
         return null
     }
 
-    private fun actualGlobalDBs(): Map<String, DB> {
-        val ids = actualGlobalDBsIDs
-        for ((root, id) in ids) {
+    private fun refreshDatabases() {
+        val storedLibraries = storedLibraries
+        for ((root, fileFrozen) in storedLibraries) {
             if (allLibrariesRoots == null || allLibrariesRoots.contains(root)) {
-                dbById(id.first, id.second)
+                val storageFile = fileFrozen.first
+                databases.computeIfAbsent(storageFile) {
+                    MDB(project, globalStorage.resolve(storageFile), true, fileFrozen.second)
+                }
             }
         }
-        val globalDBsCopy = globalDBs.toMap()
+        val globalDBsCopy = databases.toMap()
         for ((id, _) in globalDBsCopy) {
-            if (!ids.values.contains(id to false) && !ids.values.contains(id to true)) {
-                val removed = globalDBs.remove(id)
+            if (!storedLibraries.values.contains(id to false) && !storedLibraries.values.contains(id to true)) {
+                val removed = databases.remove(id)
                 kotlin.runCatching {
                     removed?.close()
                 }.onFailure {
@@ -200,25 +198,16 @@ class LibrariesRouter(
                 }
             }
         }
-        return globalDBs
     }
 
-    private fun dbById(id: String, freezed: Boolean): DB {
-        return globalDBs.computeIfAbsent(id) {
-            val result = MDB(project, globalStorage.resolve(id), true, freezed)
-            result.init()
-            result
-        }
-    }
-
-    private fun loadLibrariesMap(): SafeDBResource<HTreeMap<String, Array<Any>>> = globalMetaDB.resource { db ->
+    private fun loadLibrariesMap(): SafeDBResource<HTreeMap<String, Array<Any>>> = metadataDB.resource { db ->
         db.hashMap(LIBRARIES_MAP)
             .keySerializer(Serializer.STRING)
             .valueSerializer(SerializerArrayTuple(Serializer.STRING, Serializer.BOOLEAN))
             .createOrOpen()
     }
 
-    private fun listGlobalDBs(): Map<String, Pair<String, Boolean>> {
+    private fun loadStoredLibraries(): Map<String, Pair<String, Boolean>> {
         val result = mutableMapOf<String, Pair<String, Boolean>>()
         librariesMap.read { map ->
             for ((libraryPath, id) in map) {

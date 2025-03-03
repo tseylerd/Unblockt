@@ -13,9 +13,6 @@ import kotlin.io.path.exists
 import kotlin.math.abs
 
 class ShardedRouter(private val project: Project, private val root: Path, private val appendOnly: Boolean, private val shards: Int): RouterDB.Router {
-    override val supportsDeletionByMeta: Boolean
-        get() = !appendOnly
-
     private val dbs = arrayOfNulls<DB>(shards)
     override val all: Collection<DB>
         get() = dbs.filterNotNull().toList()
@@ -40,7 +37,7 @@ class ShardedRouter(private val project: Project, private val root: Path, privat
         metaDB = SharedDBWrapperImpl {
             MDB.openOrCreateDB(metadataPath) {
                 MDB.makeMetaDB(metadataPath)
-            }
+            }.first
         }
         val metadataMap = metaDB.resource {
             db -> db.hashMap("metadata", Serializer.STRING, Serializer.STRING).createOrOpen()
@@ -64,7 +61,7 @@ class ShardedRouter(private val project: Project, private val root: Path, privat
         }
 
         for (i in 0 until shards) {
-            initBucket(i).init()
+            wiped = initBucket(i).init().value || wiped
         }
         return Wiped(wiped)
     }

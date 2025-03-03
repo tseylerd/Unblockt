@@ -134,9 +134,6 @@ class RouterDB(val router: Router): FreezeableDB {
     interface Router: Closeable {
         val metadataDB: SafeDB
 
-        val supportsDeletionByMeta: Boolean
-            get() = true
-
         val all: Collection<DB>
 
         fun init(): Wiped

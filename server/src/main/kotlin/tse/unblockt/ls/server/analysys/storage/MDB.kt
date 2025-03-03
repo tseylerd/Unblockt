@@ -39,13 +39,13 @@ class MDB(private val project: Project, private val root: Path, private val appe
             }
         }
 
-        fun openOrCreateDB(dbPath: Path, transaction: Boolean = false, readOnly: Boolean = false): MapDB {
+        fun openOrCreateDB(dbPath: Path, transaction: Boolean = false, readOnly: Boolean = false): Pair<MapDB, Wiped> {
             return openOrCreateDB(dbPath) {
                 makeDB(dbPath, transaction, readOnly)
             }
         }
 
-        fun makeMetaDB(dbPath: Path): org.mapdb.DB {
+        fun makeMetaDB(dbPath: Path): MapDB {
             return DBMaker
                 .fileDB(dbPath.toFile())
                 .allocateStartSize(128 * 1024)
@@ -58,9 +58,9 @@ class MDB(private val project: Project, private val root: Path, private val appe
         }
 
         @OptIn(ExperimentalPathApi::class)
-        fun openOrCreateDB(dbPath: Path, maker: () -> MapDB): MapDB {
+        fun openOrCreateDB(dbPath: Path, maker: () -> MapDB): Pair<MapDB, Wiped> {
             return try {
-                maker()
+                maker() to Wiped(false)
             } catch (t: Throwable) {
                 logger.warn("Wiping mdb: path=$dbPath, message=${t.message}")
 
@@ -72,7 +72,7 @@ class MDB(private val project: Project, private val root: Path, private val appe
                     parent.createDirectories()
                 }
 
-                maker()
+                maker() to Wiped(true)
             }
         }
     }
@@ -92,8 +92,9 @@ class MDB(private val project: Project, private val root: Path, private val appe
         }
         val indexesPath = indexesPath(root)
         indexesPath.parent.createDirectories()
-        db = openOrCreateDB(indexesPath, appendOnly, readOnly)
-        return Wiped(false)
+        val (db, wiped) = openOrCreateDB(indexesPath, appendOnly, readOnly)
+        this.db = db
+        return wiped
     }
 
     override fun init(name: String) {
