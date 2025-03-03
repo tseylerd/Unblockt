@@ -72,7 +72,7 @@ class MDB(private val project: Project, private val root: Path, private val appe
             return try {
                 maker() to InitializationResult(wiped = false, success = true)
             } catch (t: Throwable) {
-                logger.warn("Wiping mdb: path=$dbPath, message=${t.message}")
+                logger.warn("Wiping mdb: path=$dbPath, message=${t.message}", t)
                 cleanup()
 
                 try {
