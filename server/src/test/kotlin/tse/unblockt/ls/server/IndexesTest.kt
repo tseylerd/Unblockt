@@ -109,17 +109,10 @@ class IndexesTest {
             val librariesMap = loadLibrariesMap(mdb)
             assertFalse { librariesMap.isEmpty() }
             for ((key, arr) in librariesMap) {
-                val frozen = arr[1] as Boolean
-                assertTrue("Library $key is not frozen") { frozen }
+                val completed = arr[1] as Boolean
+                assertTrue("Library $key is not completed") { completed }
             }
         }
-    }
-
-    @Test
-    fun librariesAreNotReindexed(info: TestInfo) = rkTest {
-        init(testProjectPath)
-
-
     }
 
     @Test
