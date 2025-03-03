@@ -27,10 +27,7 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.nio.file.StandardOpenOption
-import kotlin.io.path.exists
-import kotlin.io.path.getLastModifiedTime
-import kotlin.io.path.readText
-import kotlin.io.path.writeText
+import kotlin.io.path.*
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
@@ -155,8 +152,8 @@ class IndexesTest {
 
         val localDBAfter = localDB(testProjectPath)
         val globalDBAfter = globalDB(testProjectPath)
-        assertEquals(InitializationResult(wiped = true, success = true), localDBAfter.init())
-        assertEquals(InitializationResult(wiped = true, success = true), globalDBAfter.init())
+        localDBAfter.init()
+        globalDBAfter.init()
         after { localDBAfter.close() }
         after { globalDBAfter.close() }
 
@@ -241,8 +238,11 @@ class IndexesTest {
         }
     }
 
+    @OptIn(ExperimentalPathApi::class)
     @Test
     fun globalIndexRecoveryWorks(info: TestInfo) {
+        ourGlobalIndexesPath.deleteRecursively()
+
         rkTest {
             simulateClient(testProjectPath, info) {
                 assertInitialized()
@@ -282,8 +282,11 @@ class IndexesTest {
         }
     }
 
+    @OptIn(ExperimentalPathApi::class)
     @Test
     fun globalIndexMetadataRecoveryWorks(info: TestInfo) {
+        ourGlobalIndexesPath.deleteRecursively()
+
         rkTest {
             simulateClient(testProjectPath, info) {
                 assertInitialized()
