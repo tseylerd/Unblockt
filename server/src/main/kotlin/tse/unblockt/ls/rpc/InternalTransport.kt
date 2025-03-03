@@ -16,7 +16,9 @@ import kotlinx.serialization.serializer
 import org.apache.logging.log4j.kotlin.logger
 import tse.unblockt.ls.rpc.reflect.*
 import tse.unblockt.ls.safe
-import java.io.*
+import java.io.PrintWriter
+import java.io.Writer
+import java.nio.charset.StandardCharsets
 import java.util.*
 import java.util.concurrent.Executors
 import kotlin.coroutines.CoroutineContext
@@ -51,18 +53,20 @@ internal abstract class InternalTransport(private val json: Json) {
             launch(ourReceiveDispatcher) {
                 while (active) {
                     logger.safe {
-                        val received = receive() ?: return@launch
-                        logger.debug("Received $received")
+                        val received = try {
+                            receive() ?: return@launch
+                        } catch (e: ParsingError) {
+                            logger.warn("Parsing error", e)
+                            respondError(ErrorCodes.PARSE_ERROR, "Failed to parse incoming data")
+                            return@safe
+                        }
 
+                        logger.debug("Received $received")
                         val element = try {
                             json.parseToJsonElement(received)
                         } catch (e: SerializationException) {
                             logger.warn("Failed to parse $received element")
-                            launch(ourReceiveDispatcher) {
-                                supervisorScope {
-                                    respondError(ErrorCodes.PARSE_ERROR, "Failed to parse request: $received")
-                                }
-                            }
+                            respondError(ErrorCodes.PARSE_ERROR, "Failed to parse incoming data: $received")
                             return@safe
                         }
                         val obj: JsonObject = elementAsObject(element)
@@ -97,9 +101,13 @@ internal abstract class InternalTransport(private val json: Json) {
         }
     }
 
-    private suspend fun respondError(code: Int, message: String) {
-        val buildMap = buildMap(null, null, null, RpcError(code, message, null), null)
-        outChannel.send(JsonObject(buildMap).toString())
+    private fun CoroutineScope.respondError(code: Int, message: String) {
+        launch(ourReceiveDispatcher) {
+            supervisorScope {
+                val buildMap = buildMap(null, null, null, RpcError(code, message, null), null)
+                outChannel.send(JsonObject(buildMap).toString())
+            }
+        }
     }
 
     private suspend fun callServerMethod(call: InternalRpcMethodCall) {
@@ -232,37 +240,38 @@ internal abstract class InternalTransport(private val json: Json) {
     }
 
     class StdIO(json: Json) : InternalTransport(json) {
-        private val reader: Reader = BufferedReader(InputStreamReader(System.`in`))
         private val writer: Writer = PrintWriter(System.out)
 
-        override suspend fun receive(): String {
-            val allocated = CharArray(CONTENT_LENGTH.length)
-            val lengthHeader = withContext(Dispatchers.IO) {
-                reader.read(allocated)
+        override suspend fun receive(): String? {
+            val lengthString = withContext(Dispatchers.IO) {
+                readlnOrNull()
+            } ?: return null
+
+            if (!lengthString.startsWith(CONTENT_LENGTH)) {
+                throw ParsingError("Received $lengthString, expected Content-Length: ")
             }
-            val length = if (lengthHeader > 0) buildString {
-                for (i in 0 until lengthHeader) {
-                    val buffer = CharArray(1)
-                    reader.read(buffer)
-                    if (!buffer[0].isDigit()) {
-                        break
-                    }
-                    append(buffer)
-                }
-            }.toInt() else 0
-            withContext(Dispatchers.IO) {
-                reader.skip(3)
+            val lengthHeader = try {
+                lengthString.substringAfter(CONTENT_LENGTH).toInt()
+            } catch (e: NumberFormatException) {
+                throw ParsingError("Failed to extract number from $lengthString", e)
             }
-            val request = buildString {
-                var read = 0
-                while (read < length) {
-                    val buffer = CharArray(length - read)
-                    val count = reader.read(buffer)
-                    read += count
-                    appendRange(buffer, 0, count)
-                }
+            var lastLine = withContext(Dispatchers.IO) {
+                readlnOrNull()
+            } ?: return null
+            if (lastLine.startsWith("Content-Type")) {
+               lastLine = withContext(Dispatchers.IO) {
+                   readlnOrNull()
+               } ?: return null
             }
-            return request
+
+            if (lastLine.isNotBlank()) {
+                throw ParsingError("Received $lastLine, expected empty line")
+            }
+
+            val bytes = withContext(Dispatchers.IO) {
+                System.`in`.readNBytes(lengthHeader)
+            }
+            return String(bytes, StandardCharsets.UTF_8)
         }
 
         override suspend fun respond(value: String) {
@@ -295,4 +304,6 @@ internal abstract class InternalTransport(private val json: Json) {
         override val key: CoroutineContext.Key<*>
             get() = RequestIdContextElement
     }
+
+    class ParsingError(message: String, cause: Throwable? = null): Exception(message, cause)
 }
