@@ -343,6 +343,34 @@ class IndexesTest {
         }
     }
 
+    @Test
+    fun localIndexMetadataRecoveryWorks(info: TestInfo) {
+        rkTest {
+            simulateClient(testProjectPath, info) {
+                assertInitialized()
+            }
+        }
+
+        val indexesDirBefore = getLocalIndexesDirs(testProjectPath)
+        val metaDBPath = DB.indexesPath(getLocalDBPath(testProjectPath)).resolve(ShardedRouter.METADATA_DB)
+        assertTrue(metaDBPath.exists(), "Meta DB file does not exist")
+        Files.write(metaDBPath, byteArrayOf(1))
+        val timeWas = System.currentTimeMillis()
+
+        rkTest {
+            simulateClient(testProjectPath, info) {
+                diagnose()
+            }
+        }
+
+        val localIndexesDirsAfter = getLocalIndexesDirs(testProjectPath)
+        assertEquals(indexesDirBefore.size, localIndexesDirsAfter.size, "Size of local indexes doesn't match of the size it previously was")
+        for (path in localIndexesDirsAfter) {
+            val lastModifiedTime = path.getLastModifiedTime().toMillis()
+            assertTrue(lastModifiedTime > timeWas, "File wasn't modified after we corrupted it: $path")
+        }
+    }
+
     private fun assertInitialized() {
         assertTrue(AnalysisEntrypoint.services is SessionBasedServices, "Non successful initialization")
     }

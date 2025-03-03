@@ -12,8 +12,14 @@ import kotlin.io.path.deleteRecursively
 import kotlin.io.path.exists
 import kotlin.math.abs
 
+
 class ShardedRouter(private val project: Project, private val root: Path, private val appendOnly: Boolean, private val shards: Int): RouterDB.Router {
+    companion object {
+        const val METADATA_DB = "metadata.db"
+    }
+
     private val dbs = arrayOfNulls<DB>(shards)
+
     override val all: Collection<DB>
         get() = dbs.filterNotNull().toList()
 
@@ -30,7 +36,7 @@ class ShardedRouter(private val project: Project, private val root: Path, privat
         if (!Files.exists(indexesPath)) {
             indexesPath.createDirectories()
         }
-        val metadataPath = indexesPath.resolve("metadata.db")
+        val metadataPath = indexesPath.resolve(METADATA_DB)
         val (mdb, result) = MDB.openOrCreateDB(metadataPath) {
             MDB.makeMetaDB(metadataPath)
         }
