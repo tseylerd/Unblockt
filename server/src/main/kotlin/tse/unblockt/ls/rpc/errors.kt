@@ -17,6 +17,7 @@ object ErrorCodes {
     const val CANCELLED_BY_CLIENT = -32800
     @Suppress("unused")
     const val SERVER_IS_NOT_INITIALIZED = -32002
+    const val PARSE_ERROR = -32700
 }
 
 internal fun unwrap(t: Throwable): Throwable {

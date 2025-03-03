@@ -10,6 +10,7 @@ import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.serialization.InternalSerializationApi
+import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.*
 import kotlinx.serialization.serializer
 import org.apache.logging.log4j.kotlin.logger
@@ -53,7 +54,17 @@ internal abstract class InternalTransport(private val json: Json) {
                         val received = receive() ?: return@launch
                         logger.debug("Received $received")
 
-                        val element = json.parseToJsonElement(received)
+                        val element = try {
+                            json.parseToJsonElement(received)
+                        } catch (e: SerializationException) {
+                            logger.warn("Failed to parse $received element")
+                            launch(ourReceiveDispatcher) {
+                                supervisorScope {
+                                    respondError(ErrorCodes.PARSE_ERROR, "Failed to parse request: $received")
+                                }
+                            }
+                            return@safe
+                        }
                         val obj: JsonObject = elementAsObject(element)
                         val receivable: Receivable = when {
                             obj.isMethodCall -> objectAsMethodCall(obj)
@@ -84,6 +95,11 @@ internal abstract class InternalTransport(private val json: Json) {
                 }
             }
         }
+    }
+
+    private suspend fun respondError(code: Int, message: String) {
+        val buildMap = buildMap(null, null, null, RpcError(code, message, null), null)
+        outChannel.send(JsonObject(buildMap).toString())
     }
 
     private suspend fun callServerMethod(call: InternalRpcMethodCall) {
@@ -191,7 +207,7 @@ internal abstract class InternalTransport(private val json: Json) {
         return json.encodeToJsonElement(clazz.serializer(), data)
     }
 
-    private fun buildMap(method: String?, id: RpcID?, data: JsonElement?, error: RpcError?, dataKey: String): Map<String, JsonElement> {
+    private fun buildMap(method: String?, id: RpcID?, data: JsonElement?, error: RpcError?, dataKey: String?): Map<String, JsonElement> {
         val content = mutableMapOf<String, JsonElement>(
             "jsonrpc" to JsonPrimitive("2.0"),
         )
@@ -205,7 +221,7 @@ internal abstract class InternalTransport(private val json: Json) {
             }
         }
         // todo handle rpc call parameters
-        if (data != null) {
+        if (data != null && dataKey != null) {
             content[dataKey] = data
         }
         if (error != null) {
