@@ -123,11 +123,11 @@ class IndexesTest {
         localDB.init()
         globalDB.init()
 
-        val savedVersionLocal = localDB.get(VersionedDB.VERSION_KEY)?.toLong()
+        val savedVersionLocal = localDB.dbVersion
 
         assertNotNull(savedVersionLocal, "Version is null")
 
-        val savedVersionGlobal = globalDB.get(VersionedDB.VERSION_KEY)?.toLong()
+        val savedVersionGlobal = globalDB.dbVersion
 
         assertNotNull(savedVersionGlobal, "Version is null")
 
@@ -158,16 +158,16 @@ class IndexesTest {
         after { localDBAfter.close() }
         after { globalDBAfter.close() }
 
-        val savedVersionLocalAfter = localDBAfter?.get(VersionedDB.VERSION_KEY)?.toLong()
-        val creationTimeLocalAfter = localDBAfter.get(VersionedDB.CREATED_TIME_KEY)?.toLong()
+        val savedVersionLocalAfter = localDBAfter.dbVersion
+        val creationTimeLocalAfter = localDBAfter.createdAt
 
         assertNotNull(savedVersionLocalAfter, "Version is null")
         assertEquals(newVersion, savedVersionLocalAfter)
         assertNotNull(creationTimeLocalAfter, "CreationTime is null")
         assertTrue { creationTimeLocalAfter > timeNow }
 
-        val savedVersionGlobalAfter = globalDBAfter.get(VersionedDB.VERSION_KEY)?.toLong()
-        val creationTimeGlobalAfter = globalDBAfter.get(VersionedDB.CREATED_TIME_KEY)?.toLong()
+        val savedVersionGlobalAfter = globalDBAfter.dbVersion
+        val creationTimeGlobalAfter = globalDBAfter.createdAt
 
         assertNotNull(savedVersionGlobalAfter, "Version is null")
         assertEquals(newVersion, savedVersionGlobalAfter)
@@ -242,7 +242,7 @@ class IndexesTest {
 
     private fun globalDB(root: Path): VersionedDB {
         val globalDBPath = globalIndexPath.resolve(".unblockt").resolve("global")
-        val globalDB = VersionedDB {
+        val globalDB = VersionedDB(globalDBPath) {
             RouterDB(LibrariesRouter(project, globalDBPath, root, null))
         }
         return globalDB
@@ -250,7 +250,7 @@ class IndexesTest {
 
     private fun localDB(root: Path): VersionedDB {
         val localDBPath = root.resolve(".unblockt").resolve("local")
-        val localDB = VersionedDB {
+        val localDB = VersionedDB(localDBPath) {
             RouterDB(ShardedRouter(project, localDBPath, false, 10))
         }
         return localDB

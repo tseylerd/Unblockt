@@ -7,11 +7,16 @@ import java.nio.file.Path
 
 class VersionedDB(private val path: Path, private val factory: () -> DB): CompletableDB {
     companion object {
-        const val META_DB_KEY = "version"
-        const val VERSION_KEY = "VersionedDB.version"
-        const val CREATED_TIME_KEY = "VersionedDB.createdAt"
+        private const val META_DB_KEY = "version"
+        private const val VERSION_KEY = "VersionedDB.version"
+        private const val CREATED_TIME_KEY = "VersionedDB.createdAt"
     }
 
+
+    val dbVersion: Long
+        get() = version.read { it.get() }
+    val createdAt: Long
+        get() = creationTime.read { it.get() }
 
     override val isValid: Boolean
         get() = delegate.isValid

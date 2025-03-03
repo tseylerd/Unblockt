@@ -6,7 +6,7 @@ interface IndexVersionProvider {
     val version: Long
 
     companion object {
-        private var current: IndexVersionProvider = Simple(9)
+        private var current: IndexVersionProvider = Simple(10)
 
         fun instance(): IndexVersionProvider {
             return current
