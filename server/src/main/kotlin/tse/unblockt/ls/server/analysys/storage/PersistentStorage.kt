@@ -66,7 +66,7 @@ class PersistentStorage(
         return dbManager.database.isComplete(meta)
     }
 
-    private fun complete() {
+    fun complete() {
         dbManager.database.complete()
     }
 
@@ -84,7 +84,6 @@ class PersistentStorage(
     suspend fun exclusively(modification: suspend PersistentStorage.() -> Unit) {
         dbManager.exclusively {
             this.modification()
-            complete()
         }
     }
 
@@ -157,8 +156,13 @@ class PersistentStorage(
         dbManager.database.close()
     }
 
-    fun deleteAll() {
-        dbManager.cleanup()
+    suspend fun deleteAll() {
+        exclusively {
+            dbManager.cleanup()
+        }
+        exclusively {
+            init()
+        }
     }
 
     fun clearCache() {

@@ -55,10 +55,6 @@ class ExclusiveWriteAppendOnlyDB(path: Path, private val factory: () -> DB): Com
     }
 
     suspend fun exclusively(what: suspend () -> Unit) {
-        if (completed) {
-            what()
-            return
-        }
         if (!::lock.isInitialized) {
             val result = metadata.init()
             if (!result.success) {

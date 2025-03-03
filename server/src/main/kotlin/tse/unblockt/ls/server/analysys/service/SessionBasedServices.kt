@@ -238,9 +238,7 @@ internal class SessionBasedServices(root: Path, storagePath: Path, globalStorage
     override val serviceInformation: ServiceInformation = ServiceInformation(storagePath, globalStoragePath)
 
     override suspend fun cleanup() {
-        PersistentStorage.instance(session.project).exclusively {
-            deleteAll()
-        }
+        PersistentStorage.instance(session.project).deleteAll()
     }
 
     private val persistentStorage: PersistentStorage = PersistentStorage.instance(session.project)

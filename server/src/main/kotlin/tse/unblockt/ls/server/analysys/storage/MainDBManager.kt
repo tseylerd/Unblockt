@@ -27,7 +27,6 @@ class MainDBManager(
         db.delete()
 
         createDB()
-        initDB()
     }
 
     fun initDB() {

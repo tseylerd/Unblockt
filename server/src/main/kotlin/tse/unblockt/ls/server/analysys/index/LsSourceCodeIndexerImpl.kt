@@ -172,6 +172,7 @@ class LsSourceCodeIndexerImpl(private val project: Project): LsSourceCodeIndexer
                 indexAll(ourMachines, storage, filesSequence(entry))
                 put(ProjectModelSetup.namespace, ProjectModelSetup.entryAttribute, entry.url, entry.url, entry)
             }
+            complete()
         }
         loadAllStubs(model)
     }
