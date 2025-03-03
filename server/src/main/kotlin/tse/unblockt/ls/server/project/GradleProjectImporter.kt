@@ -51,6 +51,7 @@ class GradleProjectImporter: ProjectImporter {
 
         return try {
             val gradleVersionToUse = getGradleVersionToUse(path)
+            prepareGradleIfNeeded(path)
             val allOut = GradleConnector.newConnector()
                 .forProjectDirectory(path.toFile()).run {
                     if (gradleVersionToUse != null) {
@@ -87,6 +88,26 @@ class GradleProjectImporter: ProjectImporter {
         }
         finally {
             Files.delete(tempFile)
+        }
+    }
+
+    private fun prepareGradleIfNeeded(path: Path, ) {
+        if (hasGradleWrapper(path)) {
+            val command = when (Environment.OS) {
+                Environment.OperatingSystem.MAC_OS, Environment.OperatingSystem.LINUX -> arrayOf("./gradlew", "--version")
+                Environment.OperatingSystem.WINDOWS -> arrayOf("gradlew.bat", "--version")
+            }
+            try {
+                val process = ProcessBuilder()
+                    .command(*command)
+                    .directory(path.toFile())
+                    .start()
+                process.waitFor(10, TimeUnit.SECONDS)
+                val lines = process.inputReader().readLines().joinToString()
+                logger.info("Gradle version output: $lines")
+            } catch (t: Throwable) {
+                logger.warn("Error while running gradlew --version", t)
+            }
         }
     }
 }
@@ -325,7 +346,6 @@ fun getJDKHome(): Result<String> {
         exec.inputReader().readLine()
     }
 }
-
 
 fun getGradleVersionToUse(path: Path): String? {
     if (hasGradleWrapper(path) || hasGradleInstalled()) {
