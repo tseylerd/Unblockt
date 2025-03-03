@@ -148,6 +148,14 @@ class KotlinLanguageServer(client: LanguageClient) : LanguageServer {
             exitProcess(0)
         }
 
+        override suspend fun error(errorType: ErrorType) {
+            if (client.data.name != "test") {
+                exitProcess(1)
+            } else {
+                throw IllegalStateException("Failed to parse input")
+            }
+        }
+
         override suspend fun initialize(params: InitializationRequestParameters): InitializationResponse {
             logger.info("Received initialization request")
             logger.info("Client: ${client.data.name}")

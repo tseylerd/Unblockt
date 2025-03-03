@@ -14,6 +14,7 @@ import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.*
 import kotlinx.serialization.serializer
 import org.apache.logging.log4j.kotlin.logger
+import tse.unblockt.ls.protocol.ErrorType
 import tse.unblockt.ls.rpc.reflect.*
 import tse.unblockt.ls.safe
 import java.io.PrintWriter
@@ -57,29 +58,41 @@ internal abstract class InternalTransport(private val json: Json) {
                             receive() ?: return@launch
                         } catch (e: ParsingError) {
                             logger.warn("Parsing error", e)
-                            respondError(ErrorCodes.PARSE_ERROR, "Failed to parse incoming data")
-                            return@safe
+                            null
                         }
 
                         logger.debug("Received $received")
-                        val element = try {
-                            json.parseToJsonElement(received)
-                        } catch (e: SerializationException) {
-                            logger.warn("Failed to parse $received element")
-                            respondError(ErrorCodes.PARSE_ERROR, "Failed to parse incoming data: $received")
-                            return@safe
+                        val element = when (received) {
+                            null -> null
+                            else -> try {
+                                json.parseToJsonElement(received)
+                            } catch (e: SerializationException) {
+                                logger.warn("Failed to parse $received element")
+                                null
+                            }
                         }
-                        val obj: JsonObject = elementAsObject(element)
                         val receivable: Receivable = when {
-                            obj.isMethodCall -> objectAsMethodCall(obj)
-                            obj.isResponse -> objectAsResponse(obj)
-                            else -> throw IllegalStructureException("Can't parse $obj", null)
+                            element == null -> InternalRpcMethodCall(
+                                null,
+                                "error",
+                                RpcParametersArray(listOf(JsonPrimitive(ErrorType.PARSING_ERROR.value))),
+                            )
+                            else -> {
+                                val obj: JsonObject = elementAsObject(element)
+                                when {
+                                    obj.isMethodCall -> objectAsMethodCall(obj)
+                                    obj.isResponse -> objectAsResponse(obj)
+                                    else -> throw IllegalStructureException("Can't parse $obj", null)
+                                }
+                            }
                         }
                         when (receivable) {
                             is InternalRpcResponse -> responsesFlow.emit(receivable)
-                            is InternalRpcMethodCall -> launch(ourReceiveDispatcher) {
-                                supervisorScope {
-                                    callServerMethod(receivable)
+                            is InternalRpcMethodCall -> {
+                                launch(ourReceiveDispatcher) {
+                                    supervisorScope {
+                                        callServerMethod(receivable)
+                                    }
                                 }
                             }
                         }
@@ -127,7 +140,7 @@ internal abstract class InternalTransport(private val json: Json) {
                 RpcResponse(id, json.asJson(t.result), null)
             } else {
                 val message = t.message
-                if (message == null || id == null) {
+                if (message == null) {
                     null
                 } else {
                     val type = try {

@@ -19,6 +19,7 @@ interface LanguageServer {
         suspend fun initialized()
         suspend fun shutdown(): Any?
         suspend fun exit()
+        suspend fun error(errorType: ErrorType)
     }
 
     interface Service {

@@ -83,6 +83,10 @@ class TestLanguageServer(
             notify("exit", null)
         }
 
+        override suspend fun error(errorType: ErrorType) {
+            notify("error", errorType.encode())
+        }
+
         override suspend fun initialize(params: InitializationRequestParameters): InitializationResponse {
             call("initialize", params.encode())
             val response = result().decode<InitializationResponse>()

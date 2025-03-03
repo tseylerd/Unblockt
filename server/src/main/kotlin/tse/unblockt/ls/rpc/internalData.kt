@@ -36,7 +36,7 @@ internal sealed class RpcID {
 }
 
 internal data class RpcResponse(
-    val id: RpcID,
+    val id: RpcID?,
     val result: JsonElement?,
     val error: RpcError?,
 ) {

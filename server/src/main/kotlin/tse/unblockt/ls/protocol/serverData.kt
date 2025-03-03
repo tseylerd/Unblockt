@@ -757,3 +757,16 @@ data class ParameterInformation(
     val label: String,
     val documentation: String? = null,
 )
+
+@Serializable
+@JvmInline
+value class ErrorType private constructor(val value: Int) {
+    companion object {
+        val PARSING_ERROR = ErrorType(1)
+    }
+    init {
+        if (value !in listOf(1)) {
+            throw IllegalArgumentException("Unsupported value: $value")
+        }
+    }
+}

@@ -126,6 +126,13 @@ private class LsDelegate(name: String, private val client: LanguageClient, priva
             return air
         }
 
+        override suspend fun error(errorType: ErrorType) {
+            if (params != null) {
+                shutdown()
+            }
+            initializer.error(errorType)
+        }
+
         override suspend fun initialized() {
             if (asyncInitializerResponse != null) {
                 val paramsLocal = params ?: throw IllegalStateException("Initialization parameters are null")

@@ -27,7 +27,7 @@ internal fun unwrap(t: Throwable): Throwable {
     }
 }
 
-internal fun errorAsResponse(rpcID: RpcID, ex: Throwable): RpcResponse {
+internal fun errorAsResponse(rpcID: RpcID?, ex: Throwable): RpcResponse {
     val code = when (ex) {
         is RPCCallException -> ex.code
         else -> ErrorCodes.INTERNAL_ERROR

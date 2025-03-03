@@ -142,13 +142,9 @@ private suspend fun process(context: JsonRpcContext, request: InternalRpcMethodC
         if (ex !is RPCCallException || ex.code != ErrorCodes.CANCELLED_BY_SERVER) {
             logger.error(ex.message ?: "No message", ex)
         }
-        if (request.id != null) {
-            return errorAsResponse(request.id, ex)
-        } else {
-            null
-        }
-
+        return errorAsResponse(request.id, ex)
     }
+
     val isUnit = result == Unit
     val element = if (isUnit) {
         null
