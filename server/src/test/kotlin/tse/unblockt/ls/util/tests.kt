@@ -13,6 +13,7 @@ import kotlinx.coroutines.channels.SendChannel
 import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.core.config.Configurator
 import org.apache.logging.log4j.core.config.builder.api.ConfigurationBuilderFactory
+import org.apache.logging.log4j.kotlin.logger
 import org.junit.jupiter.api.TestInfo
 import tse.unblockt.ls.protocol.*
 import tse.unblockt.ls.rpc.RPCMethodCall
@@ -25,6 +26,9 @@ import tse.unblockt.ls.server.analysys.text.applyEdits
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.util.*
+import kotlin.io.path.ExperimentalPathApi
+import kotlin.io.path.deleteRecursively
 import kotlin.test.assertEquals
 
 private const val OVERWRITE_TEST_DATA: Boolean = false
@@ -85,7 +89,34 @@ data class RkTestEnvironment(
     var root: Path? = null
 }
 
+private sealed class CleanedEntity {
+    data object Global : CleanedEntity()
+    data class Project(val path: String) : CleanedEntity()
+}
+private val cleanedEntities = Collections.synchronizedSet(mutableSetOf<CleanedEntity>())
+
+@OptIn(ExperimentalPathApi::class)
 suspend fun RkTestEnvironment.init(path: Path) {
+    val cleanIndexes = System.getenv("CLEAN_CACHES")?.toBoolean()
+    if (cleanIndexes == true) {
+        if (!cleanedEntities.contains(CleanedEntity.Global)) {
+            logger.info("Cleaning global caches")
+            if (Files.exists(globalIndexPath)) {
+                globalIndexPath.deleteRecursively()
+            }
+            cleanedEntities += CleanedEntity.Global
+        }
+        val currentPath = CleanedEntity.Project(path.normalize().toAbsolutePath().toString())
+        if (!cleanedEntities.contains(currentPath)) {
+            val resolve = path.resolve(".unblockt")
+            logger.info("Cleaning $path caches")
+            if (Files.exists(resolve)) {
+                resolve.deleteRecursively()
+            }
+            cleanedEntities += currentPath
+        }
+    }
+
     root = path
     languageServer.initializer.initialize(
         InitializationRequestParameters(
