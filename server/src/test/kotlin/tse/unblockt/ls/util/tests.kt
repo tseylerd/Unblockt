@@ -188,8 +188,13 @@ val TestInfo.findDirectory: Path
     get() {
         val testClass = testClass.get()
         val dirName = testClass.simpleName
-        val pack = testClass.packageName.split(".")
-        return pack.fold(testDataPath) { acc, cur -> acc.resolve(cur) }.resolve(dirName)
+        val prefix = generateSequence(testClass.enclosingClass) { it.enclosingClass }.map { it.simpleName }.toList()
+        val pathToClass = when {
+            prefix.isEmpty() -> listOf(dirName)
+            else -> prefix + dirName
+        }
+        val pack = testClass.packageName.split(".") + pathToClass
+        return pack.fold(testDataPath) { acc, cur -> acc.resolve(cur) }
     }
 
 val TestInfo.findModificationsDirectory: Path
