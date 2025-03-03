@@ -55,7 +55,7 @@ class ShardedRouter(private val project: Project, private val root: Path, privat
                 }
             }
         }
-        metadataMap.writeWithoutLock {
+        metadataMap.write {
             it["shards"] = shards.toString()
         }
 

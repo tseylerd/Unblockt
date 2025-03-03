@@ -6,10 +6,10 @@ import com.intellij.openapi.project.DefaultProjectFactory
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInfo
 import org.junit.jupiter.api.assertDoesNotThrow
-import org.mapdb.DB
 import org.mapdb.HTreeMap
 import org.mapdb.Serializer
 import org.mapdb.serializer.SerializerArrayTuple
+import tse.unblockt.ls.isUUID
 import tse.unblockt.ls.protocol.Document
 import tse.unblockt.ls.protocol.JobWithProgressParams
 import tse.unblockt.ls.protocol.SemanticTokensParams
@@ -27,14 +27,15 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.nio.file.StandardOpenOption
-import java.util.*
 import kotlin.io.path.exists
+import kotlin.io.path.getLastModifiedTime
 import kotlin.io.path.readText
 import kotlin.io.path.writeText
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
+import org.mapdb.DB as MapDB
 
 class IndexesTest {
     companion object {
@@ -263,6 +264,7 @@ class IndexesTest {
             Files.write(indexesPath, byteArrayOf(1), StandardOpenOption.TRUNCATE_EXISTING)
         }
 
+        val timeWas = System.currentTimeMillis()
         rkTest {
             simulateClient(testProjectPath, info) {
                 highlight()
@@ -270,6 +272,21 @@ class IndexesTest {
         }
         val dirsAfter = getGlobalIndexesDirs()
         assertEquals(indexes.size, dirsAfter.size, "Indexes folder size is different from what it was")
+        for (path in dirsAfter) {
+            assertTrue(path.getLastModifiedTime().toMillis() > timeWas, "File wasn't modified after we corrupted it")
+        }
+
+        val timeAfter = System.currentTimeMillis()
+        rkTest {
+            simulateClient(testProjectPath, info) {
+                assertInitialized()
+            }
+        }
+        val thirdDirs = getGlobalIndexesDirs()
+        assertEquals(indexes.size, thirdDirs.size, "Indexes folder size is different from what it was")
+        for (path in thirdDirs) {
+            assertTrue(path.getLastModifiedTime().toMillis() < timeAfter, "File was modified after we recovered it")
+        }
     }
 
     @Test
@@ -286,6 +303,7 @@ class IndexesTest {
 
         Files.write(metadataPath, byteArrayOf(1))
 
+        val timeWas = System.currentTimeMillis()
         rkTest {
             simulateClient(testProjectPath, info) {
                 highlight()
@@ -295,6 +313,37 @@ class IndexesTest {
         assertEquals(globalIndexesDirs.size, dirsAfter.size, "Indexes folder size is different from what it was")
         for (dirAfter in dirsAfter) {
             assertFalse("Directories intersect") { globalIndexesDirs.contains(dirAfter) }
+            assertTrue(dirAfter.getLastModifiedTime().toMillis() > timeWas, "File wasn't modified after we corrupted it")
+        }
+    }
+
+    @Test
+    fun localIndexRecoveryWorks(info: TestInfo) {
+        rkTest {
+            simulateClient(testProjectPath, info) {
+                assertInitialized()
+            }
+        }
+
+        val localIndexesDirs = getLocalIndexesDirs(testProjectPath)
+        for (localIndexesDir in localIndexesDirs) {
+            val indexFile = MDB.indexesPath(localIndexesDir)
+            assertTrue(indexFile.exists(), "Local index file does not exist")
+            Files.write(indexFile, byteArrayOf(1))
+        }
+        val timeWas = System.currentTimeMillis()
+
+        rkTest {
+            simulateClient(testProjectPath, info) {
+                diagnose()
+            }
+        }
+
+        val localIndexesDirsAfter = getLocalIndexesDirs(testProjectPath)
+        assertEquals(localIndexesDirs.size, localIndexesDirsAfter.size, "Size of local indexes doesn't match of the size it previously was")
+        for (path in localIndexesDirsAfter) {
+            val lastModifiedTime = path.getLastModifiedTime().toMillis()
+            assertTrue(lastModifiedTime > timeWas, "File wasn't modified after we corrupted it")
         }
     }
 
@@ -305,12 +354,15 @@ class IndexesTest {
     private fun getGlobalIndexesDirs(): List<Path> {
         return Files.list(ourGlobalIndexesPath).use { files ->
             files.filter { path ->
-                try {
-                    UUID.fromString(path.fileName.toString())
-                    true
-                } catch (e: IllegalArgumentException) {
-                    false
-                }
+                Files.isDirectory(path) && path.fileName.toString().isUUID
+            }.toList()
+        }
+    }
+
+    private fun getLocalIndexesDirs(path: Path): List<Path> {
+        return Files.list(DB.indexesPath(getLocalDBPath(path))).use { files ->
+            files.filter { path ->
+                Files.isDirectory(path)
             }.toList()
         }
     }
@@ -323,12 +375,14 @@ class IndexesTest {
     }
 
     private fun localDB(root: Path): VersionedDB {
-        val localDBPath = root.resolve(".unblockt").resolve("local")
+        val localDBPath = getLocalDBPath(root)
         val localDB = VersionedDB(localDBPath) {
             RouterDB(ShardedRouter(project, localDBPath, false, 10))
         }
         return localDB
     }
+
+    private fun getLocalDBPath(root: Path): Path = root.resolve(".unblockt").resolve("local")
 
     private fun assertCommonsIsHere(librariesMap: HTreeMap<String, Array<Any>>) {
         val commonsLib = librariesMap.keys.firstOrNull {
@@ -337,7 +391,7 @@ class IndexesTest {
         assertNotNull(commonsLib)
     }
 
-    private fun loadLibrariesMap(mdb: DB) = mdb.hashMap(LibrariesRouter.LIBRARIES_MAP)
+    private fun loadLibrariesMap(mdb: MapDB) = mdb.hashMap(LibrariesRouter.LIBRARIES_MAP)
         .keySerializer(Serializer.STRING)
         .valueSerializer(SerializerArrayTuple(Serializer.STRING, Serializer.BOOLEAN))
         .open()

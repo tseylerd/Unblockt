@@ -177,7 +177,7 @@ class MDB(private val project: Project, private val root: Path, private val appe
     }
 
     override fun delete() {
-        indexesPath(root).parent.deleteRecursively()
+        root.deleteRecursively()
     }
 
     override fun close() {

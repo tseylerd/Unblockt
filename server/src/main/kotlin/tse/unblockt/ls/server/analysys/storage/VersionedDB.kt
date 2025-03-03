@@ -49,6 +49,7 @@ class VersionedDB(path: Path, private val factory: () -> DB): CompletableDB {
         val versionValue = version.read { it.get() }
 
         val currentVersion = IndexVersionProvider.instance().version
+
         if (versionValue == currentVersion) {
             return result
         }
@@ -61,8 +62,8 @@ class VersionedDB(path: Path, private val factory: () -> DB): CompletableDB {
             return newResult
         }
         
-        version.writeWithoutLock { it.set(currentVersion) }
-        creationTime.writeWithoutLock { it.set(System.currentTimeMillis()) }
+        version.write { it.set(currentVersion) }
+        creationTime.write { it.set(System.currentTimeMillis()) }
 
         return InitializationResult(true, success = true)
     }

@@ -70,7 +70,7 @@ class LibrariesRouter(
     }
 
     override fun complete() {
-        librariesMap.writeWithoutLock { map ->
+        librariesMap.write { map ->
             val keys = map.keys
             for (key in keys) {
                 val curValue = map[key]!!
@@ -87,9 +87,12 @@ class LibrariesRouter(
 
     @OptIn(ExperimentalPathApi::class)
     override fun delete() {
-        Files.list(globalStorage).use {
-            for (path in it) {
-                path.deleteRecursively()
+        Files.list(globalStorage).use { paths ->
+            for (path in paths) {
+                val fileName = path.fileName.toString()
+                if (fileName.isUUID || fileName == CATALOGUE_DB || fileName == LIBRARIES_MAP) {
+                    path.deleteRecursively()
+                }
             }
         }
     }
@@ -123,7 +126,7 @@ class LibrariesRouter(
             for ((_, dbMeta) in databases) {
                 val initResult = dbMeta.db.init()
                 if (initResult.wiped) {
-                    librariesMap.writeWithoutLock { map ->
+                    librariesMap.write { map ->
                         map.remove(dbMeta.root)
                     }
                     dbMeta.db.delete()
@@ -165,7 +168,7 @@ class LibrariesRouter(
             } else {
                 val newID = UUID.randomUUID().toString()
                 val dbMeta = DBMeta(newID, false)
-                librariesMap.writeWithoutLock {
+                librariesMap.write {
                     it[root] = arrayOf(dbMeta.file, dbMeta.completed)
                 }
                 dbMeta
@@ -177,7 +180,7 @@ class LibrariesRouter(
             val result = databases[meta.file] ?: throw IllegalStateException("No db for $root: id=$meta")
             val initResult = result.db.init()
             if (!initResult.success) {
-                librariesMap.writeWithoutLock { map ->
+                librariesMap.write { map ->
                     map.remove(root)
                 }
                 result.db.delete()

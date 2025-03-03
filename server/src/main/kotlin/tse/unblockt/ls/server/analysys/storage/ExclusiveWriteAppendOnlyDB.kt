@@ -72,7 +72,7 @@ class ExclusiveWriteAppendOnlyDB(path: Path, private val factory: () -> DB): Com
             while (true) {
                 val currentValue = lock.read { it.get() }
                 val acquired = when {
-                    currentValue == FREE_MARKER || System.currentTimeMillis() - pulse.read { it.get() } > MAX_PULSE_DELAY -> lock.writeWithoutLock { it.compareAndSet(currentValue, ourLaunchId) }
+                    currentValue == FREE_MARKER || System.currentTimeMillis() - pulse.read { it.get() } > MAX_PULSE_DELAY -> lock.write { it.compareAndSet(currentValue, ourLaunchId) }
                     else -> false
                 }
 
@@ -89,7 +89,7 @@ class ExclusiveWriteAppendOnlyDB(path: Path, private val factory: () -> DB): Com
             try {
                 what.invoke()
             } finally {
-                lock.writeWithoutLock { it.set(FREE_MARKER) }
+                lock.write { it.set(FREE_MARKER) }
             }
         }
     }
@@ -181,7 +181,7 @@ class ExclusiveWriteAppendOnlyDB(path: Path, private val factory: () -> DB): Com
 
     private suspend fun pulse() {
         while (lock.read { it.get() } == ourLaunchId) {
-            pulse.writeWithoutLock { it.set(System.currentTimeMillis()) }
+            pulse.write { it.set(System.currentTimeMillis()) }
             delay(DELAY)
         }
     }

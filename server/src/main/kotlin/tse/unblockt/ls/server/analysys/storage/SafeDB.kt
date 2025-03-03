@@ -31,13 +31,7 @@ interface SafeDB: AutoCloseable {
 
 class SafeDBResource<T>(val db: SafeDB, val resource: T)
 
-inline fun <T, R> SafeDBResource<T>.writeWithLock(crossinline call: (T) -> R): R {
-    return db.lock {
-        call(resource)
-    }
-}
-
-inline fun <T, R> SafeDBResource<T>.writeWithoutLock(crossinline call: (T) -> R): R {
+inline fun <T, R> SafeDBResource<T>.write(crossinline call: (T) -> R): R {
     return db.write {
         call(resource)
     }
@@ -48,7 +42,5 @@ inline fun <T, R> SafeDBResource<T>.read(call: (T) -> R): R {
 }
 
 fun <T> SafeDB.resource(block: (DB) -> T): SafeDBResource<T> {
-    return lock { db ->
-        SafeDBResource(this, block(db))
-    }
+    return SafeDBResource(this, read { block(it) })
 }

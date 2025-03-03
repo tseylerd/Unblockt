@@ -8,9 +8,9 @@ class Metadata(private val path: Path, private val key: String) {
     internal lateinit var db: SafeDB
 
     fun init(): InitializationResult {
-        val lockPath = path.resolve("meta_$key")
-        val (mdb, result) = MDB.openOrCreateDB(lockPath) {
-            MDB.makeMetaDB(lockPath)
+        val dbPath = path.resolve("meta_$key")
+        val (mdb, result) = MDB.openOrCreateDB(dbPath) {
+            MDB.makeMetaDB(dbPath)
         }
         if (mdb == null) {
             return result
