@@ -81,7 +81,7 @@ class PersistentStorage(
         return null
     }
 
-    suspend fun inSession(modification: suspend PersistentStorage.() -> Unit) {
+    suspend fun exclusively(modification: suspend PersistentStorage.() -> Unit) {
         dbManager.exclusively {
             this.modification()
             complete()

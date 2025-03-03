@@ -133,7 +133,7 @@ class LsSourceCodeIndexerImpl(private val project: Project): LsSourceCodeIndexer
 
     override suspend fun updateIndexes(model: IndexModel) {
         report("waiting for other indexing processes to finish...")
-        storage.inSession {
+        storage.exclusively {
             report("initializing databases...")
             init()
             init(ProjectModelSetup.namespace, ProjectModelSetup.entryAttribute)
