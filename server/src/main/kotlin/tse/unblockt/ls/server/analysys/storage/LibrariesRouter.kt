@@ -9,6 +9,7 @@ import org.jetbrains.kotlin.cli.jvm.modules.CoreJrtFileSystem
 import org.mapdb.HTreeMap
 import org.mapdb.Serializer
 import org.mapdb.serializer.SerializerArrayTuple
+import tse.unblockt.ls.isUUID
 import tse.unblockt.ls.server.fs.LsFileSystem
 import java.nio.file.Files
 import java.nio.file.Path
@@ -93,6 +94,7 @@ class LibrariesRouter(
         }
     }
 
+    @OptIn(ExperimentalPathApi::class)
     override fun init(): InitializationResult {
         val pathToMetadata = globalStorage.resolve(CATALOGUE_DB)
         val (mdb, result) = MDB.openOrCreateDB(pathToMetadata) {
@@ -102,6 +104,16 @@ class LibrariesRouter(
             return InitializationResult(wiped = result.wiped, success = false)
         }
         metadataDB = SharedDBWrapperImpl { mdb }
+
+        if (result.wiped) {
+            Files.list(globalStorage).use { files ->
+                for (file in files) {
+                    if (Files.isDirectory(file) && file.fileName.toString().isUUID) {
+                        file.deleteRecursively()
+                    }
+                }
+            }
+        }
 
         var wiped = false
         for (i in 0..5) {
@@ -117,7 +129,7 @@ class LibrariesRouter(
                     dbMeta.db.delete()
                     dbMeta.db.close()
                 }
-                wipedOnCurrentIteration = initResult.success || initResult.wiped || wipedOnCurrentIteration
+                wipedOnCurrentIteration = initResult.wiped || wipedOnCurrentIteration
             }
             wiped = wiped || wipedOnCurrentIteration
 

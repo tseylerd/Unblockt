@@ -4,6 +4,7 @@ package tse.unblockt.ls
 
 import org.apache.logging.log4j.kotlin.KotlinLogger
 import org.apache.logging.log4j.kotlin.logger
+import java.util.*
 
 val logger = logger("measurements")
 
@@ -23,3 +24,11 @@ inline fun <T> measure(name: String, block: () -> T): T {
     logger.trace("$name took ${after - before} ms")
     return result
 }
+
+val String.isUUID: Boolean
+    get() = try {
+        UUID.fromString(this)
+        true
+    } catch (e: IllegalArgumentException) {
+        false
+    }

@@ -14,9 +14,11 @@ import tse.unblockt.ls.protocol.Document
 import tse.unblockt.ls.protocol.JobWithProgressParams
 import tse.unblockt.ls.protocol.SemanticTokensParams
 import tse.unblockt.ls.protocol.Uri
+import tse.unblockt.ls.server.analysys.AnalysisEntrypoint
 import tse.unblockt.ls.server.analysys.index.LsSourceCodeIndexer
 import tse.unblockt.ls.server.analysys.index.machines.JavaPackageIndexMachine
 import tse.unblockt.ls.server.analysys.index.machines.KtPackageIndexMachine
+import tse.unblockt.ls.server.analysys.service.SessionBasedServices
 import tse.unblockt.ls.server.analysys.storage.*
 import tse.unblockt.ls.server.framework.simulateClient
 import tse.unblockt.ls.server.fs.cutProtocol
@@ -26,6 +28,7 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import java.nio.file.StandardOpenOption
 import java.util.*
+import kotlin.io.path.exists
 import kotlin.io.path.readText
 import kotlin.io.path.writeText
 import kotlin.test.assertEquals
@@ -247,7 +250,9 @@ class IndexesTest {
     @Test
     fun globalIndexRecoveryWorks(info: TestInfo) {
         rkTest {
-            simulateClient(testProjectPath, info) {}
+            simulateClient(testProjectPath, info) {
+                assertInitialized()
+            }
         }
 
         val indexes = getGlobalIndexesDirs()
@@ -265,6 +270,36 @@ class IndexesTest {
         }
         val dirsAfter = getGlobalIndexesDirs()
         assertEquals(indexes.size, dirsAfter.size, "Indexes folder size is different from what it was")
+    }
+
+    @Test
+    fun globalIndexMetadataRecoveryWorks(info: TestInfo) {
+        rkTest {
+            simulateClient(testProjectPath, info) {
+                assertInitialized()
+            }
+        }
+
+        val globalIndexesDirs = getGlobalIndexesDirs()
+        val metadataPath = ourGlobalIndexesPath.resolve(LibrariesRouter.CATALOGUE_DB)
+        assertTrue(metadataPath.exists(), "No metadata file found")
+
+        Files.write(metadataPath, byteArrayOf(1))
+
+        rkTest {
+            simulateClient(testProjectPath, info) {
+                highlight()
+            }
+        }
+        val dirsAfter = getGlobalIndexesDirs()
+        assertEquals(globalIndexesDirs.size, dirsAfter.size, "Indexes folder size is different from what it was")
+        for (dirAfter in dirsAfter) {
+            assertFalse("Directories intersect") { globalIndexesDirs.contains(dirAfter) }
+        }
+    }
+
+    private fun assertInitialized() {
+        assertTrue(AnalysisEntrypoint.services is SessionBasedServices, "Non successful initialization")
     }
 
     private fun getGlobalIndexesDirs(): List<Path> {

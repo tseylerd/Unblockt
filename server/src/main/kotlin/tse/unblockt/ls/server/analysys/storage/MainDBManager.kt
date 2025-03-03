@@ -33,7 +33,7 @@ class MainDBManager(
     fun initDB() {
         val result = db.init()
         if (!result.success) {
-            throw IllegalStateException("Failed to initialize DB after cleanup")
+            throw IllegalStateException("Failed to initialize main DB")
         }
     }
 
