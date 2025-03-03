@@ -55,4 +55,4 @@ interface DB: AutoCloseable {
     }
 }
 
-class InitializationResult(val wiped: Boolean, val success: Boolean)
+data class InitializationResult(val wiped: Boolean, val success: Boolean)
