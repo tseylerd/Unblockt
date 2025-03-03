@@ -1,4 +1,4 @@
-![Version Badge](https://img.shields.io/badge/version-0.0.4-red)
+![Version Badge](https://img.shields.io/badge/version-0.0.5-red)
 ![License Badge](https://img.shields.io/badge/license-PolyForm_Perimeter_License_1.0.0-green)
 # Unblockt
 ### Kotlin Language Support for Visual Studio Code

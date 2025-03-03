@@ -1,4 +1,4 @@
-![Version Badge](https://img.shields.io/badge/version-0.0.4-red)
+![Version Badge](https://img.shields.io/badge/version-0.0.5-red)
 ![License Badge](https://img.shields.io/badge/license-PolyForm_Perimeter_License_1.0.0-green)
 ## Kotlin Language Support for Visual Studio Code
 **Note:** This extension is in its early stages and does not yet support all build systems or Kotlin features. It may also be unstable — please report any issues or unexpected behavior you experience.
