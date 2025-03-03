@@ -100,25 +100,6 @@ class MDB(private val project: Project, private val root: Path, private val appe
     override fun init(name: String) {
     }
 
-    override fun put(key: String, value: String) {
-        if (readOnly) {
-            throw IllegalStateException("DB is read only")
-        }
-        val atomicString = db.atomicString(key).createOrOpen()
-        atomicString.set(value)
-    }
-
-    override fun get(key: String): String? {
-        if (!db.exists(key)) {
-            return null
-        }
-        val atomicString = when {
-            readOnly -> db.atomicString(key).open()
-            else -> db.atomicString(key).createOrOpen()
-        }
-        return atomicString.get()
-    }
-
     override fun <M : Any, K : Any, V : Any> put(
         name: String,
         attribute: DB.Attribute<M, K, V>,

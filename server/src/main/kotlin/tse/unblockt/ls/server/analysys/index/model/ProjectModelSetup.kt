@@ -7,6 +7,7 @@ import kotlinx.serialization.json.Json
 import tse.unblockt.ls.server.analysys.index.stub.IndexModel
 import tse.unblockt.ls.server.analysys.storage.DB
 import tse.unblockt.ls.server.analysys.storage.PersistentStorage
+import tse.unblockt.ls.server.util.State
 
 object ProjectModelSetup {
     val namespace = PersistentStorage.Namespace("project_model")
@@ -19,6 +20,6 @@ object ProjectModelSetup {
         valueToString = { Json.encodeToString(it) },
         stringToKey = { _, str -> str },
         stringToValue = { _, str -> Json.decodeFromString(str) },
-        forceLocal = true,
+        shared = State.NO,
     )
 }

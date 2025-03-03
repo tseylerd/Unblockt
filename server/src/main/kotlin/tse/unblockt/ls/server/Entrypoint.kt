@@ -12,9 +12,11 @@ import tse.unblockt.ls.protocol.runLanguageServer
 import tse.unblockt.ls.rpc.Transport
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.util.*
 import kotlin.io.path.absolutePathString
 import kotlin.io.path.createDirectories
 
+val ourLaunchId = UUID.randomUUID().toString()
 
 private const val PRODUCT_NAME = "Unblockt"
 

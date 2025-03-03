@@ -31,14 +31,14 @@ interface SafeDB: AutoCloseable {
 
 class SafeDBResource<T>(val db: SafeDB, val resource: T)
 
-inline fun <T> SafeDBResource<T>.writeWithLock(crossinline call: (T) -> Unit) {
-    db.lock {
+inline fun <T, R> SafeDBResource<T>.writeWithLock(crossinline call: (T) -> R): R {
+    return db.lock {
         call(resource)
     }
 }
 
-inline fun <T> SafeDBResource<T>.writeWithoutLock(crossinline call: (T) -> Unit) {
-    db.write {
+inline fun <T, R> SafeDBResource<T>.writeWithoutLock(crossinline call: (T) -> R): R {
+    return db.write {
         call(resource)
     }
 }

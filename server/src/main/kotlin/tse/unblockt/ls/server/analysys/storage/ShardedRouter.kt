@@ -20,9 +20,6 @@ class ShardedRouter(private val project: Project, private val root: Path, privat
 
     private lateinit var metaDB: SafeDB
 
-    override val metadataDB: SafeDB
-        get() = metaDB
-
     @OptIn(ExperimentalPathApi::class)
     override fun init(): Wiped {
         if (::metaDB.isInitialized) {

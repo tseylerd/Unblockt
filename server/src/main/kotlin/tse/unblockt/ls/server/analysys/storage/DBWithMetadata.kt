@@ -2,64 +2,43 @@
 
 package tse.unblockt.ls.server.analysys.storage
 
-import org.mapdb.Atomic
 import java.nio.file.Path
 
-class VersionedDB(private val path: Path, private val factory: () -> DB): CompletableDB {
-    companion object {
-        const val META_DB_KEY = "version"
-        const val VERSION_KEY = "VersionedDB.version"
-        const val CREATED_TIME_KEY = "VersionedDB.createdAt"
+internal class DBWithMetadata(private val key: String, private val path: Path, private val factory: () -> DB): CompletableDB {
+    internal lateinit var metadataDB: SafeDB
+
+    private lateinit var delegate: DB
+
+    override fun complete() {
+        val curDB = delegate
+        if (curDB is CompletableDB) {
+            curDB.complete()
+        }
     }
 
+    override fun isComplete(meta: String): Boolean {
+        val curDB = delegate
+        return curDB is CompletableDB && curDB.isComplete(meta)
+    }
 
     override val isValid: Boolean
         get() = delegate.isValid
     override val isClosed: Boolean
         get() = delegate.isClosed
 
-    private lateinit var delegate: DBWithMetadata
-    private lateinit var version: SafeDBResource<Atomic.Long>
-    private lateinit var creationTime: SafeDBResource<Atomic.Long>
-
     override fun init(): Wiped {
-        if (::version.isInitialized) {
+        if (::delegate.isInitialized) {
             return Wiped(false)
         }
-
-        val result = recreate()
-
-        val versionValue = version.read { it.get() }
-
-        val currentVersion = IndexVersionProvider.instance().version
-        if (versionValue == currentVersion) {
-            return result
+        val lockPath = path.resolve("meta_$key")
+        metadataDB = SharedDBWrapperImpl {
+            MDB.openOrCreateDB(lockPath) {
+                MDB.makeMetaDB(lockPath)
+            }.first
         }
 
-        delegate.close()
-        delegate.delete()
-
-        recreate()
-        version.writeWithoutLock { it.set(currentVersion) }
-        creationTime.writeWithoutLock { it.set(System.currentTimeMillis()) }
-
-        return Wiped(true)
-    }
-
-    private fun recreate(): Wiped {
-        delegate = DBWithMetadata(META_DB_KEY, path, factory)
-        val result = delegate.init()
-        version = delegate.metadataDB.resource { it.atomicLong(VERSION_KEY).createOrOpen() }
-        creationTime = delegate.metadataDB.resource { it.atomicLong(CREATED_TIME_KEY).createOrOpen() }
-        return result
-    }
-
-    override fun complete() {
-        delegate.complete()
-    }
-
-    override fun isComplete(meta: String): Boolean {
-        return delegate.isComplete(meta)
+        delegate = factory()
+        return delegate.init()
     }
 
     override fun init(name: String) {
@@ -137,5 +116,6 @@ class VersionedDB(private val path: Path, private val factory: () -> DB): Comple
 
     override fun close() {
         delegate.close()
+        metadataDB.close()
     }
 }

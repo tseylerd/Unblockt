@@ -5,6 +5,7 @@ package tse.unblockt.ls.server.analysys.storage
 import com.intellij.openapi.project.Project
 import org.apache.logging.log4j.kotlin.logger
 import tse.unblockt.ls.server.fs.cutProtocol
+import tse.unblockt.ls.server.util.State
 import java.nio.file.Path
 
 class LocalGlobalRouter(
@@ -13,28 +14,17 @@ class LocalGlobalRouter(
     localStoragePath: Path,
     globalStoragePath: Path,
     allLibrariesRoots: Collection<String>,
-): RouterDB.FreezableRouter {
-    override val metadataDB: SafeDB
-        get() = throw UnsupportedOperationException()
-
+): RouterDB.CompletableRouter {
     private val projectPathString = projectPath.toString()
-    private val localDB = VersionedDB { RouterDB(ShardedRouter(project, localStoragePath, false, 10)) }
-    private val globalDB = VersionedDB { RouterDB(LibrariesRouter(project, globalStoragePath, projectPath, allLibrariesRoots)) }
+    private val localDB = VersionedDB(localStoragePath) { RouterDB(ShardedRouter(project, localStoragePath, false, 10)) }
 
-    override val all: Collection<DB> = listOf(localDB, globalDB)
-
-    fun deleteLocal() {
-        kotlin.runCatching {
-            localDB.close()
-        }.onFailure {
-            logger.error(it)
-        }
-        kotlin.runCatching {
-            localDB.delete()
-        }.onFailure {
-            logger.error(it)
+    internal val globalDB = ExclusiveWriteAppendOnlyDB(globalStoragePath)  {
+        VersionedDB(globalStoragePath) {
+            RouterDB(LibrariesRouter(project, globalStoragePath, projectPath, allLibrariesRoots))
         }
     }
+
+    override val all: Collection<DB> = listOf(localDB, globalDB)
 
     override fun init(): Wiped {
         return Wiped(
@@ -57,7 +47,7 @@ class LocalGlobalRouter(
         }
     }
 
-    private fun dbByMeta(meta: String): VersionedDB {
+    private fun dbByMeta(meta: String): CompletableDB {
         return when {
             meta.isLibraryUrl -> {
                 val withoutProtocol = meta.cutProtocol
@@ -71,15 +61,21 @@ class LocalGlobalRouter(
     }
 
     override fun dbsByKey(attribute: DB.Attribute<*, *, *>, key: String): Collection<DB> {
-        if (attribute.forceLocal) {
+        if (attribute.shared == State.NO) {
             return listOf(localDB)
+        }
+        if (attribute.shared == State.YES) {
+            return listOf(globalDB)
         }
         return all
     }
 
     override fun dbToPut(attribute: DB.Attribute<*, *, *>, meta: String, key: String): DB {
-        if (attribute.forceLocal) {
+        if (attribute.shared == State.NO) {
             return localDB
+        }
+        if (attribute.shared == State.YES) {
+            return globalDB
         }
         return dbsByMeta(meta).single()
     }
@@ -88,16 +84,16 @@ class LocalGlobalRouter(
         return dbsByMeta(meta)
     }
 
-    override fun freeze() {
-        globalDB.freeze()
+    override fun complete() {
+        globalDB.complete()
     }
 
-    override fun isFrozen(meta: String): Boolean {
+    override fun isCompleted(meta: String): Boolean {
         val db = dbByMeta(meta)
         if (db !== globalDB) {
             return false
         }
-        return db.isFrozen(meta)
+        return db.isComplete(meta)
     }
 
     override fun delete() {

@@ -12,23 +12,13 @@ import tse.unblockt.ls.protocol.HealthStatusInformation
 import java.nio.file.Path
 
 class PersistentStorage(
-    private val project: Project,
-    private val workspaceStorage: Path,
-    private val globalStorage: Path,
-    private val projectRoot: Path,
-    private val allLibrariesRoots: Collection<String>,
+    project: Project,
+    workspaceStorage: Path,
+    globalStorage: Path,
+    projectRoot: Path,
+    allLibrariesRoots: Collection<String>,
 ): Disposable {
-    private var db = createDB()
-
-    private fun createDB() = RouterDB(LocalGlobalRouter(
-        project,
-        projectRoot,
-        workspaceStorage,
-        globalStorage,
-        allLibrariesRoots,
-    ))
-
-    private var forciblyValid: Boolean = false
+    private val dbManager = MainDBManager(project, projectRoot, workspaceStorage, globalStorage, allLibrariesRoots)
 
     companion object {
         inline fun <T> safely(call: () -> T): T? {
@@ -64,36 +54,24 @@ class PersistentStorage(
     }
 
     fun init() {
-        db.init()
-
-        init(Internals.namespace, Internals.attribute)
+        dbManager.database.init()
     }
 
     fun init(namespace: Namespace, attribute: DB.Attribute<*, *, *>) {
         val attributed = namespace.attributed(attribute)
-        db.init(attributed.name)
+        dbManager.database.init(attributed.name)
     }
 
     fun freeze() {
-        db.freeze()
+        dbManager.database.complete()
     }
 
     fun isFrozen(meta: String): Boolean {
-        return db.isFrozen(meta)
+        return dbManager.database.isComplete(meta)
     }
 
     fun health(): HealthStatusInformation? {
-        if (forciblyValid) {
-            return null
-        }
-        if (!db.isValid) {
-            return HealthStatusInformation(
-                "Indexes are corrupted",
-                "Indexes are corrupted",
-                HealthStatus.ERROR
-            )
-        }
-        if (!isValid()) {
+        if (!dbManager.database.isValid) {
             return HealthStatusInformation(
                 "Indexes are corrupted",
                 "Indexes are corrupted",
@@ -103,49 +81,26 @@ class PersistentStorage(
         return null
     }
 
-    suspend fun together(modification: suspend PersistentStorage.() -> Unit) {
-        val before = forciblyValid
-        forciblyValid = true
-
-        try {
-            setInProgress(true)
+    suspend fun inSession(modification: suspend PersistentStorage.() -> Unit) {
+        dbManager.exclusively {
             this.modification()
-            setInProgress(false)
-        } finally {
-            forciblyValid = before
         }
-    }
-
-    suspend fun sync(modification: suspend PersistentStorage.() -> Unit) {
-        together {
-            modification()
-        }
-    }
-
-    private fun isValid(): Boolean {
-        if (forciblyValid) {
-            return true
-        }
-        if (db.isClosed) {
-            return false
-        }
-        return forciblyValid || !getInProgress()
     }
 
     fun <K: Any, V: Any> put(namespace: Namespace, attribute: DB.Attribute<String, K, V>, source: String, key: K, value: V) {
         val attributed = namespace.attributed(attribute)
-        db.put(attributed.name, attribute, source, key, value)
+        dbManager.database.put(attributed.name, attribute, source, key, value)
     }
 
     fun <K: Any, V: Any> putAll(namespace: Namespace, attribute: DB.Attribute<String, K, V>, triples: Set<Triple<String, K, V>>) {
         val attributed = namespace.attributed(attribute)
-        db.putAll(attributed.name, attribute, triples)
+        dbManager.database.putAll(attributed.name, attribute, triples)
     }
 
     fun <K: Any, V: Any> getSequence(namespace: Namespace, attribute: DB.Attribute<String, K, V>): Sequence<Pair<K, V>> {
         return sequence {
             safely {
-                val all = db.all(namespace.attributed(attribute).name, attribute)
+                val all = dbManager.database.all(namespace.attributed(attribute).name, attribute)
                 for (p in all) {
                     yield(p)
                 }
@@ -156,7 +111,7 @@ class PersistentStorage(
     fun <K: Any, V: Any> getSequenceOfKeys(namespace: Namespace, attribute: DB.Attribute<String, K, V>): Sequence<K> {
         return sequence {
             safely {
-                    val allKeys = db.allKeys(namespace.attributed(attribute).name, attribute)
+                    val allKeys = dbManager.database.allKeys(namespace.attributed(attribute).name, attribute)
                     for (key in allKeys) {
                         yield(key)
                     }
@@ -167,7 +122,7 @@ class PersistentStorage(
     fun <K: Any, V: Any> getSequenceOfValues(namespace: Namespace, attribute: DB.Attribute<String, K, V>): Sequence<V> {
         return sequence {
             safely {
-                val seq = db.allValues(namespace.attributed(attribute).name, attribute)
+                val seq = dbManager.database.allValues(namespace.attributed(attribute).name, attribute)
                 for (v in seq) {
                     yield(v)
                 }
@@ -178,7 +133,7 @@ class PersistentStorage(
     fun <K: Any, V: Any> getSequence(namespace: Namespace, attribute: DB.Attribute<String, K, V>, key: K): Sequence<V> {
         return sequence {
             safely {
-                val values = db.values(namespace.attributed(attribute).name, attribute, key)
+                val values = dbManager.database.values(namespace.attributed(attribute).name, attribute, key)
                 for (value in values) {
                     yield(value)
                 }
@@ -188,51 +143,34 @@ class PersistentStorage(
 
     fun <K: Any, V: Any> exists(namespace: Namespace, attribute: DB.Attribute<String, K, V>, key: K): Boolean {
         return safely {
-            db.exists(namespace.attributed(attribute).name, attribute, key)
+            dbManager.database.exists(namespace.attributed(attribute).name, attribute, key)
         } ?: false
     }
 
     fun delete(namespace: Namespace, attribute: DB.Attribute<String, *, *>, source: String) {
         val attributed = namespace.attributed(attribute)
-        db.deleteByMeta(attributed.name, attribute, source)
+        dbManager.database.deleteByMeta(attributed.name, attribute, source)
     }
 
     override fun dispose() {
-        db.close()
+        dbManager.database.close()
     }
 
     fun deleteAll() {
-        db.close()
-        db.delete()
-        db = createDB()
-        db.init()
+        dbManager.cleanup()
     }
 
     fun clearCache() {
     }
 
-    private fun setInProgress(boolean: Boolean) {
-        put(Internals.namespace, Internals.attribute, Internals.SOURCE, Internals.KEY, boolean)
-    }
-
     fun shutdown() {
     }
 
-    fun validate() {
-        val valid = isValid()
-        if (!valid) {
-            (db.router as LocalGlobalRouter).deleteLocal()
-            db.close()
-            db = createDB()
-            db.init()
+    fun heal() {
+        if (!dbManager.database.isValid) {
+            dbManager.cleanup()
         }
     }
-
-    private fun getInProgress(): Boolean {
-        val got = getSequence(Internals.namespace, Internals.attribute, Internals.KEY).toList()
-        return got.size == 1 && got.single()
-    }
-
 
     data class Namespace(val name: String) {
         init {
@@ -244,21 +182,5 @@ class PersistentStorage(
         fun attributed(attribute: DB.Attribute<*, *, *>): Namespace {
             return Namespace("${name}_${attribute.name}")
         }
-    }
-
-    private object Internals {
-        val namespace = Namespace("internal")
-        val attribute = DB.Attribute(
-            name = "internals",
-            metaToString = { it },
-            stringToMeta = { it },
-            keyToString = { it },
-            valueToString = { it.toString() },
-            stringToKey = { _, str -> str },
-            stringToValue = { _, str -> str.toBoolean() },
-            forceLocal = true,
-        )
-        const val KEY = "inProgress"
-        const val SOURCE = "PROGRESS"
     }
 }

@@ -2,64 +2,84 @@
 
 package tse.unblockt.ls.server.analysys.storage
 
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.mapdb.Atomic
+import tse.unblockt.ls.server.ourLaunchId
 import java.nio.file.Path
 
-class VersionedDB(private val path: Path, private val factory: () -> DB): CompletableDB {
+class ExclusiveWriteAppendOnlyDB(path: Path, factory: () -> DB): CompletableDB {
     companion object {
-        const val META_DB_KEY = "version"
-        const val VERSION_KEY = "VersionedDB.version"
-        const val CREATED_TIME_KEY = "VersionedDB.createdAt"
+        private const val META_DB_KEY = "lock"
+        private const val OWNER_KEY = "ExclusiveAccessDB.owner"
+        private const val PULSE_KEY = "ExclusiveAccessDB.pulse"
+        private const val FREE_MARKER = "lock.is.free"
+        private const val MAX_PULSE_DELAY = 3000
+        private const val DELAY = 1000L
     }
 
+    private var completed: Boolean = false
+
+    private val delegate: DBWithMetadata = DBWithMetadata(META_DB_KEY, path, factory)
+    private lateinit var lock: SafeDBResource<Atomic.String>
+    private lateinit var pulse: SafeDBResource<Atomic.Long>
+
+    override fun complete() {
+        assertIsOwned()
+
+        delegate.complete()
+        completed = true
+    }
+
+    override fun isComplete(meta: String): Boolean {
+        return delegate.isComplete(meta)
+    }
 
     override val isValid: Boolean
         get() = delegate.isValid
     override val isClosed: Boolean
         get() = delegate.isClosed
 
-    private lateinit var delegate: DBWithMetadata
-    private lateinit var version: SafeDBResource<Atomic.Long>
-    private lateinit var creationTime: SafeDBResource<Atomic.Long>
+    suspend fun exclusively(what: suspend () -> Unit) {
+        if (completed) {
+            what()
+            return
+        }
+
+        coroutineScope {
+            while (true) {
+                val currentValue = lock.read { it.get() }
+                val acquired = when {
+                    currentValue == FREE_MARKER || System.currentTimeMillis() - pulse.read { it.get() } > MAX_PULSE_DELAY -> lock.writeWithoutLock { it.compareAndSet(currentValue, ourLaunchId) }
+                    else -> false
+                }
+
+                if (acquired) {
+                    break
+                }
+
+                delay(DELAY)
+            }
+            launch {
+                pulse()
+            }
+
+            try {
+                what.invoke()
+            } finally {
+                lock.writeWithoutLock { it.set(FREE_MARKER) }
+            }
+        }
+    }
 
     override fun init(): Wiped {
-        if (::version.isInitialized) {
-            return Wiped(false)
-        }
-
-        val result = recreate()
-
-        val versionValue = version.read { it.get() }
-
-        val currentVersion = IndexVersionProvider.instance().version
-        if (versionValue == currentVersion) {
-            return result
-        }
-
-        delegate.close()
-        delegate.delete()
-
-        recreate()
-        version.writeWithoutLock { it.set(currentVersion) }
-        creationTime.writeWithoutLock { it.set(System.currentTimeMillis()) }
-
-        return Wiped(true)
-    }
-
-    private fun recreate(): Wiped {
-        delegate = DBWithMetadata(META_DB_KEY, path, factory)
         val result = delegate.init()
-        version = delegate.metadataDB.resource { it.atomicLong(VERSION_KEY).createOrOpen() }
-        creationTime = delegate.metadataDB.resource { it.atomicLong(CREATED_TIME_KEY).createOrOpen() }
+
+        lock = delegate.metadataDB.resource { it.atomicString(OWNER_KEY).createOrOpen() }
+        pulse = delegate.metadataDB.resource { it.atomicLong(PULSE_KEY).createOrOpen() }
+
         return result
-    }
-
-    override fun complete() {
-        delegate.complete()
-    }
-
-    override fun isComplete(meta: String): Boolean {
-        return delegate.isComplete(meta)
     }
 
     override fun init(name: String) {
@@ -67,6 +87,8 @@ class VersionedDB(private val path: Path, private val factory: () -> DB): Comple
     }
 
     override fun delete() {
+        assertIsOwned()
+
         delegate.delete()
     }
 
@@ -77,6 +99,8 @@ class VersionedDB(private val path: Path, private val factory: () -> DB): Comple
         key: K,
         value: V
     ) {
+        assertIsOwned()
+
         delegate.put(name, attribute, meta, key, value)
     }
 
@@ -85,6 +109,8 @@ class VersionedDB(private val path: Path, private val factory: () -> DB): Comple
         attribute: DB.Attribute<M, K, V>,
         triples: Set<Triple<M, K, V>>
     ) {
+        assertIsOwned()
+
         delegate.putAll(name, attribute, triples)
     }
 
@@ -120,6 +146,8 @@ class VersionedDB(private val path: Path, private val factory: () -> DB): Comple
     }
 
     override fun <M : Any, K : Any, V : Any> deleteByMeta(name: String, attribute: DB.Attribute<M, K, V>, meta: M) {
+        assertIsOwned()
+
         delegate.deleteByMeta(name, attribute, meta)
     }
 
@@ -137,5 +165,19 @@ class VersionedDB(private val path: Path, private val factory: () -> DB): Comple
 
     override fun close() {
         delegate.close()
+    }
+
+    private suspend fun pulse() {
+        while (lock.read { it.get() } == ourLaunchId) {
+            pulse.writeWithoutLock { it.set(System.currentTimeMillis()) }
+            delay(DELAY)
+        }
+    }
+
+    private fun assertIsOwned() {
+        val currentValue = lock.read { it.get() }
+        if (currentValue != ourLaunchId) {
+            throw IllegalStateException("Client must acquire exclusive lock to work with DB")
+        }
     }
 }

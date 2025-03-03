@@ -1,8 +1,9 @@
 // Copyright 2024 Dmitrii Tseiler. Licensed under the PolyForm Perimeter License 1.0.0 (https://polyformproject.org/licenses/perimeter/1.0.0)
 
-package tse.unblockt.ls.server.analysys.storage
+package tse.unblockt.ls.server.util
 
-interface FreezeableDB: DB {
-    fun freeze()
-    fun isFrozen(meta: String): Boolean
+enum class State {
+    YES,
+    NO,
+    UNDEFINED,
 }

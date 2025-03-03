@@ -6,7 +6,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.impl.jar.CoreJarFileSystem
 import org.apache.logging.log4j.kotlin.logger
 import org.jetbrains.kotlin.cli.jvm.modules.CoreJrtFileSystem
-import org.mapdb.Atomic
 import org.mapdb.HTreeMap
 import org.mapdb.Serializer
 import org.mapdb.serializer.SerializerArrayTuple
@@ -17,19 +16,18 @@ import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.io.path.ExperimentalPathApi
 import kotlin.io.path.deleteRecursively
+import org.mapdb.DB as MapDB
 
 class LibrariesRouter(
     private val project: Project,
     private val globalStorage: Path,
     private val projectPath: Path,
     private val librariesRoots: Collection<String>?,
-): RouterDB.FreezableRouter {
+): RouterDB.CompletableRouter {
 
     companion object {
         const val LIBRARIES_MAP = "libraries"
         const val CATALOGUE_DB = "metadata.db"
-
-        private val storedLibrariesKey = UniversalCache.Key<Map<String, Pair<String, Boolean>>>("globalDBsIDs")
     }
 
     private val allLibrariesRoots: Set<String>? = run {
@@ -37,31 +35,19 @@ class LibrariesRouter(
         librariesRoots?.mapNotNull { libraryRoot(it) }?.filter { !it.startsWith(projectRoot) }?.toSet()
     }
 
-    override val metadataDB: SafeDB = SharedDBWrapperImpl {
+    private val metadataDB: MapDB = run {
         val pathToMetadata = globalStorage.resolve(CATALOGUE_DB)
         MDB.openOrCreateDB(pathToMetadata) {
             MDB.makeMetaDB(pathToMetadata)
         }.first
     }
 
-    private val librariesMap: SafeDBResource<HTreeMap<String, Array<Any>>> by lazy {
-        loadLibrariesMap()
+    private val librariesMap: HTreeMap<String, Array<Any>> by lazy {
+        metadataDB.hashMap(LIBRARIES_MAP)
+            .keySerializer(Serializer.STRING)
+            .valueSerializer(SerializerArrayTuple(Serializer.STRING, Serializer.BOOLEAN))
+            .createOrOpen()
     }
-
-    private val state: SafeDBResource<Atomic.Long> = metadataDB.resource { db ->
-        db.atomicLong("counter").createOrOpen()
-    }
-
-    private val cache = UniversalCache {
-        state.read { counter ->
-            counter.get()
-        }
-    }
-
-    private val storedLibraries: Map<String, Pair<String, Boolean>>
-        get() = cache.getOrCompute(storedLibrariesKey) {
-            loadStoredLibraries()
-        }
 
     private val databases = ConcurrentHashMap<String, DB>()
 
@@ -86,22 +72,17 @@ class LibrariesRouter(
         return dbForLibrary(root)
     }
 
-    override fun freeze() {
-        librariesMap.writeWithLock { map ->
-            val keys = map.keys
-            for (key in keys) {
-                val curValue = map[key]!!
-                map[key] = arrayOf(curValue[0], true)
-            }
+    override fun complete() {
+        val keys = librariesMap.keys
+        for (key in keys) {
+            val curValue = librariesMap[key]!!
+            librariesMap[key] = arrayOf(curValue[0], true)
         }
     }
 
-    override fun isFrozen(meta: String): Boolean {
+    override fun isCompleted(meta: String): Boolean {
         val root = libraryRoot(meta)
-        val arr = librariesMap.read { it[root] }
-        if (arr == null) {
-            return false
-        }
+        val arr = librariesMap[root] ?: return false
         return arr[1] as Boolean
     }
 
@@ -141,24 +122,20 @@ class LibrariesRouter(
     }
 
     private fun dbForLibrary(root: String): DB {
-        val id = storedLibraries[root] ?: synchronized(this) {
-            val id = storedLibraries[root]
+        val meta = librariesMap[root]?.meta() ?: synchronized(this) {
+            val id = librariesMap[root]
             if (id != null) {
-                id
+                id.meta()
             } else {
                 val newID = UUID.randomUUID().toString()
-                librariesMap.writeWithLock {
-                    it[root] = arrayOf(newID, false)
-                }
-                state.writeWithoutLock {
-                    it.incrementAndGet()
-                }
-                newID to false
+                val dbMeta = DBMeta(newID, false)
+                librariesMap[root] = arrayOf(dbMeta.file, dbMeta.completed)
+                dbMeta
             }
         }
         refreshDatabases()
 
-        val result = databases[id.first] ?: throw IllegalStateException("No db for $root: id=$id")
+        val result = databases[meta.file] ?: throw IllegalStateException("No db for $root: id=$meta")
         result.init()
         return result
     }
@@ -178,19 +155,20 @@ class LibrariesRouter(
     }
 
     private fun refreshDatabases() {
-        val storedLibraries = storedLibraries
-        for ((root, fileFrozen) in storedLibraries) {
+        for ((root, arr) in librariesMap) {
             if (allLibrariesRoots == null || allLibrariesRoots.contains(root)) {
-                val storageFile = fileFrozen.first
+                val meta = arr.meta()
+                val storageFile = meta.file
                 databases.computeIfAbsent(storageFile) {
-                    MDB(project, globalStorage.resolve(storageFile), true, fileFrozen.second)
+                    MDB(project, globalStorage.resolve(storageFile), true, meta.completed)
                 }
             }
         }
         val globalDBsCopy = databases.toMap()
-        for ((id, _) in globalDBsCopy) {
-            if (!storedLibraries.values.contains(id to false) && !storedLibraries.values.contains(id to true)) {
-                val removed = databases.remove(id)
+        val allDBFiles = librariesMap.values.mapNotNull { it?.meta()?.file }.toSet()
+        for ((file, _) in globalDBsCopy) {
+            if (!allDBFiles.contains(file)) {
+                val removed = databases.remove(file)
                 kotlin.runCatching {
                     removed?.close()
                 }.onFailure {
@@ -200,23 +178,15 @@ class LibrariesRouter(
         }
     }
 
-    private fun loadLibrariesMap(): SafeDBResource<HTreeMap<String, Array<Any>>> = metadataDB.resource { db ->
-        db.hashMap(LIBRARIES_MAP)
-            .keySerializer(Serializer.STRING)
-            .valueSerializer(SerializerArrayTuple(Serializer.STRING, Serializer.BOOLEAN))
-            .createOrOpen()
-    }
-
-    private fun loadStoredLibraries(): Map<String, Pair<String, Boolean>> {
-        val result = mutableMapOf<String, Pair<String, Boolean>>()
-        librariesMap.read { map ->
-            for ((libraryPath, id) in map) {
-                result += libraryPath to Pair(id[0] as String, id[1] as Boolean)
-            }
-        }
-        return result
-    }
-
     private val String.isUrl: Boolean
         get() = startsWith("file:/") || startsWith("jar:/") || startsWith("jrt:/")
+
+    private fun Array<Any>.meta(): DBMeta {
+        return DBMeta(this[0] as String, this[1] as Boolean)
+    }
+
+    private data class DBMeta(
+        val file: String,
+        val completed: Boolean,
+    )
 }

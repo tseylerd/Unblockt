@@ -4,7 +4,7 @@ package tse.unblockt.ls.server.analysys.storage
 
 import java.io.Closeable
 
-class RouterDB(val router: Router): FreezeableDB {
+class RouterDB(private val router: Router): CompletableDB {
     override val isValid: Boolean
         get() = router.all.all { it.isValid }
     override val isClosed: Boolean
@@ -24,35 +24,21 @@ class RouterDB(val router: Router): FreezeableDB {
         router.delete()
     }
 
-    override fun freeze() {
-        if (router is FreezableRouter) {
-            router.freeze()
+    override fun complete() {
+        if (router is CompletableRouter) {
+            router.complete()
         }
     }
 
-    override fun isFrozen(meta: String): Boolean {
-        if (router !is FreezableRouter) {
+    override fun isComplete(meta: String): Boolean {
+        if (router !is CompletableRouter) {
             return false
         }
-        return router.isFrozen(meta)
+        return router.isCompleted(meta)
     }
 
     override fun close() {
         router.close()
-    }
-
-    override fun put(key: String, value: String) {
-        router.metadataDB.lock { db ->
-            val str = db.atomicString(key).createOrOpen()
-            str.set(value)
-        }
-    }
-
-    override fun get(key: String): String? {
-        return router.metadataDB.read { db ->
-            val atomicString = db.atomicString(key).createOrOpen()
-            atomicString.get()
-        }
     }
 
     override fun <M : Any, K : Any, V : Any> put(
@@ -132,8 +118,6 @@ class RouterDB(val router: Router): FreezeableDB {
     }
 
     interface Router: Closeable {
-        val metadataDB: SafeDB
-
         val all: Collection<DB>
 
         fun init(): Wiped
@@ -146,8 +130,8 @@ class RouterDB(val router: Router): FreezeableDB {
         fun delete()
     }
 
-    interface FreezableRouter: Router {
-        fun freeze()
-        fun isFrozen(meta: String): Boolean
+    interface CompletableRouter: Router {
+        fun complete()
+        fun isCompleted(meta: String): Boolean
     }
 }

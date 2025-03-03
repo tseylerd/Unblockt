@@ -140,11 +140,13 @@ class LsSourceCodeIndexerImpl(private val project: Project): LsSourceCodeIndexer
     }
 
     override suspend fun updateIndexes(model: IndexModel) {
-        storage.validate()
-
         report("reading model...")
         val savedModel = storage.readModel()
-        storage.sync {
+        report("waiting for other indexing processes to finish...")
+        storage.inSession {
+            report("checking and recovering storage health...")
+            storage.heal()
+
             report("checking changes...")
             val diff = computeDiff(model, savedModel)
             for (entry in diff.delete) {
