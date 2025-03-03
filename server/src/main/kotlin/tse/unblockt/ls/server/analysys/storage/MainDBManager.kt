@@ -27,7 +27,14 @@ class MainDBManager(
         db.delete()
 
         createDB()
-        db.init()
+        initDB()
+    }
+
+    fun initDB() {
+        val result = db.init()
+        if (!result.success) {
+            throw IllegalStateException("Failed to initialize DB after cleanup")
+        }
     }
 
     suspend fun exclusively(what: suspend () -> Unit) {

@@ -26,11 +26,20 @@ class LocalGlobalRouter(
 
     override val all: Collection<DB> = listOf(localDB, globalDB)
 
-    override fun init(): Wiped {
-        return Wiped(
-            all.map {
-                it.init()
-            }.any { it.value }
+    override fun init(): InitializationResult {
+        val localInitResult = localDB.init()
+        if (!localInitResult.success) {
+            return localInitResult
+        }
+
+        val globalInitResult = globalDB.init()
+        if (!globalInitResult.success) {
+            return globalInitResult
+        }
+
+        return InitializationResult(
+            wiped = localInitResult.wiped || globalInitResult.wiped,
+            success = true
         )
     }
 

@@ -22,5 +22,4 @@ interface LsSourceCodeIndexer {
 
     suspend fun updateIndexes(model: IndexModel)
     suspend fun index(files: Collection<PsiFile>)
-    fun init()
 }

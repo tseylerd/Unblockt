@@ -54,7 +54,7 @@ class PersistentStorage(
     }
 
     fun init() {
-        dbManager.database.init()
+        dbManager.initDB()
     }
 
     fun init(namespace: Namespace, attribute: DB.Attribute<*, *, *>) {
@@ -62,12 +62,12 @@ class PersistentStorage(
         dbManager.database.init(attributed.name)
     }
 
-    fun freeze() {
-        dbManager.database.complete()
+    fun exists(meta: String): Boolean {
+        return dbManager.database.isComplete(meta)
     }
 
-    fun isFrozen(meta: String): Boolean {
-        return dbManager.database.isComplete(meta)
+    private fun complete() {
+        dbManager.database.complete()
     }
 
     fun health(): HealthStatusInformation? {
@@ -84,6 +84,7 @@ class PersistentStorage(
     suspend fun inSession(modification: suspend PersistentStorage.() -> Unit) {
         dbManager.exclusively {
             this.modification()
+            complete()
         }
     }
 
@@ -164,12 +165,6 @@ class PersistentStorage(
     }
 
     fun shutdown() {
-    }
-
-    fun heal() {
-        if (!dbManager.database.isValid) {
-            dbManager.cleanup()
-        }
     }
 
     data class Namespace(val name: String) {

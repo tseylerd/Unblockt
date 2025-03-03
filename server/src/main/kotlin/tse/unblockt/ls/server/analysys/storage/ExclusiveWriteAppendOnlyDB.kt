@@ -9,7 +9,7 @@ import org.mapdb.Atomic
 import tse.unblockt.ls.server.ourLaunchId
 import java.nio.file.Path
 
-class ExclusiveWriteAppendOnlyDB(path: Path, factory: () -> DB): CompletableDB {
+class ExclusiveWriteAppendOnlyDB(path: Path, private val factory: () -> DB): CompletableDB {
     companion object {
         private const val META_DB_KEY = "lock"
         private const val OWNER_KEY = "ExclusiveAccessDB.owner"
@@ -21,19 +21,21 @@ class ExclusiveWriteAppendOnlyDB(path: Path, factory: () -> DB): CompletableDB {
 
     private var completed: Boolean = false
 
-    private val delegate: DBWithMetadata = DBWithMetadata(META_DB_KEY, path, factory)
+    private val metadata = Metadata(path, META_DB_KEY)
+
+    private lateinit var delegate: DB
     private lateinit var lock: SafeDBResource<Atomic.String>
     private lateinit var pulse: SafeDBResource<Atomic.Long>
 
     override fun complete() {
         assertIsOwned()
 
-        delegate.complete()
+        (delegate as? CompletableDB)?.complete()
         completed = true
     }
 
     override fun isComplete(meta: String): Boolean {
-        return delegate.isComplete(meta)
+        return (delegate as? CompletableDB)?.isComplete(meta) ?: false
     }
 
     override val isValid: Boolean
@@ -41,10 +43,29 @@ class ExclusiveWriteAppendOnlyDB(path: Path, factory: () -> DB): CompletableDB {
     override val isClosed: Boolean
         get() = delegate.isClosed
 
+    override fun init(): InitializationResult {
+        delegate = factory()
+        val result = delegate.init()
+
+        if (result.success) {
+            return result
+        }
+
+        return result
+    }
+
     suspend fun exclusively(what: suspend () -> Unit) {
         if (completed) {
             what()
             return
+        }
+        if (!::lock.isInitialized) {
+            val result = metadata.init()
+            if (!result.success) {
+                throw IllegalStateException("Failed to initialize metadata db for $META_DB_KEY")
+            }
+            lock = metadata.db.resource { it.atomicString(OWNER_KEY).createOrOpen() }
+            pulse = metadata.db.resource { it.atomicLong(PULSE_KEY).createOrOpen() }
         }
 
         coroutineScope {
@@ -71,15 +92,6 @@ class ExclusiveWriteAppendOnlyDB(path: Path, factory: () -> DB): CompletableDB {
                 lock.writeWithoutLock { it.set(FREE_MARKER) }
             }
         }
-    }
-
-    override fun init(): Wiped {
-        val result = delegate.init()
-
-        lock = delegate.metadataDB.resource { it.atomicString(OWNER_KEY).createOrOpen() }
-        pulse = delegate.metadataDB.resource { it.atomicLong(PULSE_KEY).createOrOpen() }
-
-        return result
     }
 
     override fun init(name: String) {

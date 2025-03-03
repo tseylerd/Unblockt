@@ -18,10 +18,14 @@ import tse.unblockt.ls.server.analysys.index.LsSourceCodeIndexer
 import tse.unblockt.ls.server.analysys.index.machines.JavaPackageIndexMachine
 import tse.unblockt.ls.server.analysys.index.machines.KtPackageIndexMachine
 import tse.unblockt.ls.server.analysys.storage.*
+import tse.unblockt.ls.server.framework.simulateClient
 import tse.unblockt.ls.server.fs.cutProtocol
 import tse.unblockt.ls.util.*
+import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.nio.file.StandardOpenOption
+import java.util.*
 import kotlin.io.path.readText
 import kotlin.io.path.writeText
 import kotlin.test.assertEquals
@@ -33,6 +37,7 @@ class IndexesTest {
     companion object {
         private const val COMMONS_LIB = "commons-lang3-3.17.0.jar!/"
         private const val COMMONS_DEP = "implementation(\"org.apache.commons:commons-lang3:3.17.0\")"
+        private val ourGlobalIndexesPath = globalIndexPath.resolve(".unblockt").resolve("global")
     }
 
     @Test
@@ -153,8 +158,8 @@ class IndexesTest {
 
         val localDBAfter = localDB(testProjectPath)
         val globalDBAfter = globalDB(testProjectPath)
-        assertEquals(Wiped(false), localDBAfter.init())
-        assertEquals(Wiped(false), globalDBAfter.init())
+        assertEquals(InitializationResult(wiped = false, success = true), localDBAfter.init())
+        assertEquals(InitializationResult(wiped = false, success = true), globalDBAfter.init())
         after { localDBAfter.close() }
         after { globalDBAfter.close() }
 
@@ -190,7 +195,7 @@ class IndexesTest {
             localDB.close()
         }
 
-        assertFalse("Storage is wiped") { init.value }
+        assertFalse("Storage is wiped") { init.wiped }
 
         val allKtPackages = localDB.metas(ktPackage.namespace.attributed(ktPackage.attribute).name, ktPackage.attribute).toList()
         assertFalse("Kotlin packages are empty") { allKtPackages.isEmpty() }
@@ -221,7 +226,7 @@ class IndexesTest {
             globalDB.close()
         }
 
-        assertFalse("Storage wiped") { wiped.value }
+        assertFalse("Storage wiped") { wiped.wiped }
 
         val allKtPackages = globalDB.metas(ktPackage.namespace.attributed(ktPackage.attribute).name, ktPackage.attribute).toList()
         assertFalse("Kotlin packages are empty") { allKtPackages.isEmpty() }
@@ -239,11 +244,45 @@ class IndexesTest {
         }
     }
 
+    @Test
+    fun globalIndexRecoveryWorks(info: TestInfo) {
+        rkTest {
+            simulateClient(testProjectPath, info) {}
+        }
+
+        val indexes = getGlobalIndexesDirs()
+        assertFalse { indexes.isEmpty() }
+
+        for (index in indexes) {
+            val indexesPath = MDB.indexesPath(index)
+            Files.write(indexesPath, byteArrayOf(1), StandardOpenOption.TRUNCATE_EXISTING)
+        }
+
+        rkTest {
+            simulateClient(testProjectPath, info) {
+                highlight()
+            }
+        }
+        val dirsAfter = getGlobalIndexesDirs()
+        assertEquals(indexes.size, dirsAfter.size, "Indexes folder size is different from what it was")
+    }
+
+    private fun getGlobalIndexesDirs(): List<Path> {
+        return Files.list(ourGlobalIndexesPath).use { files ->
+            files.filter { path ->
+                try {
+                    UUID.fromString(path.fileName.toString())
+                    true
+                } catch (e: IllegalArgumentException) {
+                    false
+                }
+            }.toList()
+        }
+    }
 
     private fun globalDB(root: Path): VersionedDB {
-        val globalDBPath = globalIndexPath.resolve(".unblockt").resolve("global")
-        val globalDB = VersionedDB(globalDBPath) {
-            RouterDB(LibrariesRouter(project, globalDBPath, root, null))
+        val globalDB = VersionedDB(ourGlobalIndexesPath) {
+            RouterDB(LibrariesRouter(project, ourGlobalIndexesPath, root, null))
         }
         return globalDB
     }

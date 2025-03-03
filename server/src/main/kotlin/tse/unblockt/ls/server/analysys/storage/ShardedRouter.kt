@@ -21,9 +21,9 @@ class ShardedRouter(private val project: Project, private val root: Path, privat
     private lateinit var metaDB: SafeDB
 
     @OptIn(ExperimentalPathApi::class)
-    override fun init(): Wiped {
+    override fun init(): InitializationResult {
         if (::metaDB.isInitialized) {
-            return Wiped(false)
+            return InitializationResult(false, success = true)
         }
 
         val indexesPath = DB.indexesPath(root)
@@ -31,11 +31,13 @@ class ShardedRouter(private val project: Project, private val root: Path, privat
             indexesPath.createDirectories()
         }
         val metadataPath = indexesPath.resolve("metadata.db")
-        metaDB = SharedDBWrapperImpl {
-            MDB.openOrCreateDB(metadataPath) {
-                MDB.makeMetaDB(metadataPath)
-            }.first
+        val (mdb, result) = MDB.openOrCreateDB(metadataPath) {
+            MDB.makeMetaDB(metadataPath)
         }
+        if (mdb == null) {
+            return result
+        }
+        metaDB = SharedDBWrapperImpl { mdb }
         val metadataMap = metaDB.resource {
             db -> db.hashMap("metadata", Serializer.STRING, Serializer.STRING).createOrOpen()
         }
@@ -58,9 +60,13 @@ class ShardedRouter(private val project: Project, private val root: Path, privat
         }
 
         for (i in 0 until shards) {
-            wiped = initBucket(i).init().value || wiped
+            val init = initBucket(i).init()
+            wiped = init.wiped || wiped
+            if (!init.success) {
+                return InitializationResult(wiped = wiped, success = false)
+            }
         }
-        return Wiped(wiped)
+        return InitializationResult(wiped, true)
     }
 
 

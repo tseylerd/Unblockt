@@ -19,7 +19,7 @@ import org.mapdb.DB as MapDB
 
 class MDB(private val project: Project, private val root: Path, private val appendOnly: Boolean, private val readOnly: Boolean): DB {
     companion object {
-        private fun indexesPath(path: Path): Path {
+        fun indexesPath(path: Path): Path {
             return path.resolve("index")
         }
 
@@ -39,7 +39,7 @@ class MDB(private val project: Project, private val root: Path, private val appe
             }
         }
 
-        fun openOrCreateDB(dbPath: Path, transaction: Boolean = false, readOnly: Boolean = false): Pair<MapDB, Wiped> {
+        fun openOrCreateDB(dbPath: Path, transaction: Boolean = false, readOnly: Boolean = false): Pair<MapDB?, InitializationResult> {
             return openOrCreateDB(dbPath) {
                 makeDB(dbPath, transaction, readOnly)
             }
@@ -58,12 +58,8 @@ class MDB(private val project: Project, private val root: Path, private val appe
         }
 
         @OptIn(ExperimentalPathApi::class)
-        fun openOrCreateDB(dbPath: Path, maker: () -> MapDB): Pair<MapDB, Wiped> {
-            return try {
-                maker() to Wiped(false)
-            } catch (t: Throwable) {
-                logger.warn("Wiping mdb: path=$dbPath, message=${t.message}")
-
+        fun openOrCreateDB(dbPath: Path, maker: () -> MapDB): Pair<MapDB?, InitializationResult> {
+            fun cleanup() {
                 if (dbPath.exists()) {
                     dbPath.deleteRecursively()
                 }
@@ -71,8 +67,21 @@ class MDB(private val project: Project, private val root: Path, private val appe
                 if (!parent.exists()) {
                     parent.createDirectories()
                 }
+            }
 
-                maker() to Wiped(true)
+            return try {
+                maker() to InitializationResult(wiped = false, success = true)
+            } catch (t: Throwable) {
+                logger.warn("Wiping mdb: path=$dbPath, message=${t.message}")
+                cleanup()
+
+                try {
+                    maker() to InitializationResult(wiped = true, success = true)
+                } catch (t: Throwable) {
+                    logger.warn("Second try failed", t)
+                    cleanup()
+                    null to InitializationResult(wiped = true, success = false)
+                }
             }
         }
     }
@@ -86,15 +95,17 @@ class MDB(private val project: Project, private val root: Path, private val appe
     override val isClosed: Boolean
         get() = !::db.isInitialized || db.isClosed()
 
-    override fun init(): Wiped {
+    override fun init(): InitializationResult {
         if (::db.isInitialized) {
-            return Wiped(false)
+            return InitializationResult(wiped = false, success = true)
         }
         val indexesPath = indexesPath(root)
         indexesPath.parent.createDirectories()
-        val (db, wiped) = openOrCreateDB(indexesPath, appendOnly, readOnly)
-        this.db = db
-        return wiped
+        val (db, result) = openOrCreateDB(indexesPath, appendOnly, readOnly)
+        if (db != null) {
+            this.db = db
+        }
+        return result
     }
 
     override fun init(name: String) {

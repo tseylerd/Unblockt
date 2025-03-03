@@ -5,7 +5,7 @@ package tse.unblockt.ls.server.analysys.storage
 import org.mapdb.Atomic
 import java.nio.file.Path
 
-class VersionedDB(private val path: Path, private val factory: () -> DB): CompletableDB {
+class VersionedDB(path: Path, private val factory: () -> DB): CompletableDB {
     companion object {
         private const val META_DB_KEY = "version"
         private const val VERSION_KEY = "VersionedDB.version"
@@ -23,16 +23,28 @@ class VersionedDB(private val path: Path, private val factory: () -> DB): Comple
     override val isClosed: Boolean
         get() = delegate.isClosed
 
-    private lateinit var delegate: DBWithMetadata
+    private val metadata = Metadata(path, META_DB_KEY)
+    
+    private lateinit var delegate: DB
     private lateinit var version: SafeDBResource<Atomic.Long>
     private lateinit var creationTime: SafeDBResource<Atomic.Long>
 
-    override fun init(): Wiped {
+    override fun init(): InitializationResult {
         if (::version.isInitialized) {
-            return Wiped(false)
+            return InitializationResult(wiped = false, success = true)
         }
 
+        val metadataInitResult = metadata.init()
+        if (!metadataInitResult.success) {
+            return InitializationResult(wiped = false, success = false)
+        }
+        version = metadata.db.resource { it.atomicLong(VERSION_KEY).createOrOpen() }
+        creationTime = metadata.db.resource { it.atomicLong(CREATED_TIME_KEY).createOrOpen() }
+
         val result = recreate()
+        if (!result.success) {
+            return result
+        }
 
         val versionValue = version.read { it.get() }
 
@@ -44,27 +56,28 @@ class VersionedDB(private val path: Path, private val factory: () -> DB): Comple
         delegate.close()
         delegate.delete()
 
-        recreate()
+        val newResult = recreate()
+        if (!newResult.success) {
+            return newResult
+        }
+        
         version.writeWithoutLock { it.set(currentVersion) }
         creationTime.writeWithoutLock { it.set(System.currentTimeMillis()) }
 
-        return Wiped(true)
+        return InitializationResult(true, success = true)
     }
 
-    private fun recreate(): Wiped {
-        delegate = DBWithMetadata(META_DB_KEY, path, factory)
-        val result = delegate.init()
-        version = delegate.metadataDB.resource { it.atomicLong(VERSION_KEY).createOrOpen() }
-        creationTime = delegate.metadataDB.resource { it.atomicLong(CREATED_TIME_KEY).createOrOpen() }
-        return result
+    private fun recreate(): InitializationResult {
+        delegate = factory()
+        return delegate.init()
     }
 
     override fun complete() {
-        delegate.complete()
+        (delegate as? CompletableDB)?.complete()
     }
 
     override fun isComplete(meta: String): Boolean {
-        return delegate.isComplete(meta)
+        return (delegate as? CompletableDB)?.isComplete(meta) ?: false
     }
 
     override fun init(name: String) {

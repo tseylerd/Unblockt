@@ -118,14 +118,6 @@ class LsSourceCodeIndexerImpl(private val project: Project): LsSourceCodeIndexer
         }, project)
     }
 
-    override fun init() {
-        storage.init()
-        storage.init(ProjectModelSetup.namespace, ProjectModelSetup.entryAttribute)
-        for (ourMachine in ourMachines) {
-            storage.init(ourMachine.namespace, ourMachine.attribute)
-        }
-    }
-
     override operator fun <K: Any, V: Any, I: IndexMachine<K, V>> get(clazz: KClass<I>): I {
         @Suppress("UNCHECKED_CAST")
         return ourMachines.first { clazz.isInstance(it) } as I
@@ -140,12 +132,17 @@ class LsSourceCodeIndexerImpl(private val project: Project): LsSourceCodeIndexer
     }
 
     override suspend fun updateIndexes(model: IndexModel) {
-        report("reading model...")
-        val savedModel = storage.readModel()
         report("waiting for other indexing processes to finish...")
         storage.inSession {
-            report("checking and recovering storage health...")
-            storage.heal()
+            report("initializing databases...")
+            init()
+            init(ProjectModelSetup.namespace, ProjectModelSetup.entryAttribute)
+            for (ourMachine in ourMachines) {
+                init(ourMachine.namespace, ourMachine.attribute)
+            }
+
+            report("reading model...")
+            val savedModel = readModel()
 
             report("checking changes...")
             val diff = computeDiff(model, savedModel)
@@ -166,7 +163,7 @@ class LsSourceCodeIndexerImpl(private val project: Project): LsSourceCodeIndexer
             }
 
             for (entry in diff.add) {
-                if (isFrozen(entry.url)) {
+                if (exists(entry.url)) {
                     put(ProjectModelSetup.namespace, ProjectModelSetup.entryAttribute, entry.url, entry.url, entry)
                     continue
                 }
@@ -175,10 +172,21 @@ class LsSourceCodeIndexerImpl(private val project: Project): LsSourceCodeIndexer
                 indexAll(ourMachines, storage, filesSequence(entry))
                 put(ProjectModelSetup.namespace, ProjectModelSetup.entryAttribute, entry.url, entry.url, entry)
             }
-
-            freeze()
         }
         loadAllStubs(model)
+    }
+
+    private fun PersistentStorage.validateModel(savedModel: IndexModel?): IndexModel? {
+        savedModel ?: return null
+
+        val libs = savedModel.paths.filter { it.properties.stub }
+        val removedLibs = mutableSetOf<IndexModel.Entry>()
+        for (lib in libs) {
+            if (!exists(lib.url)) {
+                removedLibs.add(lib)
+            }
+        }
+        return IndexModel(paths = savedModel.paths - removedLibs)
     }
 
     private suspend fun loadAllStubs(modelWithBuiltIns: IndexModel) {
@@ -215,7 +223,7 @@ class LsSourceCodeIndexerImpl(private val project: Project): LsSourceCodeIndexer
         if (allEntries.isEmpty()) {
             return null
         }
-        return IndexModel(allEntries.toSet())
+        return validateModel(IndexModel(allEntries.toSet()))
     }
 
     private fun filesSequence(root: IndexModel.Entry): Sequence<IndexFileEntry> {

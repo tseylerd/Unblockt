@@ -19,7 +19,7 @@ interface DB: AutoCloseable {
 
     val isClosed: Boolean
 
-    fun init(): Wiped
+    fun init(): InitializationResult
     fun init(name: String)
 
     fun delete()
@@ -55,5 +55,4 @@ interface DB: AutoCloseable {
     }
 }
 
-@JvmInline
-value class Wiped(val value: Boolean)
+class InitializationResult(val wiped: Boolean, val success: Boolean)

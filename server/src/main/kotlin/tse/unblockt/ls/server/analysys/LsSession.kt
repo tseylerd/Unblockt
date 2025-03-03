@@ -259,7 +259,6 @@ internal class LsSession(
             )
 
             report("updating indexes...")
-            indexer.init()
             indexer.updateIndexes(indexModel)
             BuildManager.instance(project).indexBuildModel(model)
 

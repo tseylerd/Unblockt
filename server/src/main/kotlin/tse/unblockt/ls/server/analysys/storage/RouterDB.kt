@@ -10,7 +10,7 @@ class RouterDB(private val router: Router): CompletableDB {
     override val isClosed: Boolean
         get() = router.all.all { it.isClosed }
 
-    override fun init(): Wiped {
+    override fun init(): InitializationResult {
         return router.init()
     }
 
@@ -120,7 +120,7 @@ class RouterDB(private val router: Router): CompletableDB {
     interface Router: Closeable {
         val all: Collection<DB>
 
-        fun init(): Wiped
+        fun init(): InitializationResult
 
         fun dbsByMeta(meta: String): Collection<DB>
         fun dbsToDeleteByMeta(meta: String): Collection<DB>
