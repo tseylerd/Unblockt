@@ -21,8 +21,12 @@ val ourLaunchId = UUID.randomUUID().toString()
 private const val PRODUCT_NAME = "Unblockt"
 
 fun main(args: Array<String>) {
-    configureLogger(Paths.get(args.first()))
-    logger("entrypoint").info("Starting language server...")
+    val logPath = args.first()
+    configureLogger(Paths.get(logPath))
+
+    val logger = logger("entrypoint")
+    logger.info("Starting language server...")
+    logger.info("Logs path: $logPath")
 
     runBlocking {
         runLanguageServer(PRODUCT_NAME, Transport.StdIO, LanguageClient.Factory.Default) { client ->
@@ -39,7 +43,7 @@ private fun configureLogger(path: Path) {
     builder.add(
         builder.newAppender("ROLLING", "RollingFile")
             .addAttribute("fileName", pathToLog.absolutePathString())
-            .addAttribute("filePattern", "server-%i.log")
+            .addAttribute("filePattern", "${pathToLog.parent.absolutePathString()}/server-%i.log")
             .add(
                 builder.newLayout("PatternLayout")
                     .addAttribute("pattern", "%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n")
