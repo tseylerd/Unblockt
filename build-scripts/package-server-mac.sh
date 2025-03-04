@@ -17,7 +17,7 @@ echo "Packaging language server..."
 jpackage --input ./server/build/jars \
   --name "server" \
   --main-jar "server.jar" \
-  --main-class "tse.unblockt.ls.server.EntrypointKt" \
+  --main-class "tse.unblockt.ls.server.UnblocktLanguageServer" \
   --runtime-image "$JRE_PATH" \
   --type app-image \
   --dest extension/resources/server \

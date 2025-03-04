@@ -22,7 +22,7 @@ repositories {
 }
 
 application {
-    mainClass.set("tse.unblockt.ls.server.EntrypointKt")
+    mainClass.set("tse.unblockt.ls.server.UnblocktLanguageServer")
     applicationDefaultJvmArgs = listOf("--add-exports=java.base/sun.nio.ch=ALL-UNNAMED",
         "--add-opens=java.base/java.lang=ALL-UNNAMED",
         "--add-opens=java.base/java.lang.reflect=ALL-UNNAMED",
@@ -33,7 +33,7 @@ val jarDirectory = file("$rootDir/server/build/jars")
 
 tasks.jar {
     manifest {
-        attributes["Main-Class"] = "tse.unblockt.ls.server.EntrypointKt"
+        attributes["Main-Class"] = "tse.unblockt.ls.server.UnblocktLanguageServer"
         archiveFileName.set("server.jar")
         destinationDirectory.set(jarDirectory)
     }
