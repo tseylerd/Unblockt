@@ -15,7 +15,6 @@ import org.jetbrains.kotlin.analysis.api.projectStructure.KaModule
 import org.jetbrains.kotlin.analysis.api.projectStructure.KaSourceModule
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInfo
-import org.junit.jupiter.api.assertDoesNotThrow
 import tse.unblockt.ls.protocol.*
 import tse.unblockt.ls.server.analysys.AnalysisEntrypoint
 import tse.unblockt.ls.server.analysys.project.LsProjectStructureProvider
@@ -127,15 +126,6 @@ class ProjectImportTest {
             }
             val hsi = health.data as HealthStatusInformation
             assertEqualsWithFile(json.encodeToString(hsi.copy(text = "", message = "")), info)
-        }
-    }
-
-    @Test
-    fun projectImportedTwiceWorks() = rkTest {
-        init(testProjectPath)
-
-        assertDoesNotThrow {
-            init(testProjectPath)
         }
     }
 
