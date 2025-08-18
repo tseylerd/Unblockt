@@ -5,18 +5,6 @@
 **Note:** This extension is in its early stages and does not yet support all build systems or Kotlin features. It may also be unstable — please report any issues or unexpected behavior you experience.
 For more details, see the [limitations](#limitations) section.
 
-Your feedback is invaluable — please [report](https://github.com/tseylerd/Unblockt/issues) any issues you encounter.
-## Installation
-1. Install the [Unblockt](https://marketplace.visualstudio.com/items?itemName=tseylerd.unblockt) extension from the Visual Studio Code Marketplace.
-2. Open any `.kt` or `.kts` file to activate the extension.
-
-Upon activation, the extension will:
-- Launch the language server
-- Read the project structure using Gradle
-- Index project files to enable code insight features
-
-Once indexing is complete, you're ready to code!
-
 ## Basics
 - **Memory Widget:** A widget in the bottom right corner displays current memory usage.  
   ![Memory widget](images/ui/memoryWidget.png)
