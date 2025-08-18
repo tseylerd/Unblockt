@@ -1,3 +1,3 @@
-// Copyright 2024 Dmitrii Tseiler. Licensed under the PolyForm Perimeter License 1.0.0 (https://polyformproject.org/licenses/perimeter/1.0.0)
+// Copyright 2024 Dmitrii Tseiler. Licensed under the Apache 2.0 Licence
 
 export const NAME = "Unblockt"
