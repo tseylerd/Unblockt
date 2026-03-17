@@ -1,5 +1,8 @@
 ![Version Badge](https://img.shields.io/badge/version-0.0.5-red)
 ## Kotlin Language Support for Visual Studio Code
+
+> **This project is no longer maintained.** There is now an official Kotlin Language Server available.
+
 **Note:** This extension is in its early stages and does not yet support all build systems or Kotlin features. It may also be unstable — please report any issues or unexpected behavior you experience.
 For more details, see the [limitations](#limitations) section.
 
